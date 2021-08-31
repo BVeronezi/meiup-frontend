@@ -1,11 +1,6 @@
 {
-    "version": 2,
-    "name": "meiup",
     "github": {
-        "enabled": false
-    },
-    "builds": [
-      { "src": "package.json", "use": "@vercel/next" },
-      { "src": "backend/**/*.js", "use": "@vercel/node" }
-    ]
+      "enabled": false,
+      "silent": true
+    }
   }
