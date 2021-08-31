@@ -1,13 +1,11 @@
 {
     "version": 2,
-    "public": false,
+    "name": "meiup",
     "github": {
-      "enabled": false
+        "enabled": false
     },
     "builds": [
-      { "src": "./public/**", "use": "@now/static" }
-    ],
-    "routes": [
-      { "src": "/(.*)", "dest": "public/$1" }
+      { "src": "package.json", "use": "@vercel/next" },
+      { "src": "backend/**/*.js", "use": "@vercel/node" }
     ]
   }
