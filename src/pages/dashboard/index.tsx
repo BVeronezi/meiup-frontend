@@ -1,16 +1,33 @@
 import { Box, Divider, Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react";
-import { useContext } from "react";
+import { useEffect, useState } from "react";
 import { ChartBarDashboard } from "../../components/ChartBar";
 import { ChartLineDashboard } from "../../components/ChartLine";
-import { ContainerPage } from "../../components/ContainerPage";
-import { AuthContext } from "../../contexts/AuthContext";
+import { ContainerPage } from "../../components/ContainerPage";import { api } from "../../services/apiClient";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 
+interface DashboardProps {
+    nome: string;
+    empresa: {
+        razaoSocial: string;
+    }
+}
+
 export default function Dashboard() {
-    const { user } = useContext(AuthContext);
+
+    const [data, setData] = useState<DashboardProps>();
+    
+    useEffect(() => {
+        async function getDadosUser() {
+            const response: any = await api.get('/auth/me')
+
+            setData(response.data);
+        }
+
+        getDadosUser()
+    }, [])
 
     return (
-        <ContainerPage title={`Olá, ${user.nome && user.email}`} subtitle="Boas vindas ao seu painel"> 
+        <ContainerPage title={`Olá, ${data?.empresa.razaoSocial ? data?.empresa.razaoSocial : data?.nome}`} subtitle="Boas vindas ao seu painel"> 
                 <SimpleGrid columns={2} spacing={10} flex="1">
                     <Box
                         p={["6", "8"]}

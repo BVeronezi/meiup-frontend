@@ -25,7 +25,8 @@ import { Box,
     AlertDialogHeader, 
     AlertDialogBody, 
     AlertDialogFooter, 
-    Button 
+    Button, 
+    createStandaloneToast
 } from "@chakra-ui/react";
 import { ViewIcon } from "@chakra-ui/icons";
 
@@ -34,6 +35,7 @@ import { ButtonSocial } from "../../components/ButtonSocial";
 import MButton from "../../components/Button";
 import { api } from "../../services/apiClient";
 import { withSSRGuest } from "../../utils/withSSRGuest";
+import { theme as customTheme } from "../../styles/theme";
 
 type UserFormData = {
     email: string;
@@ -47,6 +49,7 @@ const userFormSchema = yup.object().shape({
 
 export default function SignUp() {
     const router = useRouter();
+    const toast = createStandaloneToast({theme: customTheme})
     const [error, setError] = useState(false);
     const [isOpen, setIsOpen] = useState(false)
     const [show, setShow] = useState(false)
@@ -69,6 +72,14 @@ export default function SignUp() {
                     ...user,
                     created_at: new Date(),
             })
+
+
+            toast({
+                title: "Conta criada com sucesso!",
+                status: "success",
+                duration: 2000,
+                isClosable: true,
+            })   
 
             router.push('/login')
         } catch (err) {

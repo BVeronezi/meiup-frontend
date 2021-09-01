@@ -23,7 +23,7 @@ export function SidebarNav() {
 
     return (
     <>
-    <Divider color="red" />
+    <Divider />
         <Stack spacing="30" align="flex-start" ml="6" mt="4">
         
             <NavLink icon={RiDashboardLine} href="/dashboard">INÍCIO</NavLink>

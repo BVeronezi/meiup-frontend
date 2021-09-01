@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Box, Button, Flex, SimpleGrid, Stack, VStack } from "@chakra-ui/react";
+import { Box, Button, createStandaloneToast, Flex, SimpleGrid, Stack, VStack } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -8,9 +8,10 @@ import { ContainerPage } from "../../components/ContainerPage";
 import { Headings } from "../../components/Heading";
 import { Input } from "../../components/Input";
 import { withSSRAuth } from "../../utils/withSSRAuth";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
+import { theme as customTheme } from "../../styles/theme";
 
 type FormData = {
     cnpj: string;
@@ -36,8 +37,9 @@ const empresaFormSchema = yup.object().shape({
 })
 
 export default function DadosGerais() {
-    
+    const [isLoading, setIsLoading] = useState(true);
     const { user } = useContext(AuthContext);
+    const toast = createStandaloneToast({theme: customTheme})
 
     const { register, handleSubmit, formState, setValue } = useForm({
         resolver: yupResolver(empresaFormSchema)
@@ -47,6 +49,7 @@ export default function DadosGerais() {
 
     useEffect(() => {
         async function findEmpresa() {
+            setIsLoading(false);
             const empresaId: any = user.empresa?.id
             const response: any = await api.get(`empresa/${empresaId}`)
 
@@ -56,9 +59,13 @@ export default function DadosGerais() {
                 }        
             });
 
-            Object.entries(response.data.empresa.endereco).forEach(([key, value]) => {
-                setValue(key,value)
-            });
+            if (response.data.empresa.endereco) {
+                Object.entries(response.data.empresa.endereco).forEach(([key, value]) => {
+                    setValue(key,value)
+                });
+            }
+
+            setIsLoading(true);
         }
 
         findEmpresa()
@@ -92,15 +99,22 @@ export default function DadosGerais() {
                     ...data,
             })
 
+            toast({
+                title: "Dados salvos com sucesso!",
+                status: "success",
+                duration: 2000,
+                isClosable: true,
+            })   
+
         } catch (err) {
             console.log(err)
         } 
     }
 
     return (
-        <ContainerPage title="Empresa" subtitle="Dados gerais">
+        <ContainerPage title="Empresa" subtitle="Dados gerais">          
             <Stack as="form" onSubmit={handleSubmit(handleDadosGerais)} flex='1'>
-                <Headings title="Informações da empresa"/>
+                <Headings title="Informações da empresa" isLoading={isLoading} isFetching={true}/>
                 <Box 
                     marginTop="10px"
                     boxShadow="base"
@@ -109,7 +123,7 @@ export default function DadosGerais() {
                     p={["6", "8"]} 
                     >
 
-                    <VStack spacing="8">
+                    <VStack spacing="8">                   
                         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
                             <Input 
                                 name="cnpj"
@@ -119,7 +133,6 @@ export default function DadosGerais() {
                                 {...register('cnpj')}
                                 >                                
                             </Input>
-
                             <Input 
                                 name="razaoSocial"
                                 label="Razão Social *:"
@@ -159,11 +172,12 @@ export default function DadosGerais() {
                             >                                
                             </Input>
                         </SimpleGrid>
+              
                     </VStack>
                 </Box>
                 <Box>
                 <Box marginTop="2rem">                    
-                    <Headings title="Endereço"/>
+                    <Headings title="Endereço" isLoading={isLoading} isFetching={true}/>
                 </Box>
                 <Box 
                     marginTop="10px"
@@ -237,13 +251,15 @@ export default function DadosGerais() {
                             mt="8"
                             width="200px"
                             type="submit" 
-                            colorScheme="blue" 
+                            color="white"
+                            backgroundColor="blue.500"
                             isLoading={formState.isSubmitting}
                         >
                             SALVAR
                         </Button>
                     </Flex>
             </Stack> 
+           
         </ContainerPage>
     )
 }

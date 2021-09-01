@@ -1,16 +1,14 @@
 import React, { useContext, useState } from "react";
 import NextLink from "next/link";
-import { useRouter } from "next/dist/client/router";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Checkbox, Container, Input,  Flex, FormErrorMessage, Heading, HStack, IconButton, Image, InputGroup, InputRightElement, SimpleGrid, Text, Button, FormControl } from "@chakra-ui/react";
+import { Box, Checkbox, Container, Input,  Flex, FormErrorMessage, Heading, HStack, IconButton, Image, InputGroup, InputRightElement, SimpleGrid, Text, Button, FormControl, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from "@chakra-ui/react";
 import { ViewIcon } from "@chakra-ui/icons";
 
 import { MDivider } from "../../components/Divider";
 import { ButtonSocial } from "../../components/ButtonSocial";
 import MButton from "../../components/Button";
-import { api } from "../../services/apiClient";
 import { AuthContext } from "../../contexts/AuthContext";
 import { withSSRGuest } from "../../utils/withSSRGuest";
 
@@ -39,9 +37,9 @@ export default function Login() {
 
     const handleSignIn: SubmitHandler<UserFormData> = async(user: any) => {
         try {
-            await signIn(user);
+            await signIn(user);   
         } catch (err) {
-            console.log(err)
+           console.log(err)
         } 
     }
 
@@ -94,7 +92,7 @@ export default function Login() {
                         </FormControl>
 
                             <HStack justify="space-between">
-                                <Checkbox defaultIsChecked>Lembrar-me</Checkbox>
+                                <Checkbox>Lembrar-me</Checkbox>
                                 <NextLink href="/passwordReset" passHref>
                                         <Text as="a">Esqueci minha senha</Text>
                                     </NextLink>

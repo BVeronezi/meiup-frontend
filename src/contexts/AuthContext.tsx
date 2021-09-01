@@ -1,7 +1,9 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
 import { setCookie, parseCookies, destroyCookie } from 'nookies';
 import Router from 'next/router';
 import { api } from "../services/apiClient";
+import { createStandaloneToast } from "@chakra-ui/react";
+import { theme as customTheme } from "../styles/theme";
 
 type User = {
     email: string;
@@ -11,7 +13,8 @@ type User = {
 };
 
 type Empresa = {
-    id: string
+    id: string;
+    razaoSocial: string;
 }
 
 type SignCredentials = {
@@ -45,6 +48,7 @@ export function signOut() {
 
 export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User>();
+    const toast = createStandaloneToast({theme: customTheme})
     const isAuthenticated = !!user;
 
     useEffect(() => {
@@ -84,7 +88,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     async function signIn({email, senha}: SignCredentials) {
         try {
-            const response: any = await api.post('/auth/signin', {email, senha});
+            const response: any = await api.post('/auth/signin', {email, senha})
 
             const { token, nome, empresa, refreshToken, roles } = response.data;
 
@@ -111,13 +115,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             Router.push('/dashboard');     
         } catch (error) {
-            console.log(error)
+
+            Router.push('/login');  
+
+            toast({
+                title: "Erro ao acessar",
+                description: "Credenciais inválidas.",
+                status: "error",
+                duration: 2000,
+                isClosable: true,
+              })            
         }     
     }
 
     return (
         <AuthContext.Provider value={{ signIn, signOut, isAuthenticated, user }}>
-            {children}
+            {children}       
         </AuthContext.Provider>
     )
 }
