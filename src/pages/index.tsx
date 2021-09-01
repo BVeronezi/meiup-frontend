@@ -3,6 +3,8 @@ import { useRouter } from 'next/dist/client/router';
 import { Box, Flex, IconButton, Image, Stack, Text, useBreakpointValue } from '@chakra-ui/react';
 import { RiAccountCircleFill } from 'react-icons/ri';
 import MButton from '../components/Button';
+import { GetStaticProps } from 'next';
+import { withSSRGuest } from '../utils/withSSRGuest';
 
 export default function Home() {
   const router = useRouter();
@@ -58,3 +60,11 @@ export default function Home() {
    </>
   )
 }
+
+export const getServerSideProps = withSSRGuest(async (ctx) => {
+  return {
+    props: {
+
+    }
+  }
+});

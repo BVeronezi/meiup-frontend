@@ -33,6 +33,7 @@ import { MDivider } from "../../components/Divider";
 import { ButtonSocial } from "../../components/ButtonSocial";
 import MButton from "../../components/Button";
 import { api } from "../../services/apiClient";
+import { withSSRGuest } from "../../utils/withSSRGuest";
 
 type UserFormData = {
     email: string;
@@ -187,3 +188,11 @@ export default function SignUp() {
   </>
     )
 }
+
+export const getServerSideProps = withSSRGuest(async (ctx) => {
+    return {
+      props: {
+  
+      }
+    }
+});

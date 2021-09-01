@@ -113,7 +113,7 @@ export default function Login() {
 
                             <HStack justify="center">
                                 <Text>Não tem conta?</Text>
-                                <NextLink href="/signUp" passHref>
+                                <NextLink href="/sign-up" passHref>
                                     <Text as="a">Cadastre-se</Text>
                                 </NextLink>
                             </HStack>
