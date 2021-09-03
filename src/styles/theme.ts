@@ -15,6 +15,9 @@ export const theme = extendTheme<Theme>({
         blue: {
           "500": "#40739E",
           "700": "#487EB0",
+        },
+        red: {
+          "700": "#C23616",
         }
     },
     fonts: {

@@ -1,4 +1,4 @@
-import { Divider, Stack } from "@chakra-ui/react";
+import { Box, Divider, Stack } from "@chakra-ui/react";
 import { NavLink } from "./NavLink";
 import { 
     RiBuilding4Line, 
@@ -57,8 +57,11 @@ export function SidebarNav() {
             <NavSection title="RELATÓRIOS">
                 
             </NavSection>
-
-            <NavLink icon={RiLoginBoxLine} href="#" onClick={signOut}>SAIR</NavLink>
+        
+            <Box>
+                <NavLink mb="20px" icon={RiLoginBoxLine} href="#" onClick={signOut}>SAIR</NavLink>
+            </Box>
+      
         </Stack>
      </>
     )

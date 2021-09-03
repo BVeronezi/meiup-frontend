@@ -10,7 +10,7 @@ export function Headings({ title, isLoading = false, isFetching = false}: Headin
     return (
         <Heading size="md" fontWeight="normal">{title}
         {
-            !isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="4"/>
+            !isLoading && <Spinner size="sm" color="gray.500" ml="4"/>
         }
         </Heading>
     )
