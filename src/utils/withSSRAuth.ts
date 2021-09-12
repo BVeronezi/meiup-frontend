@@ -10,7 +10,7 @@ type withSSRAuthOptions = {
 
 export function withSSRAuth<P>(fn: GetServerSideProps<P>, options?: withSSRAuthOptions) {
 
-    return async (ctx: GetServerSidePropsContext): Promise<GetServerSidePropsResult<P>> => {
+    return async (ctx: GetServerSidePropsContext): Promise<GetServerSidePropsResult<P>> => {  
         const cookies = parseCookies(ctx);
         const token = cookies['meiup.token'];
       

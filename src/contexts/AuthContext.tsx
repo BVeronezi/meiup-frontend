@@ -70,7 +70,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const { 'meiup.token': token } = parseCookies()
 
         if (token) {
-            api.get('/me').then(response => {
+            api.get('/auth/me').then(response => {
               const { email, nome, empresa, roles } = response.data;
 
               setUser({
@@ -83,7 +83,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             .catch(()  => {
                 signOut();
             })
-        }
+        }   
     }, [])
 
     async function signIn({email, senha}: SignCredentials) {

@@ -50,6 +50,7 @@ export default function DadosGerais() {
     useEffect(() => {
         async function findEmpresa() {
             setIsLoading(false);
+
             const empresaId: any = user.empresa?.id
             const response: any = await api.get(`empresa/${empresaId}`)
 

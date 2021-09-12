@@ -2,14 +2,13 @@ import { Box, Divider, Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react
 import { useEffect, useState } from "react";
 import { ChartBarDashboard } from "../../components/ChartBar";
 import { ChartLineDashboard } from "../../components/ChartLine";
-import { ContainerPage } from "../../components/ContainerPage";import { api } from "../../services/apiClient";
+import { ContainerPage } from "../../components/ContainerPage";import { setupAPIClient } from "../../services/api";
+import { api } from "../../services/apiClient";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 
 interface DashboardProps {
     nome: string;
-    empresa: {
-        razaoSocial: string;
-    }
+    email: string;
 }
 
 export default function Dashboard() {
@@ -27,7 +26,7 @@ export default function Dashboard() {
     }, [])
 
     return (
-        <ContainerPage title={`Olá, ${data?.empresa.razaoSocial ? data?.empresa.razaoSocial : data?.nome}`} subtitle="Boas vindas ao seu painel"> 
+        <ContainerPage title={`Olá, ${data?.nome || data?.email}`} subtitle="Boas vindas ao seu painel"> 
                 <SimpleGrid columns={2} spacing={10} flex="1">
                     <Box
                         p={["6", "8"]}

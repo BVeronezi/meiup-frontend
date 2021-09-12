@@ -17,7 +17,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </SidebarDrawerProvider>       
         </ChakraProvider>
       </QueryClientProvider>
-      </AuthProvider>
+    </AuthProvider>
  
   ) 
 }
