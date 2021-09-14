@@ -1,4 +1,5 @@
 import { Box, Divider, Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react";
+import { parseCookies } from "nookies";
 import { useEffect, useState } from "react";
 import { ChartBarDashboard } from "../../components/ChartBar";
 import { ChartLineDashboard } from "../../components/ChartLine";
@@ -16,6 +17,10 @@ export default function Dashboard() {
     const [data, setData] = useState<DashboardProps>();
     
     useEffect(() => {
+        const { 'meiup.token': token } = parseCookies()
+
+        console.log(`token ${token}`)
+
         // async function getDadosUser() {
         //     const response: any = await api.get('/auth/me')
 
