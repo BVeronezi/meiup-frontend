@@ -16,7 +16,7 @@ export function setupAPIClient(ctx = undefined) {
     let cookies = parseCookies(ctx);
 
     const api = axios.create({
-        baseURL: `${process.env.URL_API}api/v1`,
+        baseURL: `https://meiup-api.herokuapp.com/api/v1`,
         headers: {
             Authorization: `Bearer ${cookies['meiup.token']}`,
         }
@@ -97,4 +97,3 @@ export function setupAPIClient(ctx = undefined) {
 
     return api
 }
-
