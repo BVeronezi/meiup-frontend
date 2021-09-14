@@ -16,13 +16,13 @@ export default function Dashboard() {
     const [data, setData] = useState<DashboardProps>();
     
     useEffect(() => {
-        async function getDadosUser() {
-            const response: any = await api.get('/auth/me')
+        // async function getDadosUser() {
+        //     const response: any = await api.get('/auth/me')
 
-            setData(response.data);
-        }
+        //     setData(response.data);
+        // }
 
-        getDadosUser()
+        // getDadosUser()
     }, [])
 
     return (
