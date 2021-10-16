@@ -2,12 +2,11 @@ import { Button } from '@chakra-ui/react';
 import React from 'react';
 import { FaFacebookF } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
-import { api } from '../../services/apiClient';
 import NextLink from 'next/link'
 
 export function ButtonSocial() {
 
-    const url_google = `https://meiup-api.herokuapp.com/api/v1/auth/google`;
+    const url_google = `http://localhost:8000/api/v1/auth/google`;
 
      return (
         <>

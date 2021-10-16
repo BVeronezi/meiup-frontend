@@ -69,8 +69,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     useEffect(() => {
         const { 'meiup.token': token } = parseCookies()
 
-        console.log(`token ${token}`)
-
         if (token) {
             api.get('/auth/me').then(response => {
               const { email, nome, empresa, roles } = response.data;
