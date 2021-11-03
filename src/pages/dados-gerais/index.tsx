@@ -12,6 +12,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
 import { theme as customTheme } from "../../styles/theme";
+import { Endereco } from "../../fragments/endereco";
 
 type FormData = {
     cnpj: string;
@@ -176,77 +177,7 @@ export default function DadosGerais() {
               
                     </VStack>
                 </Box>
-                <Box>
-                <Box marginTop="2rem">                    
-                    <Headings title="Endereço" isLoading={isLoading}/>
-                </Box>
-                <Box 
-                    marginTop="10px"
-                    boxShadow="base"
-                    borderRadius={20} 
-                    p={["6", "8"]} >
-
-                    <VStack spacing="8">
-                        <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-                            <Input 
-                                name="cep"
-                                label="CEP *:"
-                                error={errors.cep}
-                                {...register('cep')}
-                            >                                
-                            </Input>
-
-                            <Input 
-                                name="endereco"
-                                label="Endereço *:"
-                                error={errors.endereco}
-                                {...register('endereco')}
-                            >                                
-                            </Input>
-                        </SimpleGrid>
-
-                        <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-                            <Input 
-                                name="numero"
-                                label="Número:"
-                                {...register('numero')}
-                            >                                
-                            </Input>
-
-                            <Input  
-                                name="bairro"
-                                label="Bairro:"
-                                {...register('bairro')}
-                            >                                
-                            </Input>
-
-                            <Input 
-                                name="cidade"
-                                label="Cidade:"
-                                {...register('cidade')}
-                            >                                
-                            </Input>
-                        </SimpleGrid>
-
-                        <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-                            <Input 
-                                name="estado"
-                                label="Estado:"
-                                {...register('estado')}
-                            >                                
-                            </Input>
-
-                            <Input 
-                                name="complemento"
-                                label="Complemento:"
-                                {...register('complemento')}
-                            >                                
-                            </Input>
-                        </SimpleGrid>
-
-                    </VStack>
-                    </Box>
-                </Box>
+                <Endereco register={register} errors={errors} isLoading={isLoading}/>
                 <Flex justify="flex-end">
                         <Button 
                             mt="8"

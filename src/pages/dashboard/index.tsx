@@ -1,37 +1,17 @@
 import { Box, Divider, Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react";
-import { parseCookies } from "nookies";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import { ChartBarDashboard } from "../../components/ChartBar";
 import { ChartLineDashboard } from "../../components/ChartLine";
-import { ContainerPage } from "../../components/ContainerPage";import { setupAPIClient } from "../../services/api";
-import { api } from "../../services/apiClient";
+import { ContainerPage } from "../../components/ContainerPage";
+import { AuthContext } from "../../contexts/AuthContext";
 import { withSSRAuth } from "../../utils/withSSRAuth";
-
-interface DashboardProps {
-    nome: string;
-    email: string;
-}
 
 export default function Dashboard() {
 
-    const [data, setData] = useState<DashboardProps>();
-    
-    useEffect(() => {
-        const { 'meiup.token': token } = parseCookies()
-
-        console.log(`token ${token}`)
-
-        // async function getDadosUser() {
-        //     const response: any = await api.get('/auth/me')
-
-        //     setData(response.data);
-        // }
-
-        // getDadosUser()
-    }, [])
+    const { user } = useContext(AuthContext);
 
     return (
-        <ContainerPage title={`Olá, ${data?.nome || data?.email}`} subtitle="Boas vindas ao seu painel"> 
+        <ContainerPage title={`Olá, ${user?.nome || user?.email}`} subtitle="Boas vindas ao seu painel"> 
                 <SimpleGrid columns={2} spacing={10} flex="1">
                     <Box
                         p={["6", "8"]}
@@ -112,8 +92,8 @@ export default function Dashboard() {
     )
 }
 
-// export const getServerSideProps = withSSRAuth(async (ctx) => {
-//     return {
-//         props: {}
-//     }
-// })
+export const getServerSideProps = withSSRAuth(async (ctx) => {
+    return {
+        props: {}
+    }
+})
