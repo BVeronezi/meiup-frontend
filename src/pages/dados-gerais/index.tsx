@@ -2,7 +2,8 @@
 import { Box, Button, createStandaloneToast, Flex, SimpleGrid, Stack, VStack } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { yupResolver } = require('@hookform/resolvers/yup')
 
 import { ContainerPage } from "../../components/ContainerPage";
 import { Headings } from "../../components/Heading";
