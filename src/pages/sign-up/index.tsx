@@ -4,7 +4,7 @@ import { useRouter } from "next/dist/client/router";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from 'yup';
 import InputMask from "react-input-mask";
-import { yupResolver } from '@hookform/resolvers/yup'
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Box, 
     Container,
     Input,  

@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import NextLink from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup'
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Box, Checkbox, Container, Input,  Flex, FormErrorMessage, Heading, HStack, IconButton, Image, InputGroup, InputRightElement, SimpleGrid, Text, Button, FormControl, AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogBody, AlertDialogFooter } from "@chakra-ui/react";
 import { ViewIcon } from "@chakra-ui/icons";
 
