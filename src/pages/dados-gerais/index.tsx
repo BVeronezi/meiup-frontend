@@ -2,6 +2,7 @@
 import { Box, Button, createStandaloneToast, Flex, SimpleGrid, Stack, VStack } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from 'yup';
+import axios, { AxiosError } from 'axios';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require('@hookform/resolvers/yup')
 
@@ -52,29 +53,80 @@ export default function DadosGerais() {
     useEffect(() => {
         async function findEmpresa() {
             setIsLoading(false);
+            const empresaId: any = user?.empresa?.id;
 
-            const empresaId: any = user.empresa?.id
-            const response: any = await api.get(`empresa/${empresaId}`)
+            if (empresaId) {
+                const response: any = await api.get(`empresa/${empresaId}`)
 
-            Object.entries(response.data.empresa).forEach(([key, value]) => {
-                if (key !== 'endereco'){
-                    setValue(key,value)
-                }        
-            });
-
-            if (response.data.empresa.endereco) {
-                Object.entries(response.data.empresa.endereco).forEach(([key, value]) => {
-                    setValue(key,value)
+                Object.entries(response.data.empresa).forEach(([key, value]) => {
+                    if (key !== 'endereco'){
+                        setValue(key,value)
+                    }        
                 });
+    
+                if (response.data.empresa.endereco) {
+                    Object.entries(response.data.empresa.endereco).forEach(([key, value]) => {
+                        setValue(key,value)
+                    });
+                }
+                setIsLoading(true);
             }
-
-            setIsLoading(true);
         }
 
         findEmpresa()
 
+
         focus()
-    }, [])
+    }, [user])
+
+    const consultaCpfCnpj = async (value) => {
+        const cpfCnpj = value.replace(/[^0-9]/g, '')
+
+        if (cpfCnpj.length == '14') {
+            const resultConsulta: any = await axios.get(`https://api.cnpja.com.br/companies/${cpfCnpj}`, {
+                headers: { Authorization: 'd7756953-d64d-46a3-8a7f-ffb409dd20a0-38e52cca-6626-41e9-950b-f69496b95a0a'}
+            })
+        
+            if (resultConsulta.data) {
+                const { name, email } = resultConsulta.data;
+                const { zip, street, number, neighborhood, city, state, details} = resultConsulta.data.address
+    
+                setValue('razaoSocial', name);
+                setValue('email', email);
+                setValue('cep', zip);
+                setValue('endereco', street);
+                setValue('numero', number);
+                setValue('bairro', neighborhood);
+                setValue('cidade', city);
+                setValue('estado', state);
+                setValue('complemento', details);
+            }
+        }
+
+    }
+
+    const buscaCep = async (value) => {
+        const cep = value.replace(/[^0-9]/g, '')
+
+        if (cep.length === 8) {
+
+        const resultCep: any = await axios.get(`https://api.cnpja.com.br/zip/${cep}`, {
+            headers: { Authorization: 'd7756953-d64d-46a3-8a7f-ffb409dd20a0-38e52cca-6626-41e9-950b-f69496b95a0a'}
+        })
+
+        if (resultCep.data) {
+                const { zip, street, district, city, state} = resultCep.data;
+
+                setValue('cep', zip);
+                setValue('endereco', street);
+                setValue('numero', '');
+                setValue('bairro', district);
+                setValue('cidade', city);
+                setValue('estado', state);
+                setValue('complemento', '');
+            }
+        }
+    }
 
     const handleDadosGerais: SubmitHandler<FormData> = async (values) => {
 
@@ -134,6 +186,7 @@ export default function DadosGerais() {
                                 label="CNPJ *:"
                                 error={errors.cnpj}
                                 {...register('cnpj')}
+                                onChange={(c) => consultaCpfCnpj(c.target.value)}
                                 >                                
                             </Input>
                             <Input 
@@ -178,7 +231,7 @@ export default function DadosGerais() {
               
                     </VStack>
                 </Box>
-                <Endereco register={register} errors={errors} isLoading={isLoading}/>
+                <Endereco register={register} errors={errors} isLoading={isLoading} buscaCep={buscaCep}/>
                 <Flex justify="flex-end">
                         <Button 
                             mt="8"

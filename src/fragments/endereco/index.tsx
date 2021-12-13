@@ -1,8 +1,10 @@
 import { Box, SimpleGrid, VStack } from "@chakra-ui/layout";
+import axios from "axios";
 import { Headings } from "../../components/Heading";
 import { Input } from "../../components/Input";
 
-export function Endereco({ register, errors, isLoading }) {
+export function Endereco({ register, errors, isLoading, buscaCep }) {
+
     return (
     <Box>
         <Box marginTop="2rem">                    
@@ -21,6 +23,7 @@ export function Endereco({ register, errors, isLoading }) {
                         label="CEP *:"
                         error={errors.cep}
                         {...register('cep')}
+                        onChange={c => buscaCep(c.target.value)}
                     >                                
                     </Input>
 

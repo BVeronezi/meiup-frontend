@@ -6,7 +6,7 @@ import NextLink from 'next/link'
 
 export function ButtonSocial() {
 
-    const url_google = `https://meiup-api.herokuapp.com/api/v1/auth/google`;
+    const url_google = `http://localhost:8000/api/v1/auth/google`;
 
      return (
         <>
