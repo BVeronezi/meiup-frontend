@@ -109,23 +109,22 @@ export default function DadosGerais() {
         const cep = value.replace(/[^0-9]/g, '')
 
         if (cep.length === 8) {
+            const resultCep: any = await axios.get(`https://api.cnpja.com.br/zip/${cep}`, {
+                headers: { Authorization: 'd7756953-d64d-46a3-8a7f-ffb409dd20a0-38e52cca-6626-41e9-950b-f69496b95a0a'}
+            })
 
-        const resultCep: any = await axios.get(`https://api.cnpja.com.br/zip/${cep}`, {
-            headers: { Authorization: 'd7756953-d64d-46a3-8a7f-ffb409dd20a0-38e52cca-6626-41e9-950b-f69496b95a0a'}
-        })
+            if (resultCep.data) {
+                    const { zip, street, district, city, state} = resultCep.data;
 
-        if (resultCep.data) {
-                const { zip, street, district, city, state} = resultCep.data;
-
-                setValue('cep', zip);
-                setValue('endereco', street);
-                setValue('numero', '');
-                setValue('bairro', district);
-                setValue('cidade', city);
-                setValue('estado', state);
-                setValue('complemento', '');
+                    setValue('cep', zip);
+                    setValue('endereco', street);
+                    setValue('numero', '');
+                    setValue('bairro', district);
+                    setValue('cidade', city);
+                    setValue('estado', state);
+                    setValue('complemento', '');
+                }
             }
-        }
     }
 
     const handleDadosGerais: SubmitHandler<FormData> = async (values) => {

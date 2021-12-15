@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import { InfoOutlineIcon, ViewIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Endereco } from "../../fragments/endereco";
+import axios from "axios";
 
 type FormData = {
     nome: string;
@@ -57,24 +58,30 @@ export default function FormUsuario() {
     useEffect(() => {
         async function findUsuario() {
             setIsLoading(false);
+
+            debugger;
             const usuarioId: any = Object.keys(router.query)[0]
-            const response: any = await api.get(`/usuario/${usuarioId}`)
 
-            Object.entries(response.data.user).forEach(([key, value]) => {
-                if (key !== 'endereco'){
-                    setValue(key,value)
-                }        
-            });
+            if (usuarioId) {
+                const response: any = await api.get(`/usuario/${usuarioId}`)
 
-            if (response.data.user.endereco) {
-                Object.entries(response.data.user.endereco).forEach(([key, value]) => {
-                    setValue(key,value)
+                Object.entries(response.data.user).forEach(([key, value]) => {
+                    if (key !== 'endereco'){
+                        setValue(key,value)
+                    }        
                 });
+    
+                if (response.data.user.endereco) {
+                    Object.entries(response.data.user.endereco).forEach(([key, value]) => {
+                        setValue(key,value)
+                    });
+                }    
             }
 
             setIsLoading(true);
         }
 
+        debugger;
 
         if (Object.keys(router.query)[0]) {
             findUsuario()
@@ -85,6 +92,28 @@ export default function FormUsuario() {
         
         focus()
     }, [])
+
+    const buscaCep = async (value) => {
+        const cep = value.replace(/[^0-9]/g, '')
+
+        if (cep.length === 8) {
+            const resultCep: any = await axios.get(`https://api.cnpja.com.br/zip/${cep}`, {
+                headers: { Authorization: 'd7756953-d64d-46a3-8a7f-ffb409dd20a0-38e52cca-6626-41e9-950b-f69496b95a0a'}
+            })
+
+            if (resultCep.data) {
+                    const { zip, street, district, city, state} = resultCep.data;
+
+                    setValue('cep', zip);
+                    setValue('endereco', street);
+                    setValue('numero', '');
+                    setValue('bairro', district);
+                    setValue('cidade', city);
+                    setValue('estado', state);
+                    setValue('complemento', '');
+                }
+            }
+    }
 
     const handleClick = () => setShow(!show)
 
@@ -231,7 +260,7 @@ export default function FormUsuario() {
               
                     </VStack>
                 </Box>
-                <Endereco register={register} errors={errors} isLoading={isLoading}/>
+                <Endereco register={register} errors={errors} isLoading={isLoading} buscaCep={buscaCep}/>
                 <Box>
                     <Flex mt="8" justify="flex-end">
                         <HStack spacing="24px">
