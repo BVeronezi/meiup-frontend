@@ -1,14 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { 
-    Stack,
     Box, 
     Button, 
-    AlertDialog,
-    AlertDialogBody,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogContent,
-    AlertDialogOverlay,
     createStandaloneToast, 
     Flex, 
     HStack, 
@@ -24,16 +17,10 @@ import {
     Thead, 
     Tr, 
     useBreakpointValue, 
-    Input as ChakraInput,
-    InputGroup,
-    InputLeftElement,
-    Grid,
-    GridItem
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { RiAddLine, RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { ContainerPage } from "../../components/ContainerPage";
-import { Headings } from "../../components/Heading";
 import { Pagination } from "../../components/Pagination";
 import { api } from "../../services/apiClient";
 import { queryClient } from "../../services/queryClient";
@@ -41,7 +28,8 @@ import { withSSRAuth } from "../../utils/withSSRAuth";
 import { useRouter } from "next/router";
 import { AuthContext } from "../../contexts/AuthContext";
 import { theme as customTheme } from "../../styles/theme";
-import { PhoneIcon, SearchIcon } from "@chakra-ui/icons";
+import { Pesquisa } from "../../fragments/pesquisa";
+import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
 interface UsuariosProps {
     users: User[];
     totalCount: number;
@@ -73,7 +61,7 @@ export default function Usuarios() {
     const [page, setPage] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState<UsuariosProps>();
-    const [error, setError] = useState('');
+    const [error] = useState('');
 
     const isWideVersion = useBreakpointValue({
         base: false,
@@ -144,7 +132,7 @@ export default function Usuarios() {
         })
 
         setData({
-            users: users,
+            users,
             totalCount: response.data.found.total
         })
 
@@ -166,22 +154,14 @@ export default function Usuarios() {
         <ContainerPage title="Usuários"> 
                 <Box flex="1" borderRadius={8} boxShadow="base" p="8">
                     <Flex mb="8" justify="space-between" align="center">     
-                        <InputGroup>
-                                <InputLeftElement                                
-                                pointerEvents="none"
-                                // eslint-disable-next-line react/no-children-prop
-                                children={<SearchIcon color="gray.300" />}
-                                />
-                                <ChakraInput value={valuePesquisa} size="sm" type="tel" placeholder="Pesquisar" onChange={handleChange}/>
-                        </InputGroup>
-
+                        <Pesquisa valuePesquisa={valuePesquisa} handleChange={handleChange} />
                         <Box ml="4">
                         <NextLink href="/usuarios/form" passHref>
                             <Button 
                             _hover={{
                                 bg: 'blue.500'
                             }}
-                            as="a" 
+                            as="a"
                             size="sm" 
                             fontSize="sm" 
                             color="white"
@@ -258,32 +238,15 @@ export default function Usuarios() {
                                         />
                                     </HStack>
 
-                                    <AlertDialog
-                                        isOpen={isOpen}
-                                        leastDestructiveRef={cancelRef}
-                                        onClose={onClose}
-                                    >
-                                    <AlertDialogOverlay>
-                                    <AlertDialogContent color="black">
-                                        <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                                        Remover usuário
-                                        </AlertDialogHeader>
-
-                                        <AlertDialogBody>
-                                        Tenm certeza que deseja remover o usuário {user.email} ? 
-                                        </AlertDialogBody>
-
-                                        <AlertDialogFooter>
-                                        <Button ref={cancelRef} onClick={onClose}>
-                                            Cancelar
-                                        </Button>
-                                        <Button colorScheme="red" onClick={() => deleteUser(user.id)} ml={3}>
-                                            Remover
-                                        </Button>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                    </AlertDialogOverlay>
-                                </AlertDialog>
+                                    <AlertDialogList 
+                                        isOpen={isOpen} 
+                                        cancelRef={cancelRef} 
+                                        onClose={onClose} 
+                                        header="Remover Usuário" 
+                                        body="Tem certeza que deseja remover o usuário" 
+                                        description={user.email} 
+                                        handleDelete={() => deleteUser(user.id)}
+                                    />
 
                                     </Td>
                             </Tr>

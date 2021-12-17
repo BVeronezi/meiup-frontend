@@ -59,7 +59,6 @@ export default function FormUsuario() {
         async function findUsuario() {
             setIsLoading(false);
 
-            debugger;
             const usuarioId: any = Object.keys(router.query)[0]
 
             if (usuarioId) {
@@ -80,8 +79,6 @@ export default function FormUsuario() {
 
             setIsLoading(true);
         }
-
-        debugger;
 
         if (Object.keys(router.query)[0]) {
             findUsuario()
