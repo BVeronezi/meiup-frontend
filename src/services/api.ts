@@ -22,8 +22,6 @@ export function setupAPIClient(ctx = undefined) {
         }
     })
 
-    console.log(api.interceptors.response)
-
     api.interceptors.response.use(response => {
         return response;
     }, (error: AxiosError) => {

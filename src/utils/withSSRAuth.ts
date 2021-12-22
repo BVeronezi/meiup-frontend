@@ -31,7 +31,7 @@ export function withSSRAuth<P>(fn: GetServerSideProps<P>, options?: withSSRAuthO
             user,
             roles
           })
-
+          
           if (!userHasValidPermissions) {
             return {
               redirect: {
