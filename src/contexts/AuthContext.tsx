@@ -98,6 +98,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 // Quais caminhos da aplicação tem acesso a esse cookie
                 path: '/' // Qualquer endereço 
             });
+            
+            setCookie(undefined, 'meiup.empresa', empresa, {
+                maxAge: 60 * 60 * 24 * 30,  
+                path: '/' 
+            });
 
             setCookie(undefined, 'meiup.refreshToken', refreshToken, {
                   maxAge: 60 * 60 * 24 * 30, 

@@ -1,4 +1,4 @@
-import { Box, Button, createStandaloneToast, Flex, HStack, SimpleGrid, Stack, Text, VStack } from "@chakra-ui/react";
+import { Box, Input as ChakraInput, Button, createStandaloneToast, Flex, FormControl, HStack, SimpleGrid, Stack, Text, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -15,6 +15,7 @@ import { api } from "../../services/apiClient";
 import { Headings } from "../../components/Heading";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
+import NumberFormat from "react-number-format";
 
 type FormData = {
     descricao: string;
@@ -35,30 +36,29 @@ const produtoFormSchema = yup.object().shape({
     tipoItem: yup.number(),
     unidade: yup.number(),
     categoria: yup.number(),
-    estoque: yup.number().required('Estoque obrigatório'),
-    estoqueMinimo: yup.number(),
-    estoqueMaximo: yup.number(),
-    precoVendaVarejo: yup.number(),
-    precoVendaAtacado:  yup.number(),
-    precoCompra: yup.number(),
-    margemLucro: yup.number(),
+    estoque: yup.string().required('Estoque obrigatório'),
+    estoqueMinimo: yup.string(),
+    estoqueMaximo: yup.string()
 })
 
-
-export default function FormProduto(optionsCategoria, props) {
+export default function FormProduto(optionsCategoria) {
   
     const [stateTipoItem, setStateTipoItem] = useState("");
     const [stateUnidade, setStateUnidade] = useState("");
     const [stateCategoria, setStateCategoria] = useState("");
+    const [statePrecoVendaVarejo, setStatePrecoVendaVarejo] = useState(0.0);
+    const [statePrecoVendaAtacado, setStatePrecoVendaAtacado] = useState(0.0);
+    const [statePrecoCompra, setStatePrecoCompra] = useState(0.0);
+    const [stateMargemLucro, setStateMargemLucro] = useState(0.0);
     const router = useRouter();
     const { user } = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(true);
     const toast = createStandaloneToast({theme: customTheme})
 
-    const { register, handleSubmit, formState, setValue, getValues } = useForm({
+    const { register, handleSubmit, formState, setValue } = useForm({
         resolver: yupResolver(produtoFormSchema)
     });
-
+    
     const { errors } = formState;
 
     const optionsTipoItem = [
@@ -95,9 +95,13 @@ export default function FormProduto(optionsCategoria, props) {
                 setStateUnidade(String(unidade));
                 
                 if (response.data.produto.precos) {
-                    Object.entries(response.data.user.endereco).forEach(([key, value]) => {
-                        setValue(key,value)
-                    });
+                    const regex = RegExp('^[+-]?([0-9]{1,3}(,[0-9]{3})*(\.[0-9]+)?|\d*\.\d+|\d+)$')
+                    const { precoVendaVarejo, precoVendaAtacado, precoCompra, margemLucro} = response.data.produto.precos;
+
+                    setStatePrecoVendaVarejo(Number(regex.exec(precoVendaVarejo)?.input));
+                    setStatePrecoVendaAtacado(Number(regex.exec(precoVendaAtacado)?.input))
+                    setStatePrecoCompra(Number(regex.exec(precoCompra)?.input))
+                    setStateMargemLucro(Number(regex.exec(margemLucro)?.input))
                 }
 
                 if (response.data.produto.categoria) {
@@ -130,31 +134,27 @@ export default function FormProduto(optionsCategoria, props) {
 
     const handleProduto: SubmitHandler<FormData> = async (values) => {
 
-        debugger;
-
-        console.log('chegou aqui')
-
-        const data = {
+              const data = {
             descricao: values.descricao,
-            tipoItem: values.tipoItem,
-            unidade: values.unidade,
-            categoria: values.categoria,
-            estoque: values.estoque,
-            estoqueMinimo: values.estoqueMinimo,       
-            estoqueMaximo: values.estoqueMaximo,
+            tipoItem: Number(stateTipoItem),
+            unidade: Number(stateUnidade),
+            categoria: Number(stateCategoria),
+            estoque: Number(values.estoque),
+            estoqueMinimo: Number(values.estoqueMinimo),       
+            estoqueMaximo: Number(values.estoqueMaximo),
             empresa: user.empresa,
             precos: {
-                precoVendaVarejo: values.precoVendaVarejo,
-                precoVendaAtacado: values.precoVendaAtacado,
-                precoCompra: values.precoCompra,
-                margemLucro: values.margemLucro,
+                precoVendaVarejo: Number(statePrecoVendaVarejo),
+                precoVendaAtacado: Number(statePrecoVendaAtacado),
+                precoCompra: Number(statePrecoCompra),
+                margemLucro: Number(stateMargemLucro),
             }
         }
 
+        debugger;
+
         try {
             const produtoId: any = Object.keys(router.query)[0]
-
-            debugger;
 
             if (produtoId) {
                 await api.patch(`/produtos/${produtoId}`, {
@@ -192,6 +192,7 @@ export default function FormProduto(optionsCategoria, props) {
                         p={["6", "8"]} >
                         <VStack spacing="8">
                             <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
+                            <FormControl isInvalid={!!errors.descricao}>
                                 <Input 
                                     name="descricao"
                                     autoFocus={true}
@@ -199,10 +200,11 @@ export default function FormProduto(optionsCategoria, props) {
                                     error={errors.descricao}
                                     {...register('descricao')}
                                 >    
-                                </Input>    
+                                </Input> 
+                            </FormControl>   
                                 <VStack align="left" spacing="4">
                                     <Text>Tipo Item:</Text>
-                                    <Select {...props}
+                                    <Select 
                                         {...register('tipoItem')}
                                         value={optionsTipoItem.filter(function(option) {
                                             return option.value === stateTipoItem;
@@ -210,27 +212,25 @@ export default function FormProduto(optionsCategoria, props) {
                                         id="tipoItem"
                                         options={optionsTipoItem}
                                         onChange={value => handleTipoItem(value)}
-                                        placeholder="Selecione o tipo do item">                                  
-                                    </Select>
+                                        placeholder="Selecione o tipo do item" />          
                                 </VStack>
                             </SimpleGrid>
                             <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
                                 <VStack align="left" spacing="4">
                                     <Text>Unidade:</Text>
-                                    <Select {...props}
+                                    <Select 
                                         {...register('unidade')}
                                         value={optionsUnidade.filter(function(option) {
                                             return option.value === stateUnidade;
-                                        })}
+                                        })}                                       
                                         id="unidade"                                       
                                         options={optionsUnidade}
                                         onChange={handleUnidade}
-                                        placeholder="Selecione a unidade">
-                                    </Select>
+                                        placeholder="Selecione a unidade" />
                                 </VStack>
                                 <VStack align="left" spacing="4">
                                     <Text>Categoria:</Text>
-                                    <Select {...props}
+                                        <Select 
                                         id="categoria"
                                         {...register('categoria')}
                                         value={optionsCategoria.result.filter(function(option) {
@@ -238,8 +238,7 @@ export default function FormProduto(optionsCategoria, props) {
                                         })}
                                         options={optionsCategoria.result}
                                         onChange={handleCategoria}
-                                        placeholder="Selecione a categoria">
-                                    </Select>
+                                        placeholder="Selecione a categoria" /> 
                                 </VStack>
                             </SimpleGrid>
                         </VStack>
@@ -253,18 +252,18 @@ export default function FormProduto(optionsCategoria, props) {
                         p={["6", "8"]} >
                         <VStack spacing="8">
                             <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
+                            <FormControl isInvalid={!!errors.estoque}>
                                 <Input 
                                     type="number"
-                                    defaultValue={0}
                                     name="estoque"
                                     label="Estoque *:"
                                     error={errors.estoque}
                                     {...register('estoque')}
                                 >    
-                                </Input>    
+                                </Input>
+                            </FormControl>    
                                 <Input 
                                     type="number"
-                                    defaultValue={0}
                                     name="estoqueMinimo"
                                     label="Estoque Mínimo:"
                                     error={errors.estoqueMinimo}
@@ -273,7 +272,6 @@ export default function FormProduto(optionsCategoria, props) {
                                 </Input>
                                 <Input 
                                     type="number"
-                                    defaultValue={0}
                                     name="estoqueMaximo"
                                     label="Estoque Máximo:"
                                     error={errors.estoqueMaximo}
@@ -292,44 +290,60 @@ export default function FormProduto(optionsCategoria, props) {
                         p={["6", "8"]} >
                         <VStack spacing="8">
                             <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-                                <Input 
-                                    type="number"
-                                    name="precoVendaVarejo"
-                                    defaultValue={0}
-                                    label="Preço de venda varejo:"
-                                    error={errors.precoVendaVarejo}
-                                    {...register('precoVendaVarejo')}
-                                >    
-                                </Input>    
-                                <Input 
-                                    type="number"
-                                    name="precoVendaAtacado"
-                                    defaultValue={0}
-                                    label="Preço de venda atacado:"
-                                    error={errors.precoVendaAtacado}
-                                    {...register('precoVendaAtacado')}
-                                >    
-                                </Input>
+                                <Stack spacing="4">
+                                <Text>Preço de venda varejo:</Text>
+                                    <NumberFormat 
+                                        value={statePrecoVendaVarejo}
+                                        onValueChange={val => setStatePrecoVendaVarejo(val.floatValue)}
+                                        customInput={ChakraInput}
+                                        variant="flushed"
+                                        borderColor="gray.400"
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                        prefix={'R$'}
+                                    />    
+                                </Stack>
+                                <Stack spacing="4">
+                                    <Text>Preço de venda atacado:</Text>
+                                        <NumberFormat 
+                                            value={statePrecoVendaAtacado}
+                                            onValueChange={val => setStatePrecoVendaAtacado(val.floatValue)}
+                                            customInput={ChakraInput}
+                                            variant="flushed"
+                                            borderColor="gray.400"
+                                            thousandSeparator="."
+                                            decimalSeparator=","
+                                            prefix={'R$'}
+                                        />    
+                                </Stack>
                             </SimpleGrid>
                             <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-                                <Input 
-                                    type="number"
-                                    defaultValue={0}
-                                    name="precoCompra"
-                                    label="Preço de compra:"
-                                    error={errors.precoCompra}
-                                    {...register('precoCompra')}
-                                >    
-                                </Input>    
-                                <Input 
-                                    type="number"
-                                    defaultValue={0}
-                                    name="margemLucro"
-                                    label="Margem de lucro:"
-                                    error={errors.margemLucro}
-                                    {...register('margemLucro')}
-                                >    
-                                </Input>
+                                <Stack spacing="4">
+                                    <Text>Preço de compra:</Text>
+                                        <NumberFormat 
+                                            value={statePrecoCompra}
+                                            onValueChange={val => setStatePrecoCompra(val.floatValue)}
+                                            customInput={ChakraInput}
+                                            variant="flushed"
+                                            borderColor="gray.400"
+                                            thousandSeparator="."
+                                            decimalSeparator=","
+                                            prefix={'R$'}
+                                        />    
+                                </Stack>
+                                <Stack spacing="4">
+                                    <Text>Margem de lucro:</Text>
+                                        <NumberFormat 
+                                            value={stateMargemLucro}
+                                            onValueChange={val => setStateMargemLucro(val.floatValue)}
+                                            customInput={ChakraInput}
+                                            variant="flushed"
+                                            borderColor="gray.400"
+                                            thousandSeparator="."
+                                            decimalSeparator=","
+                                            prefix={'R$'}
+                                        />    
+                                </Stack>
                             </SimpleGrid>
                         </VStack>
                     </Box>

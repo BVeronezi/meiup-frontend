@@ -1,58 +1,37 @@
-import { Box, Button, createStandaloneToast, Flex, HStack, Icon, IconButton, Link, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
+import { Box, Button, createStandaloneToast, Flex, HStack, Icon, IconButton, Link, Progress, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ContainerPage } from "../../components/ContainerPage";
-import { AuthContext } from "../../contexts/AuthContext";
 import { Pesquisa } from "../../fragments/pesquisa";
 import { api } from "../../services/apiClient";
-import { withSSRAuth } from "../../utils/withSSRAuth";
 import NextLink from "next/link";
 import { queryClient } from "../../services/queryClient";
 import { RiAddLine, RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { Pagination } from "../../components/Pagination";
 import { theme as customTheme } from "../../styles/theme";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
-interface ProdutosProps {
-    produtos: Produto[];
-    totalCount: number;
-}
+import { GetServerSideProps } from "next";
+import { getProdutos, useProdutos } from "../../hooks/produtos/useProdutos";
 
-type Produto = {
-    id: number;
-    descricao: string;
-    categoria: string;
-    precoVarejo: number;
-}
+export default function Produtos({ produtos}) {
 
-export default function Produtos() {
     const router = useRouter();
-    const { user } = useContext(AuthContext);
     const toast = createStandaloneToast({theme: customTheme})
-    const [valuePesquisa, setValuePesquisa] = useState("")
-    const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(1);
-    const [error] = useState('');
 
-    const [data, setData] = useState<ProdutosProps>();
-    
+    let { data, isLoading, error } = useProdutos(page, {
+        initialData: produtos
+    });
+
+    const [theData, setTheData] = useState(data);
+    const [isFetching, setIsFetching] = useState(false);
     const [isOpen, setIsOpen] = useState(false)
     const onClose = () => setIsOpen(false)
     const cancelRef = React.useRef() as React.MutableRefObject<HTMLButtonElement>;
 
-    useEffect(() => {      
-        fetchProdutos();    
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page])
-
-    async function handleChange(event) {
-        setValuePesquisa(event.target.value)
-
-        if (event.target.value.length > 3) {
-            fetchProdutos(event.target.value)
-        } else {
-            fetchProdutos()
-        }
-    }
+    useEffect(() => {
+        setTheData(data)
+    }, [data])
 
     async function deleteProduto(produtoId: string) {
 
@@ -68,39 +47,10 @@ export default function Produtos() {
                 isClosable: true,
             })  
 
-            fetchProdutos()
-
+            router.reload()
         } catch (error) {
             console.log(error)
         }       
-    }
-
-    async function fetchProdutos(event?: string) {
-        setIsLoading(true);
-
-        const response: any = await api.get('/produtos', {
-            params: {
-                empresa: user.empresa.id,
-                page,
-                limit: 100,
-            }
-        });
-
-        const produtos = response.data.found.produtos.map(produto => {
-            return {
-                id: produto.id,
-                descricao: produto.descricao,
-                categoria: produto.categoria?.nome ?? '-',
-                precoVarejo: produto.precos?.precoVendaVarejo ?? '-'
-            }
-        })
-
-        setData({
-            produtos,
-            totalCount: response.data.found.total
-        })
-
-        setIsLoading(false);
     }
 
     async function handlePrefetchProduto(produtoId: number) {
@@ -114,11 +64,24 @@ export default function Produtos() {
         )
     }
 
+    async function handlePesquisaProduto(event) {
+        if (event.target.value.length > 3) {
+            setIsFetching(true)
+            const produtosPesquisados = await getProdutos(1, undefined, event.target.value);
+            setTheData(produtosPesquisados)
+            setIsFetching(false)
+        } else {
+            setIsFetching(true)
+            setTheData(data)
+            setIsFetching(false)
+        }
+    }
+
     return (
         <ContainerPage title="Produtos"> 
             <Box flex="1" borderRadius={8} boxShadow="base" p="8">
                     <Flex mb="8" justify="space-between" align="center">     
-                    <Pesquisa valuePesquisa={valuePesquisa} handleChange={handleChange} />
+                    <Pesquisa handleChange={handlePesquisaProduto} />                      
                         <Box ml="4">
                         <NextLink href="/produtos/form" passHref>
                             <Button 
@@ -135,9 +98,12 @@ export default function Produtos() {
                                 Criar novo produto
                             </Button>
                         </NextLink>
-                        </Box>
-                      
+                        </Box>                      
                     </Flex>
+
+                    { isFetching && (
+                        <Progress size='xs' isIndeterminate />
+                    )}
 
                   { isLoading ? (
                       <Flex justify="center"> 
@@ -159,12 +125,12 @@ export default function Produtos() {
                             </Tr>
                         </Thead>
                         <Tbody>
-                        { data?.produtos.map(produto => {
+                        { theData?.produtos.map(produto => {
                             return (
                                 <Tr key={produto.id}>
                                     <Td> 
                                         <Box>
-                                            <Link color="blue.900" onMouseEnter={() => handlePrefetchProduto(produto.id)}>
+                                            <Link color="blue.900" onMouseEnter={() => handlePrefetchProduto(Number(produto.id))}>
                                                 <Text fontWeight="bold">{produto.descricao}</Text>
                                             </Link>
                                         </Box>
@@ -216,7 +182,7 @@ export default function Produtos() {
                 </Table>
 
                 <Pagination 
-                    totalCountOfRegisters={data?.totalCount} 
+                    totalCountOfRegisters={data.totalCount} 
                     currentPage={page}
                     onPageChange={setPage}
                 />
@@ -227,8 +193,13 @@ export default function Produtos() {
     )
 }
 
-export const getServerSideProps = withSSRAuth(async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+
+    const { produtos } = await getProdutos(1, ctx);
+
     return {
-        props: {}
+        props: {
+            produtos
+        }
     }
-})
+}

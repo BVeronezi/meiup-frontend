@@ -22,76 +22,76 @@ export function setupAPIClient(ctx = undefined) {
         }
     })
 
-    api.interceptors.response.use(response => {
-        return response;
-    }, (error: AxiosError) => {
-        if (error?.response?.status === 401) {
-            if (error.response.data?.code === 'token.expired') {
-                // renovar token 
-                cookies = parseCookies(ctx);
+    // api.interceptors.response.use(response => {
+    //     return response;
+    // }, (error: AxiosError) => {
+    //     if (error?.response?.status === 401) {
+    //         if (error.response.data?.code === 'token.expired') {
+    //             // renovar token 
+    //             cookies = parseCookies(ctx);
     
-                const { 'meiup.refreshToken': refreshToken } = cookies;
-                const originalConfig = error.config;
+    //             const { 'meiup.refreshToken': refreshToken } = cookies;
+    //             const originalConfig = error.config;
     
-                if (!isRefreshing) {
-                    isRefreshing = true;
+    //             if (!isRefreshing) {
+    //                 isRefreshing = true;
     
-                    api.post('/refresh', {
-                        refreshToken,
-                    }).then(response => {
+    //                 api.post('/refresh', {
+    //                     refreshToken,
+    //                 }).then(response => {
         
-                        const { token } = response.data;
+    //                     const { token } = response.data;
         
-                        setCookie(ctx, 'meiup.token', token, {
-                            maxAge: 60 * 60 * 24 * 30, 
-                            path: '/' 
-                        });
+    //                     setCookie(ctx, 'meiup.token', token, {
+    //                         maxAge: 60 * 60 * 24 * 30, 
+    //                         path: '/' 
+    //                     });
             
-                        setCookie(ctx, 'meiup.refreshToken', response.data.refreshToken, {
-                            maxAge: 60 * 60 * 24 * 30, 
-                            path: '/' 
-                        });
+    //                     setCookie(ctx, 'meiup.refreshToken', response.data.refreshToken, {
+    //                         maxAge: 60 * 60 * 24 * 30, 
+    //                         path: '/' 
+    //                     });
         
-                        api.defaults.headers['Authorization'] = `Bearer ${token};`
+    //                     api.defaults.headers['Authorization'] = `Bearer ${token};`
     
-                        failedRequestsQueue.forEach(request => request.onSuccess(token));
-                        failedRequestsQueue = [];
-                    }).catch(err => {
-                        failedRequestsQueue.forEach(request => request.onFailure(err));
-                        failedRequestsQueue = [];
+    //                     failedRequestsQueue.forEach(request => request.onSuccess(token));
+    //                     failedRequestsQueue = [];
+    //                 }).catch(err => {
+    //                     failedRequestsQueue.forEach(request => request.onFailure(err));
+    //                     failedRequestsQueue = [];
     
-                        if (process.browser) {
-                            signOut();
-                        }
-                    }).finally(() => {
-                        isRefreshing = false;
-                    });              
-                }
+    //                     if (process.browser) {
+    //                         signOut();
+    //                     }
+    //                 }).finally(() => {
+    //                     isRefreshing = false;
+    //                 });              
+    //             }
     
-                return new Promise((resolve, reject) => {
-                    failedRequestsQueue.push({
-                        onSuccess: (token: string) => {
-                            originalConfig.headers['Authorization'] = `Bearer ${token}`;
+    //             return new Promise((resolve, reject) => {
+    //                 failedRequestsQueue.push({
+    //                     onSuccess: (token: string) => {
+    //                         originalConfig.headers['Authorization'] = `Bearer ${token}`;
     
-                            resolve(api(originalConfig))
-                        },
-                        onFailure: (err: AxiosError) => {
-                            reject(err)
-                        }
-                    })
-                })
-            } else {
-                // deslogar usuário
-                if (process.browser) {
-                    signOut();
-                } else {
-                    return Promise.reject(new AuthTokenError());
-                }
-            }
-        }
+    //                         resolve(api(originalConfig))
+    //                     },
+    //                     onFailure: (err: AxiosError) => {
+    //                         reject(err)
+    //                     }
+    //                 })
+    //             })
+    //         } else {
+    //             // deslogar usuário
+    //             if (process.browser) {
+    //                 signOut();
+    //             } else {
+    //                 return Promise.reject(new AuthTokenError());
+    //             }
+    //         }
+    //     }
     
-        return Promise.reject(error);
-    })
+    //     return Promise.reject(error);
+    // })
 
     return api
 }
