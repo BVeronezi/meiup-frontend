@@ -1,6 +1,6 @@
 import { Box, Button, createStandaloneToast, Flex, HStack, Icon, IconButton, Link, Progress, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ContainerPage } from "../../components/ContainerPage";
 import { Pesquisa } from "../../fragments/pesquisa";
 import { api } from "../../services/apiClient";
@@ -27,7 +27,7 @@ export default function Produtos({ produtos}) {
     const [isFetching, setIsFetching] = useState(false);
     const [isOpen, setIsOpen] = useState(false)
     const onClose = () => setIsOpen(false)
-    const cancelRef = React.useRef() as React.MutableRefObject<HTMLButtonElement>;
+    const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
     useEffect(() => {
         setTheData(data)
