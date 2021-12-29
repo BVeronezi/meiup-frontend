@@ -4,79 +4,42 @@ import { Headings } from "../../components/Heading";
 import { Input } from "../../components/Input";
 
 export function Endereco({ register, errors, isLoading, buscaCep }) {
+  return (
+    <VStack marginTop="14px" spacing="12">
+      <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
+        <Input
+          name="cep"
+          label="CEP *:"
+          error={errors.cep}
+          {...register("cep")}
+          onChange={(c) => buscaCep(c.target.value)}
+        ></Input>
 
-    return (
-    <Box>
-        <Box marginTop="2rem">                    
-            <Headings title="Endereço" isLoading={isLoading}/>
-        </Box>
-        <Box 
-            marginTop="10px"
-            boxShadow="base"
-            borderRadius={20} 
-            p={["6", "8"]} >
+        <Input
+          name="endereco"
+          label="Endereço *:"
+          error={errors.endereco}
+          {...register("endereco")}
+        ></Input>
+      </SimpleGrid>
 
-            <VStack spacing="8">
-                <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-                    <Input 
-                        name="cep"
-                        label="CEP *:"
-                        error={errors.cep}
-                        {...register('cep')}
-                        onChange={c => buscaCep(c.target.value)}
-                    >                                
-                    </Input>
+      <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
+        <Input name="numero" label="Número:" {...register("numero")}></Input>
 
-                    <Input 
-                        name="endereco"
-                        label="Endereço *:"
-                        error={errors.endereco}
-                        {...register('endereco')}
-                    >                                
-                    </Input>
-                </SimpleGrid>
+        <Input name="bairro" label="Bairro:" {...register("bairro")}></Input>
 
-                <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-                    <Input 
-                        name="numero"
-                        label="Número:"
-                        {...register('numero')}
-                    >                                
-                    </Input>
+        <Input name="cidade" label="Cidade:" {...register("cidade")}></Input>
+      </SimpleGrid>
 
-                    <Input  
-                        name="bairro"
-                        label="Bairro:"
-                        {...register('bairro')}
-                    >                                
-                    </Input>
+      <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
+        <Input name="estado" label="Estado:" {...register("estado")}></Input>
 
-                    <Input 
-                        name="cidade"
-                        label="Cidade:"
-                        {...register('cidade')}
-                    >                                
-                    </Input>
-                </SimpleGrid>
-
-                <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-                    <Input 
-                        name="estado"
-                        label="Estado:"
-                        {...register('estado')}
-                    >                                
-                    </Input>
-
-                    <Input 
-                        name="complemento"
-                        label="Complemento:"
-                        {...register('complemento')}
-                    >                                
-                    </Input>
-                </SimpleGrid>
-
-            </VStack>
-            </Box>
-        </Box>
-    )
+        <Input
+          name="complemento"
+          label="Complemento:"
+          {...register("complemento")}
+        ></Input>
+      </SimpleGrid>
+    </VStack>
+  );
 }

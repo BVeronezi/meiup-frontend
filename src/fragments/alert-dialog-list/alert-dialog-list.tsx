@@ -26,7 +26,7 @@ export function AlertDialogList({
       onClose={onClose}
     >
       <AlertDialogOverlay>
-        <AlertDialogContent color="black">
+        <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
             {header}
           </AlertDialogHeader>

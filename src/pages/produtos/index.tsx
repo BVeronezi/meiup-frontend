@@ -1,4 +1,10 @@
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
   Button,
   createStandaloneToast,
@@ -15,7 +21,9 @@ import {
   Text,
   Th,
   Thead,
+  Tooltip,
   Tr,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
@@ -24,7 +32,12 @@ import { Pesquisa } from "../../fragments/pesquisa";
 import { api } from "../../services/apiClient";
 import NextLink from "next/link";
 import { queryClient } from "../../services/queryClient";
-import { RiAddLine, RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
+import {
+  RiAddBoxLine,
+  RiAddLine,
+  RiDeleteBinLine,
+  RiPencilLine,
+} from "react-icons/ri";
 import { Pagination } from "../../components/Pagination";
 import { theme as customTheme } from "../../styles/theme";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
@@ -32,6 +45,11 @@ import { GetServerSideProps } from "next";
 import { getProdutos, useProdutos } from "../../hooks/produtos/useProdutos";
 
 export default function Produtos({ produtos }) {
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  });
+
   const router = useRouter();
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
@@ -106,21 +124,35 @@ export default function Produtos({ produtos }) {
         <Flex mb="8" justify="space-between" align="center">
           <Pesquisa handleChange={handlePesquisaProduto} />
           <Box ml="4">
-            <NextLink href="/produtos/form" passHref>
-              <Button
-                _hover={{
-                  bg: "blue.500",
-                }}
-                as="a"
-                size="sm"
-                fontSize="sm"
-                color="white"
-                backgroundColor="blue.800"
-                leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-              >
-                Novo produto
-              </Button>
-            </NextLink>
+            {isWideVersion && (
+              <NextLink href="/produtos/form" passHref>
+                <Button
+                  _hover={{
+                    bg: "blue.500",
+                  }}
+                  as="a"
+                  size="sm"
+                  fontSize="sm"
+                  color="white"
+                  backgroundColor="blue.800"
+                  leftIcon={<Icon as={RiAddLine} fontSize="20" />}
+                >
+                  Novo produto
+                </Button>
+              </NextLink>
+            )}
+
+            {!isWideVersion && (
+              <Tooltip label="Novo produto">
+                <IconButton
+                  variant="outline"
+                  color="blue.800"
+                  aria-label="Novo produto"
+                  onClick={() => router.push("/produtos/form")}
+                  icon={<RiAddBoxLine />}
+                />
+              </Tooltip>
+            )}
           </Box>
         </Flex>
 
@@ -135,7 +167,7 @@ export default function Produtos({ produtos }) {
             <Text>Falha ao obter dados dos produtos.</Text>
           </Flex>
         ) : (
-          <Box color="black">
+          <Box>
             <Table colorScheme="blackAlpha">
               <Thead>
                 <Tr>
@@ -152,7 +184,7 @@ export default function Produtos({ produtos }) {
                       <Td>
                         <Box>
                           <Link
-                            color="blue.900"
+                            color="gray.900"
                             onMouseEnter={() =>
                               handlePrefetchProduto(Number(produto.id))
                             }

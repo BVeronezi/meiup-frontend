@@ -15,12 +15,15 @@ export function ContainerPage({
   children,
 }: ContainerPageProps) {
   return (
-    <Flex bg="gray.900" direction="column" flex="1">
-      <Header title={title} subtitle={subtitle} />
-      <Flex color="black">
+    <Flex w="100wv" direction="column">
+      <Box w="100%">
+        <Header title={title} subtitle={subtitle} />
+      </Box>
+
+      <Flex>
         <Sidebar />
-        <Box bg="white" flex="1">
-          <Flex p="6">{children}</Flex>
+        <Box flex="1" p="6">
+          {children}
         </Box>
       </Flex>
     </Flex>
