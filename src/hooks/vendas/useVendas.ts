@@ -25,7 +25,7 @@ export async function getVendas(
 
   const response: any = await axios.get(`http://localhost:8000/api/v1/vendas`, {
     headers: { Authorization: `Bearer ${token}` },
-    params: { page, empresa, cliente: valuePesquisa },
+    params: { page, empresa, limit: 10, cliente: valuePesquisa },
   });
 
   const vendas = response.data.found.vendas.map((venda) => {

@@ -3,7 +3,6 @@ import {
   Input as ChakraInput,
   Button,
   createStandaloneToast,
-  Flex,
   FormControl,
   HStack,
   SimpleGrid,
@@ -29,7 +28,6 @@ const { yupResolver } = require("@hookform/resolvers/yup");
 import { ContainerPage } from "../../components/ContainerPage";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
-import { Headings } from "../../components/Heading";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import NumberFormat from "react-number-format";

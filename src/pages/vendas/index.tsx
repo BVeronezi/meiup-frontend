@@ -28,7 +28,6 @@ import {
   RiAddLine,
   RiCheckboxCircleLine,
   RiCloseCircleLine,
-  RiDeleteBinLine,
   RiEyeLine,
   RiPencilLine,
 } from "react-icons/ri";
@@ -105,7 +104,7 @@ export default function Vendas({ vendas }) {
         <Flex mb="8" justify="space-between" align="center">
           <Pesquisa handleChange={handlePesquisaVenda} />
           <Box ml="4">
-            <NextLink href="/produtos/form" passHref>
+            <NextLink href="/vendas/form" passHref>
               <Button
                 _hover={{
                   bg: "blue.500",
