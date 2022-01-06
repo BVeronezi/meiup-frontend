@@ -28,7 +28,7 @@ export async function getProdutosVenda(
     `http://localhost:8000/api/v1/produtosVenda`,
     {
       headers: { Authorization: `Bearer ${token}` },
-      params: { vendaId, page },
+      params: { vendaId, page, limit: 10 },
     }
   );
 

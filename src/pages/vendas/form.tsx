@@ -37,7 +37,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import pt from "date-fns/locale/pt";
 import moment from "moment";
-import FormProdutoVenda from "./form-produto-venda";
+import { getProdutosVenda } from "../../hooks/vendas/useProdutoVenda";
+import ProdutoVenda from "./produto-venda/produto-venda";
 registerLocale("pt", pt);
 
 type FormData = {
@@ -47,8 +48,6 @@ type FormData = {
   email: string;
   celular: string;
   telefone: string;
-  produto: string;
-  valorTotal: number;
 };
 
 const vendaFormSchema = yup.object().shape({
@@ -57,15 +56,10 @@ const vendaFormSchema = yup.object().shape({
   email: yup.string(),
   celular: yup.string(),
   telefone: yup.string(),
-  produto: yup.string(),
-  quantidade: yup.string(),
-  precoUnitario: yup.string(),
-  valorTotal: yup.number(),
 });
 
-export default function FormVendas({ clientes, produtos, servicos }) {
+export default function FormVendas({ clientes, produtos, produtosVenda }) {
   const [stateCliente, setStateCliente] = useState("");
-  const [stateProduto, setStateProduto] = useState("");
   const [stateContinuarVenda, setStateContinuarVenda] = useState(true);
   const [stateNovaVenda, setStateNovaVenda] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
@@ -75,7 +69,6 @@ export default function FormVendas({ clientes, produtos, servicos }) {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const vendaId: any = Object.keys(router.query)[0];
-  const [reload, setReload] = useState(false);
 
   const { register, handleSubmit, formState, setValue, getValues } = useForm({
     resolver: yupResolver(vendaFormSchema),
@@ -166,79 +159,6 @@ export default function FormVendas({ clientes, produtos, servicos }) {
     setValue("telefone", cliente.telefone);
     setStateContinuarVenda(true);
     setStateCliente(cliente.value);
-  };
-
-  const handleProduto = (produto) => {
-    setValue("quantidade", getValues("quantidade"));
-    setValue("precoUnitario", produto.precos?.precoVendaVarejo);
-    setStateContinuarVenda(true);
-    setStateProduto(produto.value);
-    calculaTotal();
-  };
-
-  const handleEditProduto = (produtoVenda) => {
-    setStateProduto(String(produtoVenda.produto.id));
-    setValue("precoUnitario", produtoVenda.precoUnitario);
-    setValue("quantidade", produtoVenda.quantidade);
-    setValue("outrasDespesas", produtoVenda.outrasDespesas);
-    setValue("desconto", produtoVenda.desconto);
-    setValue("valorTotal", produtoVenda.valorTotal);
-  };
-
-  async function adicionarProduto() {
-    setReload(false);
-
-    if (stateProduto) {
-      const params = {
-        produto: stateProduto,
-        quantidade: getValues("quantidade"),
-        precoUnitario: getValues("precoUnitario"),
-        outrasDespesas: getValues("outrasDespesas"),
-        desconto: getValues("desconto"),
-        valorTotal: getValues("valorTotal"),
-      };
-
-      const result = await api.post(`/vendas/produtoVenda/${vendaId}`, params);
-
-      if (!result.data?.produtoVenda) {
-        toast({
-          title: "Produto já adicionado na venda!",
-          status: "info",
-          duration: 2000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Produto adicionado com sucesso!",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-
-        setStateProduto("");
-        setValue("quantidade", null);
-        setValue("precoUnitario", null);
-        setValue("outrasDespesas", null);
-        setValue("desconto", null);
-        setValue("valorTotal", null);
-        setReload(true);
-      }
-    }
-  }
-
-  const calculaTotal = () => {
-    const quantidade = getValues("quantidade");
-    const precoUnitario = getValues("precoUnitario");
-    const outrasDespesas = getValues("outrasDespesas");
-    const desconto = getValues("desconto");
-
-    if (precoUnitario) {
-      let total = Math.ceil(quantidade * precoUnitario);
-      total += Math.ceil(outrasDespesas);
-      total -= desconto;
-
-      setValue("valorTotal", total);
-    }
   };
 
   const handleTabsChange = (index) => {
@@ -364,108 +284,19 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                 </VStack>
               </TabPanel>
               <TabPanel>
-                <VStack marginTop="14px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <VStack align="left" spacing="4">
-                      <Text>Produto: *</Text>
-                      <Select
-                        id="produto"
-                        {...register("produto")}
-                        value={produtos.filter(function (option) {
-                          return option.value === stateProduto;
-                        })}
-                        options={produtos}
-                        onChange={handleProduto}
-                        placeholder="Selecione o produto *"
-                      />
-                      {!stateProduto && (
-                        <Text color="red" fontSize="14px">
-                          Produto obrigatório
-                        </Text>
-                      )}
-                    </VStack>
-                    <FormControl isInvalid={!!errors.quantidade}>
-                      <Input
-                        name="quantidade"
-                        label="Quantidade: *"
-                        error={errors.quantidade}
-                        {...register("quantidade")}
-                        onBlur={calculaTotal}
-                      ></Input>
-                    </FormControl>
-                  </SimpleGrid>
-                </VStack>
-                <VStack marginTop="14px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Input
-                      isReadOnly
-                      name="precoUnitario"
-                      label="Preço unitário: *"
-                      error={errors.precoUnitario}
-                      {...register("precoUnitario")}
-                    ></Input>
-                    <Input
-                      name="outrasDespesas"
-                      label="Outras despesas:"
-                      error={errors.outrasDespesas}
-                      {...register("outrasDespesas")}
-                      onBlur={calculaTotal}
-                    ></Input>
-                  </SimpleGrid>
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Input
-                      name="desconto"
-                      label="Desconto:"
-                      error={errors.desconto}
-                      {...register("desconto")}
-                      onBlur={calculaTotal}
-                    ></Input>
-                    <Input
-                      isReadOnly
-                      name="total"
-                      label="Total: *"
-                      error={errors.valorTotal}
-                      {...register("valorTotal")}
-                    ></Input>
-                  </SimpleGrid>
-                  <Box alignSelf="flex-end">
-                    <HStack>
-                      <Button
-                        width="120px"
-                        fontSize="14px"
-                        type="submit"
-                        color="white"
-                        backgroundColor="yellow.600"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          adicionarProduto();
-                        }}
-                      >
-                        ADICIONAR
-                      </Button>
-                    </HStack>
-                  </Box>
-                </VStack>
-                <Divider mt="12" />
-                <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
-                  Produtos adicionados na venda
-                </Text>
-                <FormProdutoVenda
-                  handleEditProduto={handleEditProduto}
-                  reload={reload}
+                <ProdutoVenda
+                  produtos={produtos}
+                  produtosVenda={produtosVenda}
                 />
+              </TabPanel>
+              <TabPanel>
+                <VStack marginTop="14px" spacing="12">
+                  <SimpleGrid
+                    minChildWidth="240px"
+                    spacing={["6", "8"]}
+                    w="100%"
+                  ></SimpleGrid>
+                </VStack>
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -527,6 +358,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return { value: String(e.id), label: e.nome, email: e.email };
   });
 
+  const responseServicos: any = await axios.get(
+    `http://localhost:8000/api/v1/clientes`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
   const responseProdutos: any = await axios.get(
     `http://localhost:8000/api/v1/produtos`,
     { headers: { Authorization: `Bearer ${token}` } }
@@ -540,9 +376,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   });
 
-  const responseServicos: any = await axios.get(
-    `http://localhost:8000/api/v1/clientes`,
-    { headers: { Authorization: `Bearer ${token}` } }
+  const { produtosVenda } = await getProdutosVenda(
+    1,
+    ctx,
+    Object.keys(ctx.query)[0]
   );
 
   // const servicos = responseServicos.data?.found?.servicos.map((e) => {
@@ -552,6 +389,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     props: {
       clientes,
       produtos,
+      produtosVenda,
     },
   };
 };
