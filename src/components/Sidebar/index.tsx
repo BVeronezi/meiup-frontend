@@ -1,49 +1,38 @@
-import React from "react";
 import {
   Box,
   Drawer,
-  DrawerBody,
-  DrawerCloseButton,
   DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-  Image,
-  useBreakpointValue,
+  useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
-import { useSidebarDrawer } from "../../contexts/SidebarDrawersContext";
-import { SidebarNav } from "./SidebarNav";
+import { SidebarContent } from "./SidebarContent";
+import { MobileNav } from "./MobileNav";
 
-export function Sidebar() {
-  const { isOpen, onClose } = useSidebarDrawer();
-
-  const isDrawerSidebar = useBreakpointValue({
-    base: true,
-    lg: false,
-  });
-
-  if (isDrawerSidebar) {
-    return (
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
-        <DrawerOverlay>
-          <DrawerContent bg="gray.800" p="4">
-            <DrawerCloseButton color="white" mt="6" />
-            <DrawerHeader>
-              <Box justify="center" align="center">
-                <Image width="10rem" src="/logo.png" alt="Logo MEIUP" />
-              </Box>
-            </DrawerHeader>
-            <DrawerBody>
-              <SidebarNav />
-            </DrawerBody>
-          </DrawerContent>
-        </DrawerOverlay>
-      </Drawer>
-    );
-  }
+export function Sidebar({ children }) {
+  const { isOpen, onClose, onOpen } = useDisclosure();
 
   return (
-    <Box bg="gray.900" h="100hv" as="aside" w="64">
-      <SidebarNav />
+    <Box bg={useColorModeValue("white", "gray.900")}>
+      <SidebarContent
+        onClose={() => onClose}
+        display={{ base: "none", md: "block" }}
+      />
+      <Drawer
+        autoFocus={false}
+        isOpen={isOpen}
+        placement="left"
+        onClose={onClose}
+        returnFocusOnClose={false}
+        onOverlayClick={onClose}
+      >
+        <DrawerContent bg="gray.800">
+          <SidebarContent onClose={onClose} />
+        </DrawerContent>
+      </Drawer>
+      <MobileNav onOpen={onOpen} />
+      <Box ml={{ base: 0, md: 60 }} p="4">
+        {children}
+      </Box>
     </Box>
   );
 }

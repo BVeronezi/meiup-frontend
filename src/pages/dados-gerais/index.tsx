@@ -18,8 +18,6 @@ import * as yup from "yup";
 import axios, { AxiosError } from "axios";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
-
-import { ContainerPage } from "../../components/ContainerPage";
 import { Input } from "../../components/Input";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 import { useContext, useEffect, useState } from "react";
@@ -27,6 +25,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
 import { theme as customTheme } from "../../styles/theme";
 import { Endereco } from "../../fragments/endereco";
+import { Sidebar } from "../../components/Sidebar";
 
 type FormData = {
   cnpj: string;
@@ -189,7 +188,7 @@ export default function DadosGerais() {
   };
 
   return (
-    <ContainerPage title="Empresa" subtitle="Dados gerais">
+    <Sidebar>
       <Stack as="form" onSubmit={handleSubmit(handleDadosGerais)} flex="1">
         <Box
           borderBottom="1px"
@@ -290,7 +289,7 @@ export default function DadosGerais() {
           </Button>
         </Flex>
       </Stack>
-    </ContainerPage>
+    </Sidebar>
   );
 }
 

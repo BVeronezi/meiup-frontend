@@ -22,7 +22,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import Select from "react-select";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
-import { ContainerPage } from "../../components/ContainerPage";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import axios from "axios";
@@ -39,6 +38,7 @@ import pt from "date-fns/locale/pt";
 import moment from "moment";
 import { getProdutosVenda } from "../../hooks/vendas/useProdutoVenda";
 import ProdutoVenda from "./produto-venda/produto-venda";
+import { Sidebar } from "../../components/Sidebar";
 registerLocale("pt", pt);
 
 type FormData = {
@@ -166,7 +166,7 @@ export default function FormVendas({ clientes, produtos, produtosVenda }) {
   };
 
   return (
-    <ContainerPage title="Venda" subtitle="Nova Venda">
+    <Sidebar>
       <Stack as="form" onSubmit={handleSubmit(handleVenda)} flex="1">
         <Box
           borderBottom="1px"
@@ -342,7 +342,7 @@ export default function FormVendas({ clientes, produtos, produtosVenda }) {
           </HStack>
         </Box>
       </Stack>
-    </ContainerPage>
+    </Sidebar>
   );
 }
 

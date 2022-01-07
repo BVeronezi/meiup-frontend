@@ -26,7 +26,6 @@ import {
   RiDeleteBinLine,
   RiPencilLine,
 } from "react-icons/ri";
-import { ContainerPage } from "../../components/ContainerPage";
 import { Pagination } from "../../components/Pagination";
 import { api } from "../../services/apiClient";
 import { queryClient } from "../../services/queryClient";
@@ -36,6 +35,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { theme as customTheme } from "../../styles/theme";
 import { Pesquisa } from "../../fragments/pesquisa";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
+import { Sidebar } from "../../components/Sidebar";
 interface UsuariosProps {
   users: User[];
   totalCount: number;
@@ -158,7 +158,7 @@ export default function Usuarios() {
   }
 
   return (
-    <ContainerPage title="Usuários">
+    <Sidebar>
       <Box flex="1" borderRadius={8} boxShadow="base" p="8">
         <Flex mb="8" justify="space-between" align="center">
           <Pesquisa handleChange={handleChange} />
@@ -286,7 +286,7 @@ export default function Usuarios() {
           </Box>
         )}
       </Box>
-    </ContainerPage>
+    </Sidebar>
   );
 }
 

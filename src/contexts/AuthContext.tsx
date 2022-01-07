@@ -9,7 +9,7 @@ type User = {
   email: string;
   nome: string;
   empresa: Empresa;
-  roles: string[];
+  role: string;
 };
 
 type Empresa = {
@@ -73,13 +73,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       api
         .get("/auth/me")
         .then((response) => {
-          const { email, nome, empresa, roles } = response.data;
+          const { email, nome, empresa, role } = response.data;
 
           setUser({
             email,
             empresa,
             nome,
-            roles,
+            role,
           });
         })
         .catch(() => {
@@ -92,7 +92,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const response: any = await api.post("/auth/signin", { email, senha });
 
-      const { token, nome, empresa, refreshToken, roles } = response.data;
+      const { token, nome, empresa, refreshToken, role } = response.data;
 
       setCookie(undefined, "meiup.token", token, {
         // Quanto tempo eu quero manter o cookie salvo no browser
@@ -115,7 +115,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         email,
         empresa,
         nome,
-        roles,
+        role,
       });
 
       api.defaults.headers["Authorization"] = `Bearer ${token}`;

@@ -1,68 +1,74 @@
-import { Box, Divider, Stack } from "@chakra-ui/react";
-import { NavLink } from "./NavLink";
-import { 
-    RiBuilding4Line, 
-    RiContactsLine, 
-    RiDashboardLine, 
-    RiGroupLine, 
-    RiInboxLine, 
-    RiLoginBoxLine, 
-    RiPriceTag3Line, 
-    RiShoppingBasket2Line, 
-    RiShoppingCartLine, 
-    RiStackFill, 
-    RiStackLine } 
-    from "react-icons/ri";
-import { NavSection } from "./NavSection";
+import { Box, Divider, Flex, Stack, Text } from "@chakra-ui/react";
+import {
+  RiBuilding4Line,
+  RiContactsLine,
+  RiDashboardLine,
+  RiGroupLine,
+  RiInboxLine,
+  RiLoginBoxLine,
+  RiPriceTag3Line,
+  RiShoppingBasket2Line,
+  RiShoppingCartLine,
+  RiStackFill,
+  RiStackLine,
+} from "react-icons/ri";
 import { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
+import { NavItem } from "./NavItem";
 
 export function SidebarNav() {
+  const { signOut } = useContext(AuthContext);
 
-    const { signOut } = useContext(AuthContext);
-
-    return (
+  return (
     <>
-    <Divider />
-        <Stack spacing="30" align="flex-start" ml="6" mt="4">
-        
-            <NavLink icon={RiDashboardLine} href="/dashboard">INÍCIO</NavLink>
+      <NavItem icon={RiDashboardLine} children="INÍCIO" href="/dashboard" />
 
-            <NavSection title="EMPRESA">
-            <NavLink icon={RiBuilding4Line} href="/dados-gerais">Dados gerais</NavLink>
-            <NavLink icon={RiContactsLine} href="/usuarios">Usuários</NavLink>
-            </NavSection>
+      <Flex align="center" fontWeight="bold" p="4" mx="4">
+        <Text color="gray.500">EMPRESA</Text>
+      </Flex>
 
-            <NavSection title="CATAlÓGO">
-            <NavLink icon={RiStackFill} href="/produtos">Produtos</NavLink>
-            <NavLink icon={RiStackLine} href="/servicos">Serviços</NavLink>
-            <NavLink icon={RiInboxLine} href="/categorias">Categorias</NavLink>
-            </NavSection>
+      <NavItem
+        icon={RiBuilding4Line}
+        children="Dados gerais"
+        href="/dados-gerais"
+      />
+      <NavItem icon={RiContactsLine} children="Usuários" href="/usuarios" />
 
-            <NavSection title="VENDAS">
-            <NavLink icon={RiShoppingBasket2Line} href="/vendas">Vendas</NavLink>
-            <NavLink icon={RiGroupLine} href="/clientes">Clientes</NavLink>
-            <NavLink icon={RiPriceTag3Line} href="/promocoes">Promoções</NavLink>
-            </NavSection>
+      <Flex align="center" fontWeight="bold" p="4" mx="4">
+        <Text color="gray.500"> CATALÓGO</Text>
+      </Flex>
 
-            <NavSection title="COMPRAS">
-            <NavLink icon={RiShoppingCartLine} href="/compras">Compras</NavLink>
-            </NavSection>
-            
+      <NavItem icon={RiStackFill} children="Produtos" href="/produtos" />
+      <NavItem icon={RiStackLine} children="Serviços" href="/servicos" />
+      <NavItem icon={RiInboxLine} children="Categorias" href="/categorias" />
 
-            <NavSection title="AGENDA">
+      <Flex align="center" fontWeight="bold" p="4" mx="4">
+        <Text color="gray.500">VENDAS</Text>
+      </Flex>
+      <NavItem icon={RiShoppingBasket2Line} children="Vendas" href="/vendas" />
+      <NavItem icon={RiGroupLine} children="Clientes" href="/clientes" />
+      <NavItem icon={RiPriceTag3Line} children="Promoções" href="/promocoes" />
 
-            </NavSection>
+      <Flex align="center" fontWeight="bold" p="4" mx="4">
+        <Text color="gray.500">COMPRAS</Text>
+      </Flex>
 
-            <NavSection title="RELATÓRIOS">
-                
-            </NavSection>
-        
-            <Box>
-                <NavLink mb="20px" icon={RiLoginBoxLine} href="#" onClick={signOut}>SAIR</NavLink>
-            </Box>
-      
-        </Stack>
-     </>
-    )
+      <NavItem icon={RiShoppingCartLine} children="Compras" href="/compras" />
+
+      <Flex align="center" fontWeight="bold" p="4" mx="4">
+        <Text color="gray.500">AGENDA</Text>
+      </Flex>
+
+      <Flex align="center" fontWeight="bold" p="4" mx="4">
+        <Text color="gray.500">RELATÓRIOS </Text>
+      </Flex>
+
+      <NavItem
+        icon={RiLoginBoxLine}
+        children="SAIR"
+        href="#"
+        onClick={signOut}
+      />
+    </>
+  );
 }

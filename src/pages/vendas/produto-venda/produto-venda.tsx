@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  ButtonGroup,
+  chakra,
   createStandaloneToast,
   Divider,
   Flex,
@@ -9,6 +11,7 @@ import {
   IconButton,
   SimpleGrid,
   Spinner,
+  Stack,
   Table,
   Tbody,
   Td,
@@ -17,11 +20,13 @@ import {
   Thead,
   Tooltip,
   Tr,
+  useBreakpointValue,
+  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
 import Select from "react-select";
 import * as yup from "yup";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
@@ -30,9 +35,10 @@ import { api } from "../../../services/apiClient";
 import { useRouter } from "next/router";
 import { Input } from "../../../components/Input";
 import { useProdutosVenda } from "../../../hooks/vendas/useProdutoVenda";
-import { RiCloseCircleLine } from "react-icons/ri";
+import { RiCloseCircleLine, RiDeleteBinLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pagination } from "../../../components/Pagination";
+import { BsBoxArrowUpRight, BsFillTrashFill } from "react-icons/bs";
 
 const produtoVendaFormSchema = yup.object().shape({
   produto: yup.string(),
@@ -55,7 +61,7 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
     initialData: produtosVenda,
   });
 
-  const [value, setValues] = useState(data);
+  const [value, setValues] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
@@ -67,16 +73,25 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
   const { errors } = formState;
 
   useEffect(() => {
-    setValues(data);
+    const dados: any = data?.produtosVenda ?? data;
 
-    console.log(value);
-  }, [data]);
+    const arrProdutosVenda = dados.map((p) => {
+      return {
+        id: p.id,
+        descricao: p.produto.descricao,
+        quantidade: p.quantidade,
+        valor: p.valorTotal,
+      };
+    });
 
-  async function excluirProduto(produtoVendaId: string) {
+    setValues(arrProdutosVenda);
+  }, []);
+
+  async function excluirProduto(produtoVendaId) {
     try {
       onClose();
 
-      console.log(`id: ${produtoVendaId}`);
+      console.log(JSON.parse(produtoVendaId));
       //console.log(`produto: ${event.produto.descricao}`);
 
       // await api.delete(`/vendas/produtoVenda/${vendaId}`, {
@@ -258,93 +273,6 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
       <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
         Produtos adicionados na venda
       </Text>
-      {isLoading ? (
-        <Flex justify="center">
-          <Spinner />
-        </Flex>
-      ) : error ? (
-        <Flex justify="center">
-          <Text>Falha ao obter dados dos produtos.</Text>
-        </Flex>
-      ) : (
-        <Box color="black">
-          <Table colorScheme="blackAlpha">
-            <Thead>
-              <Tr>
-                <Th>Código</Th>
-                <Th>Descrição</Th>
-                <Th>Quantidade</Th>
-                <Th>Valor</Th>
-                <Th width="8"></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {value.produtosVenda.map((produtoVenda, i) => {
-                return (
-                  <Tr key={i}>
-                    <Td>
-                      <Text fontWeight="bold">{i}</Text>
-                    </Td>
-
-                    <Td>
-                      <Text>{produtoVenda.quantidade}</Text>
-                    </Td>
-
-                    <Td>
-                      <Text>{produtoVenda.valorTotal}</Text>
-                    </Td>
-
-                    <Td>
-                      <HStack>
-                        {/* <Tooltip label="Editar produto da venda">
-                          <IconButton
-                            variant="outline"
-                            color="blue.800"
-                            aria-label="Editar venda"
-                            icon={<RiPencilLine />}
-                            onClick={() => {
-                              handleEditProduto(produtoVenda);
-                            }}
-                          />
-                        </Tooltip> */}
-                        <Tooltip label="Excluir produto da venda">
-                          <IconButton
-                            variant="outline"
-                            color="red.800"
-                            aria-label="Excluir produto"
-                            icon={<RiCloseCircleLine />}
-                            onClick={() => {
-                              excluirProduto(String(i));
-                            }}
-                          />
-                        </Tooltip>
-                      </HStack>
-
-                      <AlertDialogList
-                        isOpen={isOpen}
-                        cancelRef={cancelRef}
-                        onClose={onClose}
-                        header="Excluir produto"
-                        body="Tem certeza que deseja remover o produto"
-                        description={produtoVenda.id}
-                        textButton1="Não"
-                        textButton2="Sim"
-                        handleDelete={(e) => excluirProduto(String(i))}
-                      />
-                    </Td>
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
-
-          <Pagination
-            totalCountOfRegisters={data?.totalCount}
-            currentPage={page}
-            onPageChange={setPage}
-          />
-        </Box>
-      )}
     </>
   );
 }

@@ -28,7 +28,6 @@ import * as yup from "yup";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
 
-import { ContainerPage } from "../../components/ContainerPage";
 import { Headings } from "../../components/Heading";
 import { Input } from "../../components/Input";
 import { withSSRAuth } from "../../utils/withSSRAuth";
@@ -40,6 +39,7 @@ import { InfoOutlineIcon, ViewIcon } from "@chakra-ui/icons";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Endereco } from "../../fragments/endereco";
 import axios from "axios";
+import { Sidebar } from "../../components/Sidebar";
 
 type FormData = {
   nome: string;
@@ -192,7 +192,7 @@ export default function FormUsuario() {
   };
 
   return (
-    <ContainerPage title="Usuário" subtitle="Novo usuário">
+    <Sidebar>
       <Stack as="form" onSubmit={handleSubmit(handleUsuario)} flex="1">
         <Box
           borderBottom="1px"
@@ -339,7 +339,7 @@ export default function FormUsuario() {
           </Flex>
         </Box>
       </Stack>
-    </ContainerPage>
+    </Sidebar>
   );
 }
 

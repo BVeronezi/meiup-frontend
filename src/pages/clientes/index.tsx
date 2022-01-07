@@ -1,17 +1,17 @@
 import { Text } from "@chakra-ui/react";
-import { ContainerPage } from "../../components/ContainerPage";
+import { Sidebar } from "../../components/Sidebar";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 
 export default function Clientes() {
-    return (
-        <ContainerPage title="Clientes"> 
-            <Text>Clientes</Text>
-        </ContainerPage>
-    )
+  return (
+    <Sidebar>
+      <Text>Clientes</Text>;
+    </Sidebar>
+  );
 }
 
 export const getServerSideProps = withSSRAuth(async (ctx) => {
-    return {
-        props: {}
-    }
-})
+  return {
+    props: {},
+  };
+});

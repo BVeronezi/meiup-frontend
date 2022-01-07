@@ -20,7 +20,6 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
-import { ContainerPage } from "../../components/ContainerPage";
 import { theme as customTheme } from "../../styles/theme";
 import { useEffect, useRef, useState } from "react";
 import { Pesquisa } from "../../fragments/pesquisa";
@@ -37,6 +36,7 @@ import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-
 import { Pagination } from "../../components/Pagination";
 import { getVendas, useVendas } from "../../hooks/vendas/useVendas";
 import { GetServerSideProps } from "next";
+import { Sidebar } from "../../components/Sidebar";
 
 export const StatusVenda = [
   { codigo: 0, label: "ABERTA" },
@@ -99,7 +99,7 @@ export default function Vendas({ vendas }) {
   async function handlePesquisaVenda(event) {}
 
   return (
-    <ContainerPage title="Vendas">
+    <Sidebar>
       <Box flex="1" borderRadius={8} boxShadow="base" p="8">
         <Flex mb="8" justify="space-between" align="center">
           <Pesquisa handleChange={handlePesquisaVenda} />
@@ -269,7 +269,7 @@ export default function Vendas({ vendas }) {
           </Box>
         )}
       </Box>
-    </ContainerPage>
+    </Sidebar>
   );
 }
 

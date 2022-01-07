@@ -25,12 +25,12 @@ import * as yup from "yup";
 import Select from "react-select";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
-import { ContainerPage } from "../../components/ContainerPage";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import NumberFormat from "react-number-format";
+import { Sidebar } from "../../components/Sidebar";
 
 type FormData = {
   descricao: string;
@@ -208,7 +208,7 @@ export default function FormProduto(optionsCategoria) {
   };
 
   return (
-    <ContainerPage title="Produto" subtitle="Novo Produto">
+    <Sidebar>
       <Stack as="form" onSubmit={handleSubmit(handleProduto)} flex="1">
         <Box
           borderBottom="1px"
@@ -432,7 +432,7 @@ export default function FormProduto(optionsCategoria) {
           </HStack>
         </Box>
       </Stack>
-    </ContainerPage>
+    </Sidebar>
   );
 }
 

@@ -27,7 +27,6 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { ContainerPage } from "../../components/ContainerPage";
 import { Pesquisa } from "../../fragments/pesquisa";
 import { api } from "../../services/apiClient";
 import NextLink from "next/link";
@@ -43,6 +42,7 @@ import { theme as customTheme } from "../../styles/theme";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
 import { GetServerSideProps } from "next";
 import { getProdutos, useProdutos } from "../../hooks/produtos/useProdutos";
+import { Sidebar } from "../../components/Sidebar";
 
 export default function Produtos({ produtos }) {
   const isWideVersion = useBreakpointValue({
@@ -119,7 +119,7 @@ export default function Produtos({ produtos }) {
   }
 
   return (
-    <ContainerPage title="Produtos">
+    <Sidebar>
       <Box flex="1" borderRadius={8} boxShadow="base" p="8">
         <Flex mb="8" justify="space-between" align="center">
           <Pesquisa handleChange={handlePesquisaProduto} />
@@ -252,7 +252,7 @@ export default function Produtos({ produtos }) {
           </Box>
         )}
       </Box>
-    </ContainerPage>
+    </Sidebar>
   );
 }
 
