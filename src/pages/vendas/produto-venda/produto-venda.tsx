@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   Box,
   Button,
@@ -12,14 +13,8 @@ import {
   SimpleGrid,
   Spinner,
   Stack,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
   Tooltip,
-  Tr,
   useBreakpointValue,
   useColorModeValue,
   VStack,
@@ -35,10 +30,15 @@ import { api } from "../../../services/apiClient";
 import { useRouter } from "next/router";
 import { Input } from "../../../components/Input";
 import { useProdutosVenda } from "../../../hooks/vendas/useProdutoVenda";
-import { RiCloseCircleLine, RiDeleteBinLine } from "react-icons/ri";
+import {
+  RiCloseCircleLine,
+  RiDeleteBinLine,
+  RiPencilLine,
+} from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pagination } from "../../../components/Pagination";
 import { BsBoxArrowUpRight, BsFillTrashFill } from "react-icons/bs";
+import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
 
 const produtoVendaFormSchema = yup.object().shape({
   produto: yup.string(),
@@ -273,6 +273,72 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
       <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
         Produtos adicionados na venda
       </Text>
+      <Table variant="striped" colorScheme="blackAlpha" size="md">
+        <Thead>
+          <Tr>
+            <Th>Descrição</Th>
+            <Th>Quantidade</Th>
+            <Th>Valor Total</Th>
+            <Th width="8">Ações</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {value.map((produtoVenda, index) => {
+            return (
+              <Tr key={index}>
+                <Td>
+                  <Text>{produtoVenda.descricao}</Text>
+                </Td>
+                <Td>
+                  <Text>{produtoVenda.quantidade}</Text>
+                </Td>
+                <Td>
+                  <Text>{produtoVenda.valor}</Text>
+                </Td>
+                <Td>
+                  <HStack>
+                    <IconButton
+                      variant="outline"
+                      color="blue.800"
+                      aria-label="Editar produto"
+                      icon={<RiPencilLine />}
+                      onClick={() => {
+                        excluirProduto(JSON.stringify(produtoVenda));
+                      }}
+                    />
+                    <IconButton
+                      variant="outline"
+                      color="red.800"
+                      aria-label="Remover produto"
+                      icon={<RiDeleteBinLine />}
+                      onClick={() => {
+                        excluirProduto(JSON.stringify(produtoVenda));
+                      }}
+                    />
+                  </HStack>
+
+                  {/* <AlertDialogList
+                    isOpen={isOpen}
+                    cancelRef={cancelRef}
+                    onClose={onClose}
+                    header="Remover Usuário"
+                    body="Tem certeza que deseja remover o produto"
+                    description={produtoVenda.descricao}
+                    handleDelete={() =>
+                      excluirProduto(JSON.stringify(produtoVenda))
+                    }
+                  /> */}
+                </Td>
+              </Tr>
+            );
+          })}
+        </Tbody>
+      </Table>
+      <Pagination
+        totalCountOfRegisters={data?.totalCount}
+        currentPage={page}
+        onPageChange={setPage}
+      />
     </>
   );
 }

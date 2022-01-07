@@ -15,14 +15,8 @@ import {
   Link,
   Progress,
   Spinner,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
   Tooltip,
-  Tr,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
@@ -43,6 +37,7 @@ import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-
 import { GetServerSideProps } from "next";
 import { getProdutos, useProdutos } from "../../hooks/produtos/useProdutos";
 import { Sidebar } from "../../components/Sidebar";
+import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 
 export default function Produtos({ produtos }) {
   const isWideVersion = useBreakpointValue({
@@ -120,7 +115,7 @@ export default function Produtos({ produtos }) {
 
   return (
     <Sidebar>
-      <Box flex="1" borderRadius={8} boxShadow="base" p="8">
+      <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
         <Flex mb="8" justify="space-between" align="center">
           <Pesquisa handleChange={handlePesquisaProduto} />
           <Box ml="4">
@@ -167,14 +162,14 @@ export default function Produtos({ produtos }) {
             <Text>Falha ao obter dados dos produtos.</Text>
           </Flex>
         ) : (
-          <Box>
-            <Table colorScheme="blackAlpha">
+          <>
+            <Table variant="striped" colorScheme="blackAlpha">
               <Thead>
                 <Tr>
                   <Th>Produto</Th>
                   <Th>Categoria</Th>
-                  <Th>Preço venda varejo</Th>
-                  <Th width="8"></Th>
+                  <Th>Preço venda</Th>
+                  <Th width="8">Ações</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -189,7 +184,7 @@ export default function Produtos({ produtos }) {
                               handlePrefetchProduto(Number(produto.id))
                             }
                           >
-                            <Text fontWeight="bold">{produto.descricao}</Text>
+                            <Text>{produto.descricao}</Text>
                           </Link>
                         </Box>
                       </Td>
@@ -249,7 +244,7 @@ export default function Produtos({ produtos }) {
               currentPage={page}
               onPageChange={setPage}
             />
-          </Box>
+          </>
         )}
       </Box>
     </Sidebar>

@@ -15,6 +15,8 @@ import {
   VStack,
   Input as InputChakra,
   Divider,
+  css,
+  chakra,
 } from "@chakra-ui/react";
 import * as yup from "yup";
 import { Input } from "../../components/Input";
@@ -25,7 +27,7 @@ const { yupResolver } = require("@hookform/resolvers/yup");
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { forwardRef, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "../../contexts/AuthContext";
 import { RiInformationLine } from "react-icons/ri";
@@ -181,7 +183,7 @@ export default function FormVendas({ clientes, produtos, produtosVenda }) {
             index={tabIndex}
             onChange={handleTabsChange}
           >
-            <TabList>
+            <TabList overflowX="auto">
               <Tab>Dados básicos</Tab>
               <Tab isDisabled={stateNovaVenda}>Produtos</Tab>
               <Tab isDisabled={stateNovaVenda}>Serviços</Tab>

@@ -9,14 +9,8 @@ import {
   IconButton,
   Link,
   Spinner,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
   Tooltip,
-  Tr,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
@@ -36,6 +30,7 @@ import { theme as customTheme } from "../../styles/theme";
 import { Pesquisa } from "../../fragments/pesquisa";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
 import { Sidebar } from "../../components/Sidebar";
+import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 interface UsuariosProps {
   users: User[];
   totalCount: number;
@@ -159,7 +154,7 @@ export default function Usuarios() {
 
   return (
     <Sidebar>
-      <Box flex="1" borderRadius={8} boxShadow="base" p="8">
+      <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
         <Flex mb="8" justify="space-between" align="center">
           <Pesquisa handleChange={handleChange} />
           <Box ml="4">
@@ -211,7 +206,7 @@ export default function Usuarios() {
                   <Th>Usuário</Th>
                   <Th>Perfil</Th>
                   {isWideVersion && <Th>Data de cadastro</Th>}
-                  <Th width="8"></Th>
+                  <Th width="8">Ações</Th>
                 </Tr>
               </Thead>
               <Tbody>

@@ -51,7 +51,7 @@ export const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       />
 
       <Box display={{ base: "flex", md: "none" }}>
-        <Image width="10rem" src="/logo.png" alt="Logo MEIUP" />
+        <Image width="8rem" src="/logo.png" alt="Logo MEIUP" />
       </Box>
 
       <HStack spacing={{ base: "0", md: "6" }}>

@@ -202,7 +202,7 @@ export default function FormUsuario() {
           borderColor="gray.300"
         >
           <Tabs isFitted variant="enclosed">
-            <TabList>
+            <TabList overflowX="auto">
               <Tab>Dados básicos</Tab>
               <Tab>Endereço</Tab>
             </TabList>
@@ -315,7 +315,8 @@ export default function FormUsuario() {
           <Flex mt="8" justify="flex-end">
             <HStack spacing="24px">
               <Button
-                width="200px"
+                width={["150px", "200px"]}
+                fontSize={["14px", "16px"]}
                 type="submit"
                 color="white"
                 backgroundColor="red.700"
@@ -327,7 +328,8 @@ export default function FormUsuario() {
                 VOLTAR
               </Button>
               <Button
-                width="200px"
+                width={["150px", "200px"]}
+                fontSize={["14px", "16px"]}
                 type="submit"
                 color="white"
                 backgroundColor="blue.500"

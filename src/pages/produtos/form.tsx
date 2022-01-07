@@ -209,7 +209,7 @@ export default function FormProduto(optionsCategoria) {
 
   return (
     <Sidebar>
-      <Stack as="form" onSubmit={handleSubmit(handleProduto)} flex="1">
+      <Stack as="form" onSubmit={handleSubmit(handleProduto)}>
         <Box
           borderBottom="1px"
           borderLeft="1px"

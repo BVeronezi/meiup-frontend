@@ -7,16 +7,11 @@ import {
   Icon,
   Progress,
   Spinner,
-  Table,
-  Thead,
-  Tr,
-  Th,
-  Tbody,
-  Td,
   Link,
   HStack,
   IconButton,
   Tooltip,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
@@ -24,6 +19,7 @@ import { theme as customTheme } from "../../styles/theme";
 import { useEffect, useRef, useState } from "react";
 import { Pesquisa } from "../../fragments/pesquisa";
 import {
+  RiAddBoxLine,
   RiAddLine,
   RiCheckboxCircleLine,
   RiCloseCircleLine,
@@ -37,6 +33,7 @@ import { Pagination } from "../../components/Pagination";
 import { getVendas, useVendas } from "../../hooks/vendas/useVendas";
 import { GetServerSideProps } from "next";
 import { Sidebar } from "../../components/Sidebar";
+import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 
 export const StatusVenda = [
   { codigo: 0, label: "ABERTA" },
@@ -45,6 +42,11 @@ export const StatusVenda = [
 ];
 
 export default function Vendas({ vendas }) {
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  });
+
   const router = useRouter();
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
@@ -100,25 +102,39 @@ export default function Vendas({ vendas }) {
 
   return (
     <Sidebar>
-      <Box flex="1" borderRadius={8} boxShadow="base" p="8">
+      <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
         <Flex mb="8" justify="space-between" align="center">
           <Pesquisa handleChange={handlePesquisaVenda} />
           <Box ml="4">
-            <NextLink href="/vendas/form" passHref>
-              <Button
-                _hover={{
-                  bg: "blue.500",
-                }}
-                as="a"
-                size="sm"
-                fontSize="sm"
-                color="white"
-                backgroundColor="blue.800"
-                leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-              >
-                Nova venda
-              </Button>
-            </NextLink>
+            {isWideVersion && (
+              <NextLink href="/vendas/form" passHref>
+                <Button
+                  _hover={{
+                    bg: "blue.500",
+                  }}
+                  as="a"
+                  size="sm"
+                  fontSize="sm"
+                  color="white"
+                  backgroundColor="blue.800"
+                  leftIcon={<Icon as={RiAddLine} fontSize="20" />}
+                >
+                  Nova venda
+                </Button>
+              </NextLink>
+            )}
+
+            {!isWideVersion && (
+              <Tooltip label="Nova venda">
+                <IconButton
+                  variant="outline"
+                  color="blue.800"
+                  aria-label="Nova venda"
+                  onClick={() => router.push("/vendas/form")}
+                  icon={<RiAddBoxLine />}
+                />
+              </Tooltip>
+            )}
           </Box>
         </Flex>
 
@@ -134,7 +150,7 @@ export default function Vendas({ vendas }) {
           </Flex>
         ) : (
           <Box color="black">
-            <Table colorScheme="blackAlpha">
+            <Table variant="striped" colorScheme="blackAlpha">
               <Thead>
                 <Tr>
                   <Th>Código</Th>
@@ -142,7 +158,7 @@ export default function Vendas({ vendas }) {
                   <Th>Data da venda</Th>
                   <Th>Valor total</Th>
                   <Th>Status</Th>
-                  <Th width="8"></Th>
+                  <Th width="8">Ações</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -157,13 +173,13 @@ export default function Vendas({ vendas }) {
                               handlePrefetchVenda(Number(venda.id))
                             }
                           >
-                            <Text fontWeight="bold">{venda.id}</Text>
+                            <Text>{venda.id}</Text>
                           </Link>
                         </Box>
                       </Td>
 
                       <Td>
-                        <Text fontWeight="bold">{venda.cliente}</Text>
+                        <Text>{venda.cliente}</Text>
                       </Td>
 
                       <Td>
@@ -183,6 +199,7 @@ export default function Vendas({ vendas }) {
                           {Number(venda.status) !== 0 && (
                             <Tooltip label="Visualizar venda">
                               <IconButton
+                                size="sm"
                                 variant="outline"
                                 color="blue.800"
                                 aria-label="Visualizar venda"
@@ -200,6 +217,7 @@ export default function Vendas({ vendas }) {
                           {Number(venda.status) !== 2 && (
                             <Tooltip label="Editar venda">
                               <IconButton
+                                size="sm"
                                 variant="outline"
                                 color="blue.800"
                                 aria-label="Editar venda"
@@ -217,6 +235,7 @@ export default function Vendas({ vendas }) {
                           {Number(venda.status) !== 2 && (
                             <Tooltip label="Finalizar venda">
                               <IconButton
+                                size="sm"
                                 variant="outline"
                                 color="blue.800"
                                 aria-label="Finalizar venda"
@@ -231,6 +250,7 @@ export default function Vendas({ vendas }) {
                           {Number(venda.status) !== 2 && (
                             <Tooltip label="Cancelar venda">
                               <IconButton
+                                size="sm"
                                 variant="outline"
                                 color="red.800"
                                 aria-label="Cancelar venda"

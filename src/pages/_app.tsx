@@ -4,6 +4,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { theme } from "../styles/theme";
 import { queryClient } from "../services/queryClient";
 import { AuthProvider } from "../contexts/AuthContext";
+import "../styles/styles.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

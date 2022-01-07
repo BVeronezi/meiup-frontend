@@ -198,7 +198,7 @@ export default function DadosGerais() {
           borderColor="gray.300"
         >
           <Tabs isFitted variant="enclosed">
-            <TabList>
+            <TabList overflowX="auto">
               <Tab>Informações da empresa</Tab>
               <Tab>Endereço</Tab>
             </TabList>
@@ -278,8 +278,9 @@ export default function DadosGerais() {
         </Box>
         <Flex justify="flex-end">
           <Button
+            width={["150px", "200px"]}
+            fontSize={["14px", "16px"]}
             mt="8"
-            width="200px"
             type="submit"
             color="white"
             backgroundColor="blue.500"
