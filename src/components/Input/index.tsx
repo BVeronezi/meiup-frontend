@@ -19,7 +19,11 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
 ) => {
   return (
     <FormControl isInvalid={!!error}>
-      {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
+      {!!label && (
+        <FormLabel fontWeight="bold" color="gray.800" htmlFor={name}>
+          {label}
+        </FormLabel>
+      )}
       <ChakraInput
         name={name}
         id={name}

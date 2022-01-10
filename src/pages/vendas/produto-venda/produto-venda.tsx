@@ -2,26 +2,18 @@ import * as React from "react";
 import {
   Box,
   Button,
-  ButtonGroup,
-  chakra,
   createStandaloneToast,
   Divider,
-  Flex,
   FormControl,
   HStack,
   IconButton,
   SimpleGrid,
-  Spinner,
-  Stack,
   Text,
-  Tooltip,
-  useBreakpointValue,
-  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
 import Select from "react-select";
 import * as yup from "yup";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
@@ -29,15 +21,10 @@ import { theme as customTheme } from "../../../styles/theme";
 import { api } from "../../../services/apiClient";
 import { useRouter } from "next/router";
 import { Input } from "../../../components/Input";
-import { useProdutosVenda } from "../../../hooks/vendas/useProdutoVenda";
-import {
-  RiCloseCircleLine,
-  RiDeleteBinLine,
-  RiPencilLine,
-} from "react-icons/ri";
+import { getProdutosVenda } from "../../../hooks/vendas/useProdutoVenda";
+import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pagination } from "../../../components/Pagination";
-import { BsBoxArrowUpRight, BsFillTrashFill } from "react-icons/bs";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
 
 const produtoVendaFormSchema = yup.object().shape({
@@ -49,19 +36,35 @@ const produtoVendaFormSchema = yup.object().shape({
   valorTotal: yup.number(),
 });
 
-export default function ProdutoVenda({ produtos, produtosVenda }) {
+export default function ProdutoVenda({ produtos }) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
   const [stateProduto, setStateProduto] = useState("");
-  const [reload, setReload] = useState(false);
+  const [idProdutoVenda, setIdProdutoVenda] = useState();
+  const [addProduto, setAddProduto] = useState(true);
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
 
-  let { data, isLoading, error } = useProdutosVenda(page, null, vendaId, {
-    initialData: produtosVenda,
+  const [selectedProduto, setSelectedProduto] = useState({
+    id: 0,
+    quantidade: 0,
+    valorTotal: 0,
+    produto: { id: 0, descricao: "" },
   });
 
-  const [value, setValues] = useState([]);
+  const [data, setData] = useState({
+    produtosVenda: [
+      {
+        id: 0,
+        quantidade: 0,
+        valorTotal: 0,
+        produto: { id: 0, descricao: "" },
+      },
+    ],
+    totalCount: 0,
+  });
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
@@ -73,40 +76,30 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
   const { errors } = formState;
 
   useEffect(() => {
-    const dados: any = data?.produtosVenda ?? data;
+    async function fetchData() {
+      const result: any = await getProdutosVenda(page, null, vendaId);
+      setData(result);
+    }
+    fetchData();
+  }, [refreshKey]);
 
-    const arrProdutosVenda = dados.map((p) => {
-      return {
-        id: p.id,
-        descricao: p.produto.descricao,
-        quantidade: p.quantidade,
-        valor: p.valorTotal,
-      };
-    });
-
-    setValues(arrProdutosVenda);
-  }, []);
-
-  async function excluirProduto(produtoVendaId) {
+  async function excluirProduto(produtoVenda) {
     try {
       onClose();
+      await api.delete(`/vendas/produtoVenda/${vendaId}`, {
+        data: {
+          produto: produtoVenda.produto.id,
+          produtoVenda: produtoVenda.id,
+        },
+      });
 
-      console.log(JSON.parse(produtoVendaId));
-      //console.log(`produto: ${event.produto.descricao}`);
-
-      // await api.delete(`/vendas/produtoVenda/${vendaId}`, {
-      //   data: {
-      //     produto: produtoVenda.produto,
-      //     produtoVenda: produtoVenda.id,
-      //   },
-      // });
-
-      // toast({
-      //   title: "Produto removido com sucesso!",
-      //   status: "success",
-      //   duration: 2000,
-      //   isClosable: true,
-      // });
+      toast({
+        title: "Produto removido com sucesso!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+      setRefreshKey((oldKey) => oldKey - 1);
     } catch (error) {
       console.log(error);
     }
@@ -116,6 +109,7 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
     setValue("quantidade", getValues("quantidade"));
     setValue("precoUnitario", produto.precos?.precoVendaVarejo);
     setStateProduto(produto.value);
+    setAddProduto(true);
     calculaTotal();
   };
 
@@ -126,10 +120,13 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
     setValue("outrasDespesas", produtoVenda.outrasDespesas);
     setValue("desconto", produtoVenda.desconto);
     setValue("valorTotal", produtoVenda.valorTotal);
+    setIdProdutoVenda(produtoVenda.id);
   };
 
   async function adicionarProduto() {
-    setReload(false);
+    if (!stateProduto) {
+      setAddProduto(false);
+    }
 
     if (stateProduto) {
       const params = {
@@ -145,8 +142,8 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
 
       if (!result.data?.produtoVenda) {
         toast({
-          title: "Produto já adicionado na venda!",
-          status: "info",
+          title: "Produto atualizado com sucesso!",
+          status: "success",
           duration: 2000,
           isClosable: true,
         });
@@ -157,17 +154,21 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
           duration: 2000,
           isClosable: true,
         });
-
-        setStateProduto("");
-        setValue("quantidade", null);
-        setValue("precoUnitario", null);
-        setValue("outrasDespesas", null);
-        setValue("desconto", null);
-        setValue("valorTotal", null);
-        setReload(true);
       }
+
+      resetInputs();
+      setRefreshKey((oldKey) => oldKey + 1);
     }
   }
+
+  const resetInputs = () => {
+    setStateProduto("");
+    setValue("quantidade", null);
+    setValue("precoUnitario", null);
+    setValue("outrasDespesas", null);
+    setValue("desconto", null);
+    setValue("valorTotal", null);
+  };
 
   const calculaTotal = () => {
     const quantidade = getValues("quantidade");
@@ -189,7 +190,7 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <VStack align="left" spacing="4">
-            <Text>Produto: *</Text>
+            <Text fontWeight="bold">Produto: *</Text>
             <Select
               id="produto"
               {...register("produto")}
@@ -200,7 +201,7 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
               onChange={handleProduto}
               placeholder="Selecione o produto *"
             />
-            {!stateProduto && (
+            {!addProduto && (
               <Text color="red" fontSize="14px">
                 Produto obrigatório
               </Text>
@@ -258,13 +259,13 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
               fontSize="14px"
               type="submit"
               color="white"
-              backgroundColor="yellow.600"
+              backgroundColor="yellow.500"
               onClick={(event) => {
                 event.preventDefault();
                 adicionarProduto();
               }}
             >
-              ADICIONAR
+              {idProdutoVenda ? "ATUALIZAR" : "ADICIONAR"}
             </Button>
           </HStack>
         </Box>
@@ -283,17 +284,17 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
           </Tr>
         </Thead>
         <Tbody>
-          {value.map((produtoVenda, index) => {
+          {data.produtosVenda.map((produtoVenda, index) => {
             return (
               <Tr key={index}>
                 <Td>
-                  <Text>{produtoVenda.descricao}</Text>
+                  <Text>{produtoVenda.produto.descricao}</Text>
                 </Td>
                 <Td>
                   <Text>{produtoVenda.quantidade}</Text>
                 </Td>
                 <Td>
-                  <Text>{produtoVenda.valor}</Text>
+                  <Text>{produtoVenda.valorTotal}</Text>
                 </Td>
                 <Td>
                   <HStack>
@@ -303,7 +304,7 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
                       aria-label="Editar produto"
                       icon={<RiPencilLine />}
                       onClick={() => {
-                        excluirProduto(JSON.stringify(produtoVenda));
+                        handleEditProduto(produtoVenda);
                       }}
                     />
                     <IconButton
@@ -312,22 +313,21 @@ export default function ProdutoVenda({ produtos, produtosVenda }) {
                       aria-label="Remover produto"
                       icon={<RiDeleteBinLine />}
                       onClick={() => {
-                        excluirProduto(JSON.stringify(produtoVenda));
+                        setSelectedProduto(produtoVenda);
+                        setIsOpen(true);
                       }}
                     />
                   </HStack>
 
-                  {/* <AlertDialogList
+                  <AlertDialogList
                     isOpen={isOpen}
                     cancelRef={cancelRef}
                     onClose={onClose}
                     header="Remover Usuário"
                     body="Tem certeza que deseja remover o produto"
-                    description={produtoVenda.descricao}
-                    handleDelete={() =>
-                      excluirProduto(JSON.stringify(produtoVenda))
-                    }
-                  /> */}
+                    description={selectedProduto.produto?.descricao}
+                    onClick={() => excluirProduto(selectedProduto)}
+                  />
                 </Td>
               </Tr>
             );

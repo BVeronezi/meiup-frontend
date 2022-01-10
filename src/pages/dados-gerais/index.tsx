@@ -198,7 +198,7 @@ export default function DadosGerais() {
           borderColor="gray.300"
         >
           <Tabs isFitted variant="enclosed">
-            <TabList overflowX="auto">
+            <TabList>
               <Tab>Informações da empresa</Tab>
               <Tab>Endereço</Tab>
             </TabList>

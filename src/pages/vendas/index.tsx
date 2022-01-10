@@ -272,7 +272,7 @@ export default function Vendas({ vendas }) {
                           description={venda.id}
                           textButton1="Não"
                           textButton2="Sim"
-                          handleDelete={() => cancelaVenda(String(venda.id))}
+                          onClick={() => cancelaVenda(String(venda.id))}
                         />
                       </Td>
                     </Tr>

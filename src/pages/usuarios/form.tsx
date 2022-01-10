@@ -202,13 +202,13 @@ export default function FormUsuario() {
           borderColor="gray.300"
         >
           <Tabs isFitted variant="enclosed">
-            <TabList overflowX="auto">
+            <TabList>
               <Tab>Dados básicos</Tab>
               <Tab>Endereço</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
-                <VStack k marginTop="14px" spacing="12">
+                <VStack marginTop="14px" spacing="12">
                   <SimpleGrid
                     minChildWidth="240px"
                     spacing={["6", "8"]}

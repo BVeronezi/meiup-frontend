@@ -230,7 +230,7 @@ export default function Produtos({ produtos }) {
                           header="Remover Produto"
                           body="Tem certeza que deseja remover o produto"
                           description={produto.descricao}
-                          handleDelete={() => deleteProduto(String(produto.id))}
+                          onClick={() => deleteProduto(String(produto.id))}
                         />
                       </Td>
                     </Tr>

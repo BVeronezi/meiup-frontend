@@ -14,7 +14,7 @@ export function AlertDialogList({
   onClose,
   header,
   body,
-  handleDelete,
+  onClick,
   description,
   textButton1 = "Cancelar",
   textButton2 = "Remover",
@@ -39,7 +39,7 @@ export function AlertDialogList({
             <Button ref={cancelRef} onClick={onClose}>
               {textButton1}
             </Button>
-            <Button colorScheme="red" onClick={handleDelete} ml={3}>
+            <Button colorScheme="red" onClick={onClick} ml={3}>
               {textButton2}
             </Button>
           </AlertDialogFooter>

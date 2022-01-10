@@ -60,7 +60,7 @@ const vendaFormSchema = yup.object().shape({
   telefone: yup.string(),
 });
 
-export default function FormVendas({ clientes, produtos, produtosVenda }) {
+export default function FormVendas({ clientes, produtos }) {
   const [stateCliente, setStateCliente] = useState("");
   const [stateContinuarVenda, setStateContinuarVenda] = useState(true);
   const [stateNovaVenda, setStateNovaVenda] = useState(false);
@@ -72,7 +72,7 @@ export default function FormVendas({ clientes, produtos, produtosVenda }) {
   const { user } = useContext(AuthContext);
   const vendaId: any = Object.keys(router.query)[0];
 
-  const { register, handleSubmit, formState, setValue, getValues } = useForm({
+  const { register, handleSubmit, formState, setValue } = useForm({
     resolver: yupResolver(vendaFormSchema),
   });
 
@@ -208,12 +208,12 @@ export default function FormVendas({ clientes, produtos, produtosVenda }) {
                     w="100%"
                   >
                     <HStack alignSelf="normal">
-                      <Text>Vendedor(a):</Text>
-                      <Text fontWeight="bold">{user?.nome}</Text>
+                      <Text fontWeight="bold">Vendedor(a):</Text>
+                      <Text>{user?.nome}</Text>
                     </HStack>
                     <Box>
                       <VStack align="left" spacing="4">
-                        <Text>Data da venda: *</Text>
+                        <Text fontWeight="bold">Data da venda: *</Text>
                         <DatePicker
                           locale="pt"
                           dateFormat="dd MMMM, yyy"
@@ -232,7 +232,7 @@ export default function FormVendas({ clientes, produtos, produtosVenda }) {
                     w="100%"
                   >
                     <VStack align="left" spacing="4">
-                      <Text>Cliente: *</Text>
+                      <Text fontWeight="bold">Cliente: *</Text>
                       <Select
                         id="cliente"
                         {...register("cliente")}
@@ -286,10 +286,7 @@ export default function FormVendas({ clientes, produtos, produtosVenda }) {
                 </VStack>
               </TabPanel>
               <TabPanel>
-                <ProdutoVenda
-                  produtos={produtos}
-                  produtosVenda={produtosVenda}
-                />
+                <ProdutoVenda produtos={produtos} />
               </TabPanel>
               <TabPanel>
                 <VStack marginTop="14px" spacing="12">
@@ -378,12 +375,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   });
 
-  const { produtosVenda } = await getProdutosVenda(
-    1,
-    ctx,
-    Object.keys(ctx.query)[0]
-  );
-
   // const servicos = responseServicos.data?.found?.servicos.map((e) => {
   //   return { value: String(e.id), label: e.nome };
   // });
@@ -391,7 +382,6 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     props: {
       clientes,
       produtos,
-      produtosVenda,
     },
   };
 };
