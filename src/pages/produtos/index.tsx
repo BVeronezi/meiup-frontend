@@ -1,10 +1,4 @@
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   Box,
   Button,
   createStandaloneToast,
@@ -34,10 +28,10 @@ import {
 import { Pagination } from "../../components/Pagination";
 import { theme as customTheme } from "../../styles/theme";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
-import { GetServerSideProps } from "next";
 import { getProdutos, useProdutos } from "../../hooks/produtos/useProdutos";
 import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 export default function Produtos({ produtos }) {
   const isWideVersion = useBreakpointValue({
@@ -48,20 +42,27 @@ export default function Produtos({ produtos }) {
   const router = useRouter();
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
-
-  let { data, isLoading, error } = useProdutos(page, {
-    initialData: produtos,
-  });
-
-  const [theData, setTheData] = useState(data);
   const [isFetching, setIsFetching] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
+  const [value, setValue] = useState({
+    produtos: [],
+    totalCount: 0,
+  });
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  let { data, isLoading, error } = useProdutos(page, {
+    initialData: null,
+  });
+
   useEffect(() => {
-    setTheData(data);
-  }, [data]);
+    async function fetchData() {
+      setValue(data);
+    }
+    fetchData();
+  }, [data, refreshKey]);
 
   async function deleteProduto(produtoId: string) {
     try {
@@ -76,7 +77,7 @@ export default function Produtos({ produtos }) {
         isClosable: true,
       });
 
-      router.reload();
+      setRefreshKey((oldKey) => oldKey - 1);
     } catch (error) {
       console.log(error);
     }
@@ -104,11 +105,11 @@ export default function Produtos({ produtos }) {
         undefined,
         event.target.value
       );
-      setTheData(produtosPesquisados);
+      setValue(produtosPesquisados);
       setIsFetching(false);
     } else {
       setIsFetching(true);
-      setTheData(data);
+      setValue(data);
       setIsFetching(false);
     }
   }
@@ -173,7 +174,7 @@ export default function Produtos({ produtos }) {
                 </Tr>
               </Thead>
               <Tbody>
-                {theData?.produtos.map((produto) => {
+                {value?.produtos.map((produto) => {
                   return (
                     <Tr key={produto.id}>
                       <Td>
@@ -251,12 +252,8 @@ export default function Produtos({ produtos }) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { produtos } = await getProdutos(1, ctx);
-
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   return {
-    props: {
-      produtos,
-    },
+    props: {},
   };
-};
+});

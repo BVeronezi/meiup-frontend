@@ -219,7 +219,7 @@ export default function FormProduto(optionsCategoria) {
         >
           <Tabs isFitted variant="enclosed">
             <TabList>
-              <Tab>Dados básicos</Tab>
+              <Tab>Produto</Tab>
               <Tab>Estoque</Tab>
               <Tab>Preços</Tab>
             </TabList>
@@ -236,7 +236,7 @@ export default function FormProduto(optionsCategoria) {
                       <Input
                         name="descricao"
                         autoFocus={true}
-                        label="Descrição *:"
+                        label="Descrição: *"
                         error={errors.descricao}
                         {...register("descricao")}
                       ></Input>
@@ -302,7 +302,7 @@ export default function FormProduto(optionsCategoria) {
                       <Input
                         type="number"
                         name="estoque"
-                        label="Estoque *:"
+                        label="Estoque: *"
                         error={errors.estoque}
                         {...register("estoque")}
                       ></Input>
@@ -332,7 +332,7 @@ export default function FormProduto(optionsCategoria) {
                     w="100%"
                   >
                     <Stack spacing="4">
-                      <Text>Preço de venda varejo:</Text>
+                      <Text fontWeight="bold">Preço de venda varejo:</Text>
                       <NumberFormat
                         value={statePrecoVendaVarejo}
                         onValueChange={(val) =>
@@ -347,7 +347,7 @@ export default function FormProduto(optionsCategoria) {
                       />
                     </Stack>
                     <Stack spacing="4">
-                      <Text>Preço de venda atacado:</Text>
+                      <Text fontWeight="bold">Preço de venda atacado:</Text>
                       <NumberFormat
                         value={statePrecoVendaAtacado}
                         onValueChange={(val) =>
@@ -368,7 +368,7 @@ export default function FormProduto(optionsCategoria) {
                     w="100%"
                   >
                     <Stack spacing="4">
-                      <Text>Preço de compra:</Text>
+                      <Text fontWeight="bold">Preço de compra:</Text>
                       <NumberFormat
                         value={statePrecoCompra}
                         onValueChange={(val) =>
@@ -383,7 +383,7 @@ export default function FormProduto(optionsCategoria) {
                       />
                     </Stack>
                     <Stack spacing="4">
-                      <Text>Margem de lucro:</Text>
+                      <Text fontWeight="bold">Margem de lucro:</Text>
                       <NumberFormat
                         value={stateMargemLucro}
                         onValueChange={(val) =>

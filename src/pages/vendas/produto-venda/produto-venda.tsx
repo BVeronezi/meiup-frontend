@@ -61,7 +61,7 @@ export default function ProdutoVenda({ produtos }) {
         produto: { id: 0, descricao: "" },
       },
     ],
-    totalCount: 0,
+    total: 0,
   });
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -206,7 +206,6 @@ export default function ProdutoVenda({ produtos }) {
                 Produto obrigatório
               </Text>
             )}{" "}
-            *
           </VStack>
           <FormControl isInvalid={!!errors.quantidade}>
             <Input
@@ -323,7 +322,7 @@ export default function ProdutoVenda({ produtos }) {
                     isOpen={isOpen}
                     cancelRef={cancelRef}
                     onClose={onClose}
-                    header="Remover Usuário"
+                    header="Remover Produto"
                     body="Tem certeza que deseja remover o produto"
                     description={selectedProduto.produto?.descricao}
                     onClick={() => excluirProduto(selectedProduto)}
@@ -335,7 +334,7 @@ export default function ProdutoVenda({ produtos }) {
         </Tbody>
       </Table>
       <Pagination
-        totalCountOfRegisters={data?.totalCount}
+        totalCountOfRegisters={data?.total}
         currentPage={page}
         onPageChange={setPage}
       />

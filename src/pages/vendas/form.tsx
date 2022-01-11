@@ -41,6 +41,7 @@ import moment from "moment";
 import { getProdutosVenda } from "../../hooks/vendas/useProdutoVenda";
 import ProdutoVenda from "./produto-venda/produto-venda";
 import { Sidebar } from "../../components/Sidebar";
+import ServicoVenda from "./servico-venda/servico-venda";
 registerLocale("pt", pt);
 
 type FormData = {
@@ -60,7 +61,7 @@ const vendaFormSchema = yup.object().shape({
   telefone: yup.string(),
 });
 
-export default function FormVendas({ clientes, produtos }) {
+export default function FormVendas({ clientes, produtos, servicos }) {
   const [stateCliente, setStateCliente] = useState("");
   const [stateContinuarVenda, setStateContinuarVenda] = useState(true);
   const [stateNovaVenda, setStateNovaVenda] = useState(false);
@@ -289,13 +290,7 @@ export default function FormVendas({ clientes, produtos }) {
                 <ProdutoVenda produtos={produtos} />
               </TabPanel>
               <TabPanel>
-                <VStack marginTop="14px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  ></SimpleGrid>
-                </VStack>
+                <ServicoVenda servicos={servicos} />
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -358,9 +353,16 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   });
 
   const responseServicos: any = await axios.get(
-    `http://localhost:8000/api/v1/clientes`,
+    `http://localhost:8000/api/v1/servicos`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
+
+  const servicos = responseServicos.data.found.servicos.map((e) => {
+    return {
+      value: String(e.id),
+      label: e.nome,
+    };
+  });
 
   const responseProdutos: any = await axios.get(
     `http://localhost:8000/api/v1/produtos`,
@@ -375,13 +377,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   });
 
-  // const servicos = responseServicos.data?.found?.servicos.map((e) => {
-  //   return { value: String(e.id), label: e.nome };
-  // });
   return {
     props: {
       clientes,
       produtos,
+      servicos,
     },
   };
 };
