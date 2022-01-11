@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  Input as ChakraInput,
   Box,
   Button,
   createStandaloneToast,
@@ -8,6 +9,7 @@ import {
   HStack,
   IconButton,
   SimpleGrid,
+  Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -26,6 +28,7 @@ import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pagination } from "../../../components/Pagination";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
+import NumberFormat from "react-number-format";
 
 const produtoVendaFormSchema = yup.object().shape({
   produto: yup.string(),
@@ -40,6 +43,10 @@ export default function ProdutoVenda({ produtos }) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
   const [stateProduto, setStateProduto] = useState("");
+  const [statePrecoUnitario, setStatePrecoUnitario] = useState(0);
+  const [stateOutrasDespesas, setStateOutrasDespesas] = useState(0);
+  const [stateDesconto, setStateDesconto] = useState(0);
+  const [stateValorTotal, setStateValorTotal] = useState(0);
   const [idProdutoVenda, setIdProdutoVenda] = useState();
   const [addProduto, setAddProduto] = useState(true);
   const toast = createStandaloneToast({ theme: customTheme });
@@ -61,7 +68,7 @@ export default function ProdutoVenda({ produtos }) {
         produto: { id: 0, descricao: "" },
       },
     ],
-    total: 0,
+    totalCount: 0,
   });
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -105,21 +112,13 @@ export default function ProdutoVenda({ produtos }) {
     }
   }
 
-  const handleProduto = (produto) => {
-    setValue("quantidade", getValues("quantidade"));
-    setValue("precoUnitario", produto.precos?.precoVendaVarejo);
-    setStateProduto(produto.value);
-    setAddProduto(true);
-    calculaTotal();
-  };
-
   const handleEditProduto = (produtoVenda) => {
     setStateProduto(String(produtoVenda.produto.id));
-    setValue("precoUnitario", produtoVenda.precoUnitario);
     setValue("quantidade", produtoVenda.quantidade);
-    setValue("outrasDespesas", produtoVenda.outrasDespesas);
-    setValue("desconto", produtoVenda.desconto);
-    setValue("valorTotal", produtoVenda.valorTotal);
+    setStatePrecoUnitario(parseFloat(produtoVenda.precoUnitario));
+    setStateOutrasDespesas(parseFloat(produtoVenda.outrasDespesas));
+    setStateDesconto(parseFloat(produtoVenda.desconto));
+    setStateValorTotal(parseFloat(produtoVenda.valorTotal));
     setIdProdutoVenda(produtoVenda.id);
   };
 
@@ -132,10 +131,10 @@ export default function ProdutoVenda({ produtos }) {
       const params = {
         produto: stateProduto,
         quantidade: getValues("quantidade"),
-        precoUnitario: getValues("precoUnitario"),
-        outrasDespesas: getValues("outrasDespesas"),
-        desconto: getValues("desconto"),
-        valorTotal: getValues("valorTotal"),
+        precoUnitario: statePrecoUnitario,
+        outrasDespesas: stateOutrasDespesas,
+        desconto: stateDesconto,
+        valorTotal: stateValorTotal,
       };
 
       const result = await api.post(`/vendas/produtoVenda/${vendaId}`, params);
@@ -164,25 +163,35 @@ export default function ProdutoVenda({ produtos }) {
   const resetInputs = () => {
     setStateProduto("");
     setValue("quantidade", null);
-    setValue("precoUnitario", null);
-    setValue("outrasDespesas", null);
-    setValue("desconto", null);
-    setValue("valorTotal", null);
+    setStatePrecoUnitario(0);
+    setStateOutrasDespesas(0);
+    setStateDesconto(0);
+    setStateValorTotal(0);
   };
 
   const calculaTotal = () => {
     const quantidade = getValues("quantidade");
-    const precoUnitario = getValues("precoUnitario");
-    const outrasDespesas = getValues("outrasDespesas");
-    const desconto = getValues("desconto");
 
-    if (precoUnitario) {
-      let total = Math.ceil(quantidade * precoUnitario);
-      total += Math.ceil(outrasDespesas);
-      total -= desconto;
+    let total = quantidade * statePrecoUnitario;
 
-      setValue("valorTotal", total);
-    }
+    setStateValorTotal(total);
+  };
+
+  const handleProduto = (produto) => {
+    setStatePrecoUnitario(parseFloat(produto.precos?.precoVendaVarejo) ?? 0);
+    setStateProduto(produto.value);
+    setAddProduto(true);
+    setStateValorTotal(parseFloat(produto.precos?.precoVendaVarejo) ?? 0);
+  };
+
+  const handleOutrasDespesas = (value) => {
+    setStateOutrasDespesas(value.floatValue);
+    setStateValorTotal(stateValorTotal + (value.floatValue ?? 0));
+  };
+
+  const handleDesconto = (value) => {
+    setStateDesconto(value.floatValue);
+    setStateValorTotal(stateValorTotal - (value.floatValue ?? 0));
   };
 
   return (
@@ -220,36 +229,70 @@ export default function ProdutoVenda({ produtos }) {
       </VStack>
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Input
-            isReadOnly
-            name="precoUnitario"
-            label="Preço unitário: *"
-            error={errors.precoUnitario}
-            {...register("precoUnitario")}
-          ></Input>
-          <Input
-            name="outrasDespesas"
-            label="Outras despesas:"
-            error={errors.outrasDespesas}
-            {...register("outrasDespesas")}
-            onBlur={calculaTotal}
-          ></Input>
+          <Stack spacing="4">
+            <Text fontWeight="bold">Preço unitário:</Text>
+            <NumberFormat
+              isReadOnly={true}
+              decimalScale={2}
+              fixedDecimalScale={true}
+              value={statePrecoUnitario}
+              onValueChange={(val) => setStatePrecoUnitario(val.floatValue)}
+              customInput={ChakraInput}
+              variant="flushed"
+              borderColor="gray.400"
+              thousandSeparator="."
+              decimalSeparator=","
+              prefix={"R$"}
+            />
+          </Stack>
+          <Stack spacing="4">
+            <Text fontWeight="bold">Outras despesas:</Text>
+            <NumberFormat
+              decimalScale={2}
+              fixedDecimalScale={true}
+              value={stateOutrasDespesas}
+              onValueChange={(val) => handleOutrasDespesas(val)}
+              customInput={ChakraInput}
+              variant="flushed"
+              borderColor="gray.400"
+              thousandSeparator="."
+              decimalSeparator=","
+              prefix={"R$"}
+            />
+          </Stack>
         </SimpleGrid>
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Input
-            name="desconto"
-            label="Desconto:"
-            error={errors.desconto}
-            {...register("desconto")}
-            onBlur={calculaTotal}
-          ></Input>
-          <Input
-            isReadOnly
-            name="total"
-            label="Total: *"
-            error={errors.valorTotal}
-            {...register("valorTotal")}
-          ></Input>
+          <Stack spacing="4">
+            <Text fontWeight="bold">Desconto:</Text>
+            <NumberFormat
+              decimalScale={2}
+              fixedDecimalScale={true}
+              value={stateDesconto}
+              onValueChange={(val) => handleDesconto(val)}
+              customInput={ChakraInput}
+              variant="flushed"
+              borderColor="gray.400"
+              thousandSeparator="."
+              decimalSeparator=","
+              prefix={"R$"}
+            />
+          </Stack>
+          <Stack spacing="4">
+            <Text fontWeight="bold">Total:</Text>
+            <NumberFormat
+              isReadOnly={true}
+              decimalScale={2}
+              fixedDecimalScale={true}
+              value={stateValorTotal}
+              onValueChange={(val) => setStateValorTotal(val.floatValue)}
+              customInput={ChakraInput}
+              variant="flushed"
+              borderColor="gray.400"
+              thousandSeparator="."
+              decimalSeparator=","
+              prefix={"R$"}
+            />
+          </Stack>
         </SimpleGrid>
         <Box alignSelf="flex-end">
           <HStack>
@@ -334,7 +377,7 @@ export default function ProdutoVenda({ produtos }) {
         </Tbody>
       </Table>
       <Pagination
-        totalCountOfRegisters={data?.total}
+        totalCountOfRegisters={data?.totalCount}
         currentPage={page}
         onPageChange={setPage}
       />

@@ -361,6 +361,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       value: String(e.id),
       label: e.nome,
+      valor: e.valor,
     };
   });
 

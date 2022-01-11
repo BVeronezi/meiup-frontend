@@ -217,7 +217,7 @@ export default function FormUsuario() {
                     <Input
                       name="nome"
                       autoFocus={true}
-                      label="Nome *:"
+                      label="Nome: *"
                       error={errors.nome}
                       {...register("nome")}
                     ></Input>
@@ -225,7 +225,7 @@ export default function FormUsuario() {
                     <Input
                       name="email"
                       type="email"
-                      label="E-mail *:"
+                      label="E-mail: *"
                       error={errors.email}
                       {...register("email")}
                     ></Input>
@@ -248,7 +248,9 @@ export default function FormUsuario() {
                     ></Input>
 
                     <Box>
-                      <FormLabel htmlFor="perfil">Perfil *:</FormLabel>
+                      <FormLabel fontWeight="bold" htmlFor="perfil">
+                        Perfil: *
+                      </FormLabel>
                       <Select
                         {...register("role")}
                         variant="flushed"

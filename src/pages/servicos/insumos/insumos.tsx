@@ -69,7 +69,7 @@ export default function Insumos({ produtos }) {
         produto: { id: 0, descricao: "" },
       },
     ],
-    total: 0,
+    totalCount: 0,
   });
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -261,7 +261,7 @@ export default function Insumos({ produtos }) {
         </Tbody>
       </Table>
       <Pagination
-        totalCountOfRegisters={data?.total}
+        totalCountOfRegisters={data?.totalCount}
         currentPage={page}
         onPageChange={setPage}
       />

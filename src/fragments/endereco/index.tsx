@@ -9,7 +9,7 @@ export function Endereco({ register, errors, isLoading, buscaCep }) {
       <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
         <Input
           name="cep"
-          label="CEP *:"
+          label="CEP: *"
           error={errors.cep}
           {...register("cep")}
           onChange={(c) => buscaCep(c.target.value)}
@@ -17,7 +17,7 @@ export function Endereco({ register, errors, isLoading, buscaCep }) {
 
         <Input
           name="endereco"
-          label="Endereço *:"
+          label="Endereço: *"
           error={errors.endereco}
           {...register("endereco")}
         ></Input>

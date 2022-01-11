@@ -5,7 +5,7 @@ import { useQuery, UseQueryOptions, UseQueryResult } from "react-query";
 type ServicoVenda = {
   id: string;
   servico: any;
-  precoUnidade: number;
+  valorServico: number;
   outrasDespesas: number;
   desconto: number;
   valorTotal: number;
@@ -31,16 +31,21 @@ export async function getServicosVenda(
     }
   );
 
-  const servicosVenda = response.data.found.servicosVenda.map((p) => {
-    return {
-      id: p.id,
-      servico: p.servico,
-      precoUnitario: p.precoUnitario,
-      outrasDespesas: p.outrasDespesas,
-      desconto: p.desconto,
-      valorTotal: p.valorTotal,
-    };
-  });
+  const servicos = response.data.found.servicosVenda ?? [];
+  let servicosVenda = [];
+
+  if (servicos.length > 0) {
+    servicosVenda = servicos.map((p) => {
+      return {
+        id: p.id,
+        servico: p.servico,
+        valorServico: p.valorServico,
+        outrasDespesas: p.outrasDespesas,
+        desconto: p.desconto,
+        valorTotal: p.valorTotal,
+      };
+    });
+  }
 
   return {
     servicosVenda,

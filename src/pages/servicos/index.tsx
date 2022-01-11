@@ -61,9 +61,6 @@ export default function Servicos() {
     async function fetchData() {
       setValue(data);
     }
-
-    console.log(data);
-
     fetchData();
   }, [data, refreshKey]);
 
@@ -136,7 +133,7 @@ export default function Servicos() {
                   backgroundColor="blue.800"
                   leftIcon={<Icon as={RiAddLine} fontSize="20" />}
                 >
-                  Novo servico
+                  Novo serviço
                 </Button>
               </NextLink>
             )}

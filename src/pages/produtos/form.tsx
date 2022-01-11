@@ -242,7 +242,7 @@ export default function FormProduto(optionsCategoria) {
                       ></Input>
                     </FormControl>
                     <VStack align="left" spacing="4">
-                      <Text>Tipo Item:</Text>
+                      <Text fontWeight="bold">Tipo Item:</Text>
                       <Select
                         {...register("tipoItem")}
                         value={optionsTipoItem.filter(function (option) {
@@ -261,7 +261,7 @@ export default function FormProduto(optionsCategoria) {
                     w="100%"
                   >
                     <VStack align="left" spacing="4">
-                      <Text>Unidade:</Text>
+                      <Text fontWeight="bold">Unidade:</Text>
                       <Select
                         {...register("unidade")}
                         value={optionsUnidade.filter(function (option) {
@@ -274,7 +274,7 @@ export default function FormProduto(optionsCategoria) {
                       />
                     </VStack>
                     <VStack align="left" spacing="4">
-                      <Text>Categoria:</Text>
+                      <Text fontWeight="bold">Categoria:</Text>
                       <Select
                         id="categoria"
                         {...register("categoria")}
