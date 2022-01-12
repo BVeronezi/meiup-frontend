@@ -8,7 +8,7 @@ import {
   InputProps as ChakraInputProps,
 } from "@chakra-ui/react";
 interface InputProps extends ChakraInputProps {
-  name: string;
+  name?: string;
   label?: string;
   error?: FieldError;
 }

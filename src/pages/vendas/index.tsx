@@ -214,7 +214,7 @@ export default function Vendas({ vendas }) {
                             </Tooltip>
                           )}
 
-                          {Number(venda.status) !== 2 && (
+                          {Number(venda.status) === 0 && (
                             <Tooltip label="Editar venda">
                               <IconButton
                                 size="sm"
@@ -232,7 +232,7 @@ export default function Vendas({ vendas }) {
                             </Tooltip>
                           )}
 
-                          {Number(venda.status) !== 2 && (
+                          {Number(venda.status) === 0 && (
                             <Tooltip label="Finalizar venda">
                               <IconButton
                                 size="sm"

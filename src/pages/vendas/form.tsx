@@ -14,9 +14,6 @@ import {
   Text,
   VStack,
   Input as InputChakra,
-  Divider,
-  css,
-  chakra,
 } from "@chakra-ui/react";
 import * as yup from "yup";
 import { Input } from "../../components/Input";
@@ -27,7 +24,7 @@ const { yupResolver } = require("@hookform/resolvers/yup");
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import axios from "axios";
-import { forwardRef, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "../../contexts/AuthContext";
 import { RiInformationLine } from "react-icons/ri";
@@ -38,10 +35,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import { registerLocale } from "react-datepicker";
 import pt from "date-fns/locale/pt";
 import moment from "moment";
-import { getProdutosVenda } from "../../hooks/vendas/useProdutoVenda";
 import ProdutoVenda from "./produto-venda/produto-venda";
 import { Sidebar } from "../../components/Sidebar";
 import ServicoVenda from "./servico-venda/servico-venda";
+import NumberFormat from "react-number-format";
 registerLocale("pt", pt);
 
 type FormData = {
@@ -62,9 +59,13 @@ const vendaFormSchema = yup.object().shape({
 });
 
 export default function FormVendas({ clientes, produtos, servicos }) {
+  const [venda, setVenda] = useState({ status: 0 });
   const [stateCliente, setStateCliente] = useState("");
   const [stateContinuarVenda, setStateContinuarVenda] = useState(true);
   const [stateNovaVenda, setStateNovaVenda] = useState(false);
+  const [statePagamento, setStatePagamento] = useState(0);
+  const [stateTroco, setStateTroco] = useState(0);
+  const [stateValorTotal, setStateValorTotal] = useState(0);
   const [tabIndex, setTabIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const toast = createStandaloneToast({ theme: customTheme });
@@ -85,16 +86,18 @@ export default function FormVendas({ clientes, produtos, servicos }) {
 
       if (vendaId) {
         const response: any = await api.get(`/vendas/${vendaId}`);
-        const regex = RegExp(
-          "^[+-]?([0-9]{1,3}(,[0-9]{3})*(.[0-9]+)?|d*.d+|d+)$"
-        );
-
-        const { dataVenda, cliente } = response.data.venda;
+        setVenda((venda) => ({ ...venda, ...response.data.venda }));
+        const { dataVenda, cliente, valorTotal, pagamento, troco } =
+          response.data.venda;
         setDate(moment(dataVenda).toDate());
         setStateCliente(String(cliente.id));
         setValue("email", cliente.email);
         setValue("celular", cliente.celular);
         setValue("telefone", cliente.telefone);
+
+        setStateValorTotal(valorTotal ? parseFloat(valorTotal) : 0);
+        setStatePagamento(pagamento ? parseFloat(pagamento) : 0);
+        setStateTroco(troco ? parseFloat(troco) : 0);
       }
 
       setIsLoading(true);
@@ -156,6 +159,34 @@ export default function FormVendas({ clientes, produtos, servicos }) {
     }
   };
 
+  async function finalizaVenda() {
+    if (statePagamento < stateValorTotal) {
+      toast({
+        title: "Valor do pagamento menor que o valor da venda!",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
+    try {
+      await api.patch(`/vendas/finaliza/${vendaId}`);
+
+      toast({
+        title: "Venda finalizada com sucesso!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+
+      router.back();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const handleCliente = (cliente) => {
     setValue("email", cliente.email);
     setValue("celular", cliente.celular);
@@ -166,6 +197,20 @@ export default function FormVendas({ clientes, produtos, servicos }) {
 
   const handleTabsChange = (index) => {
     setTabIndex(index);
+  };
+
+  const handlePagamento = (value) => {
+    setStatePagamento(value.floatValue);
+    const troco = (value.floatValue ?? 0) - stateValorTotal;
+    setStateTroco(troco);
+  };
+
+  const handleTroco = (value) => {
+    setStateTroco(value.floatValue);
+  };
+
+  const handleValorVenda = (value) => {
+    setStateValorTotal(value);
   };
 
   return (
@@ -221,7 +266,7 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                           showPopperArrow={false}
                           selected={date}
                           onChange={(date) => setDate(date)}
-                          customInput={<InputChakra />}
+                          customInput={<Input />}
                         />
                       </VStack>
                     </Box>
@@ -235,6 +280,7 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                     <VStack align="left" spacing="4">
                       <Text fontWeight="bold">Cliente: *</Text>
                       <Select
+                        isDisabled={venda.status !== 0}
                         id="cliente"
                         {...register("cliente")}
                         value={clientes.filter(function (option) {
@@ -252,7 +298,7 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                     </VStack>
                     <FormControl isInvalid={!!errors.email}>
                       <Input
-                        isReadOnly
+                        isDisabled={venda.status !== 0}
                         name="email"
                         label="Email: "
                         error={errors.email}
@@ -267,7 +313,7 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                   >
                     <FormControl isInvalid={!!errors.celular}>
                       <Input
-                        isReadOnly
+                        isDisabled={venda.status !== 0}
                         name="celular"
                         label="Celular: "
                         error={errors.celular}
@@ -276,7 +322,7 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                     </FormControl>
                     <FormControl isInvalid={!!errors.telefone}>
                       <Input
-                        isReadOnly
+                        isDisabled={venda.status !== 0}
                         name="telefone"
                         label="Telefone: "
                         error={errors.telefone}
@@ -287,10 +333,81 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                 </VStack>
               </TabPanel>
               <TabPanel>
-                <ProdutoVenda produtos={produtos} />
+                <ProdutoVenda
+                  produtos={produtos}
+                  statusVenda={venda.status}
+                  handleValorVenda={handleValorVenda}
+                />
               </TabPanel>
               <TabPanel>
-                <ServicoVenda servicos={servicos} />
+                <ServicoVenda servicos={servicos} statusVenda={venda.status} />
+              </TabPanel>
+              <TabPanel>
+                <VStack marginTop="14px" spacing="12">
+                  <SimpleGrid
+                    minChildWidth="240px"
+                    spacing={["6", "8"]}
+                    w="100%"
+                  >
+                    <Stack spacing="4">
+                      <Text fontWeight="bold">Pagamento:</Text>
+                      <NumberFormat
+                        isDisabled={venda.status !== 0}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        value={statePagamento}
+                        onValueChange={(val) => handlePagamento(val)}
+                        customInput={InputChakra}
+                        variant="flushed"
+                        borderColor="gray.400"
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        prefix={"R$"}
+                      />
+                    </Stack>
+                    <Stack spacing="4">
+                      <Text fontWeight="bold">Troco:</Text>
+                      <NumberFormat
+                        isReadOnly={true}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        value={stateTroco}
+                        onValueChange={(val) => handleTroco(val)}
+                        customInput={InputChakra}
+                        variant="flushed"
+                        borderColor="gray.400"
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        prefix={"R$"}
+                      />
+                    </Stack>
+                  </SimpleGrid>
+                  <SimpleGrid
+                    minChildWidth="240px"
+                    spacing={["6", "8"]}
+                    w="100%"
+                  >
+                    <Stack spacing="4">
+                      <Text fontWeight="bold">Valor total:</Text>
+                      <NumberFormat
+                        isReadOnly={true}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        value={stateValorTotal}
+                        onValueChange={(val) =>
+                          setStateValorTotal(val.floatValue)
+                        }
+                        customInput={InputChakra}
+                        variant="flushed"
+                        borderColor="gray.400"
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        prefix={"R$"}
+                      />
+                    </Stack>
+                    <Box></Box>
+                  </SimpleGrid>
+                </VStack>
               </TabPanel>
             </TabPanels>
           </Tabs>
@@ -311,24 +428,30 @@ export default function FormVendas({ clientes, produtos, servicos }) {
               VOLTAR
             </Button>
 
-            <Button
-              width={["150px", "200px"]}
-              fontSize={["14px", "16px"]}
-              type="submit"
-              color="white"
-              backgroundColor="blue.500"
-              isLoading={formState.isSubmitting}
-            >
-              {stateNovaVenda ? "CONTINUAR" : "SALVAR"}
-            </Button>
-            {!stateNovaVenda && (
+            {venda.status === 0 && (
+              <Button
+                width={["150px", "200px"]}
+                fontSize={["14px", "16px"]}
+                type="submit"
+                color="white"
+                backgroundColor="blue.500"
+                isLoading={formState.isSubmitting}
+              >
+                {stateNovaVenda ? "CONTINUAR" : "SALVAR"}
+              </Button>
+            )}
+
+            {!stateNovaVenda && venda.status === 0 && (
               <Button
                 width={["150px", "200px"]}
                 fontSize={["14px", "16px"]}
                 type="submit"
                 color="white"
                 backgroundColor="teal.500"
-                isLoading={formState.isSubmitting}
+                onClick={(event) => {
+                  event.preventDefault();
+                  finalizaVenda();
+                }}
               >
                 FINALIZAR
               </Button>

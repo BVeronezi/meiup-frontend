@@ -15,7 +15,7 @@ import { useRouter } from "next/router";
 import { theme as customTheme } from "../../../styles/theme";
 import { useEffect, useRef, useState } from "react";
 import Select from "react-select";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
 import * as yup from "yup";
@@ -26,24 +26,29 @@ import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { api } from "../../../services/apiClient";
 import { Pagination } from "../../../components/Pagination";
+import { Input } from "../../../components/Input";
+
+type FormData = {
+  servico: string;
+  valorServico: string;
+  outrasDespesas: string;
+  desconto: string;
+  valorTotal: string;
+};
 
 const produtoVendaFormSchema = yup.object().shape({
   servico: yup.string(),
-  precoUnitario: yup.number(),
-  outrasDespesas: yup.number(),
-  desconto: yup.number(),
-  valorTotal: yup.number(),
+  valorServico: yup.string().required("Valor do serviço obrigatório"),
+  outrasDespesas: yup.string(),
+  desconto: yup.string(),
+  valorTotal: yup.string(),
 });
 
-export default function ServicoVenda({ servicos }) {
+export default function ServicoVenda({ servicos, statusVenda }) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
   const [stateServico, setStateServico] = useState("");
   const [idServicoVenda, setIdServicoVenda] = useState();
-  const [stateValorServico, setStateValorServico] = useState(0);
-  const [stateOutrasDespesas, setStateOutrasDespesas] = useState(0);
-  const [stateValorTotal, setStateValorTotal] = useState(0);
-  const [stateDesconto, setStateDesconto] = useState(0);
   const [addServico, setAddServico] = useState(true);
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
@@ -73,9 +78,11 @@ export default function ServicoVenda({ servicos }) {
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
-  const { register, formState, setValue, getValues } = useForm({
+  const { register, handleSubmit, formState, setValue, getValues } = useForm({
     resolver: yupResolver(produtoVendaFormSchema),
   });
+
+  const { errors } = formState;
 
   useEffect(() => {
     async function fetchData() {
@@ -85,7 +92,7 @@ export default function ServicoVenda({ servicos }) {
     fetchData();
   }, [refreshKey]);
 
-  async function adicionarServico() {
+  const adicionarServico: SubmitHandler<FormData> = async (values) => {
     if (!stateServico) {
       setAddServico(false);
     }
@@ -93,10 +100,10 @@ export default function ServicoVenda({ servicos }) {
     if (stateServico) {
       const params = {
         servico: stateServico,
-        valorServico: stateValorServico,
-        outrasDespesas: stateOutrasDespesas,
-        desconto: stateDesconto,
-        valorTotal: stateValorTotal,
+        valorServico: values.valorServico,
+        outrasDespesas: values.outrasDespesas,
+        desconto: values.desconto,
+        valorTotal: values.valorTotal,
       };
 
       const result = await api.post(`/vendas/servicosVenda/${vendaId}`, params);
@@ -120,22 +127,22 @@ export default function ServicoVenda({ servicos }) {
 
     resetInputs();
     setRefreshKey((oldKey) => oldKey + 1);
-  }
+  };
 
   const resetInputs = () => {
     setStateServico("");
-    setStateValorServico(0);
-    setStateOutrasDespesas(0);
-    setStateDesconto(0);
-    setStateValorTotal(0);
+    setValue("valorServico", "");
+    setValue("outrasDespesas", "");
+    setValue("desconto", "");
+    setValue("valorTotal", "");
   };
 
   const handleEditServico = (servicoVenda) => {
     setStateServico(String(servicoVenda.servico.id));
-    setStateValorServico(parseFloat(servicoVenda.valorServico));
-    setStateOutrasDespesas(parseFloat(servicoVenda.outrasDespesas));
-    setStateDesconto(parseFloat(servicoVenda.desconto));
-    setStateValorTotal(parseFloat(servicoVenda.valorTotal));
+    setValue("valorServico", servicoVenda.valorServico);
+    setValue("outrasDespesas", servicoVenda.outrasDespesas);
+    setValue("desconto", servicoVenda.desconto);
+    setValue("valorTotal", servicoVenda.valorTotal);
     setIdServicoVenda(servicoVenda.id);
   };
 
@@ -163,20 +170,29 @@ export default function ServicoVenda({ servicos }) {
 
   const handleServico = (servico) => {
     setStateServico(servico.value);
-    setStateValorServico(parseFloat(servico.valor) ?? 0);
+    setValue("valorServico", servico.valor);
+    setValue("outrasDespesas", "");
+    setValue("desconto", "");
     setAddServico(true);
-    setStateValorTotal(parseFloat(servico.valor) ?? 0);
+    calculaTotal();
   };
 
-  const handleOutrasDespesas = (value) => {
-    setStateOutrasDespesas(value.floatValue);
-    setStateValorTotal(stateValorTotal + (value.floatValue ?? 0));
-  };
+  const calculaTotal = () => {
+    const valorServico = getValues("valorServico");
+    const outrasDespesas = getValues("outrasDespesas");
+    const desconto = getValues("desconto");
 
-  const handleDesconto = (value) => {
-    setStateDesconto(value.floatValue);
-    console.log(stateValorTotal);
-    setStateValorTotal(stateValorTotal - (value.floatValue ?? 0));
+    if (valorServico) {
+      let total = valorServico
+        ? parseFloat(valorServico.replace(/,/g, "."))
+        : 0;
+      total += outrasDespesas
+        ? parseFloat(outrasDespesas.replace(/,/g, "."))
+        : 0;
+      total -= desconto ? parseFloat(desconto.replace(/,/g, ".")) : 0;
+
+      setValue("valorTotal", total);
+    }
   };
 
   return (
@@ -186,6 +202,7 @@ export default function ServicoVenda({ servicos }) {
           <VStack align="left" spacing="4">
             <Text fontWeight="bold">Serviço: *</Text>
             <Select
+              isDisabled={statusVenda !== 0}
               id="servico"
               {...register("servico")}
               value={servicos.filter(function (option) {
@@ -201,95 +218,61 @@ export default function ServicoVenda({ servicos }) {
               </Text>
             )}{" "}
           </VStack>
-          <Stack spacing="4">
-            <Text fontWeight="bold">Valor serviço:</Text>
-            <NumberFormat
-              isReadOnly={true}
-              decimalScale={2}
-              fixedDecimalScale={true}
-              value={stateValorServico}
-              onValueChange={(val) => setStateValorServico(val.floatValue)}
-              customInput={ChakraInput}
-              variant="flushed"
-              borderColor="gray.400"
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix={"R$"}
-            />
-          </Stack>
+          <Input
+            isDisabled={statusVenda !== 0}
+            name="valorServico"
+            label="Valor serviço: *"
+            error={errors.valorServico}
+            {...register("valorServico")}
+            onBlur={calculaTotal}
+          ></Input>
         </SimpleGrid>
       </VStack>
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Stack spacing="4">
-            <Text fontWeight="bold">Outras despesas:</Text>
-            <NumberFormat
-              decimalScale={2}
-              fixedDecimalScale={true}
-              value={stateOutrasDespesas}
-              onValueChange={(val) => handleOutrasDespesas(val)}
-              customInput={ChakraInput}
-              variant="flushed"
-              borderColor="gray.400"
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix={"R$"}
-            />
-          </Stack>
-          <Stack spacing="4">
-            <Text fontWeight="bold">Desconto:</Text>
-            <NumberFormat
-              decimalScale={2}
-              fixedDecimalScale={true}
-              value={stateDesconto}
-              onValueChange={(val) => handleDesconto(val)}
-              customInput={ChakraInput}
-              variant="flushed"
-              borderColor="gray.400"
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix={"R$"}
-            />
-          </Stack>
+          <Input
+            isDisabled={statusVenda !== 0}
+            name="outrasDespesas"
+            label="Outras despesas:"
+            error={errors.outrasDespesas}
+            {...register("outrasDespesas")}
+            onBlur={calculaTotal}
+          ></Input>
+          <Input
+            isDisabled={statusVenda !== 0}
+            name="desconto"
+            label="Desconto:"
+            error={errors.desconto}
+            {...register("desconto")}
+            onBlur={calculaTotal}
+          ></Input>
         </SimpleGrid>
-      </VStack>
-      <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Stack spacing="4">
-            <Text fontWeight="bold">Valor total:</Text>
-            <NumberFormat
-              isReadOnly={true}
-              decimalScale={2}
-              fixedDecimalScale={true}
-              value={stateValorTotal}
-              onValueChange={(val) => setStateValorTotal(val.floatValue)}
-              customInput={ChakraInput}
-              variant="flushed"
-              borderColor="gray.400"
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix={"R$"}
-            />
-          </Stack>
+          <Input
+            isDisabled={statusVenda !== 0}
+            name="valorTotal"
+            label="Valor total:"
+            error={errors.valorTotal}
+            {...register("valorTotal")}
+          ></Input>
           <Box></Box>
         </SimpleGrid>
-        <Box alignSelf="flex-end">
-          <HStack>
-            <Button
-              width="120px"
-              fontSize="14px"
-              type="submit"
-              color="white"
-              backgroundColor="yellow.500"
-              onClick={(event) => {
-                event.preventDefault();
-                adicionarServico();
-              }}
-            >
-              {idServicoVenda ? "ATUALIZAR" : "ADICIONAR"}
-            </Button>
-          </HStack>
-        </Box>
+        {statusVenda === 0 && (
+          <Box alignSelf="flex-end">
+            <HStack>
+              <Button
+                width="120px"
+                fontSize="14px"
+                type="submit"
+                color="white"
+                backgroundColor="yellow.500"
+                onClick={handleSubmit(adicionarServico)}
+              >
+                {idServicoVenda ? "ATUALIZAR" : "ADICIONAR"}
+              </Button>
+            </HStack>
+          </Box>
+        )}
       </VStack>
       <Divider mt="12" />
       <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
@@ -327,25 +310,29 @@ export default function ServicoVenda({ servicos }) {
                 </Td>
                 <Td>
                   <HStack>
-                    <IconButton
-                      variant="outline"
-                      color="blue.800"
-                      aria-label="Editar serviço"
-                      icon={<RiPencilLine />}
-                      onClick={() => {
-                        handleEditServico(servicoVenda);
-                      }}
-                    />
-                    <IconButton
-                      variant="outline"
-                      color="red.800"
-                      aria-label="Remover serviço"
-                      icon={<RiDeleteBinLine />}
-                      onClick={() => {
-                        setSelectedServico(servicoVenda);
-                        setIsOpen(true);
-                      }}
-                    />
+                    {statusVenda === 0 && (
+                      <>
+                        <IconButton
+                          variant="outline"
+                          color="blue.800"
+                          aria-label="Editar serviço"
+                          icon={<RiPencilLine />}
+                          onClick={() => {
+                            handleEditServico(servicoVenda);
+                          }}
+                        />
+                        <IconButton
+                          variant="outline"
+                          color="red.800"
+                          aria-label="Remover serviço"
+                          icon={<RiDeleteBinLine />}
+                          onClick={() => {
+                            setSelectedServico(servicoVenda);
+                            setIsOpen(true);
+                          }}
+                        />
+                      </>
+                    )}
                   </HStack>
 
                   <AlertDialogList

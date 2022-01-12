@@ -1,22 +1,19 @@
 import * as React from "react";
 import {
-  Input as ChakraInput,
   Box,
   Button,
   createStandaloneToast,
   Divider,
-  FormControl,
   HStack,
   IconButton,
   SimpleGrid,
-  Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import Select from "react-select";
 import * as yup from "yup";
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
 import { theme as customTheme } from "../../../styles/theme";
@@ -28,25 +25,33 @@ import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pagination } from "../../../components/Pagination";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
-import NumberFormat from "react-number-format";
+
+type FormData = {
+  produto: string;
+  quantidade: string;
+  precoUnitario: string;
+  outrasDespesas: string;
+  desconto: string;
+  valorTotal: string;
+};
 
 const produtoVendaFormSchema = yup.object().shape({
   produto: yup.string(),
-  quantidade: yup.number(),
-  precoUnitario: yup.number(),
-  outrasDespesas: yup.number(),
-  desconto: yup.number(),
-  valorTotal: yup.number(),
+  quantidade: yup.string().required("Quantidade obrigatória"),
+  precoUnitario: yup.string(),
+  outrasDespesas: yup.string(),
+  desconto: yup.string(),
+  valorTotal: yup.string(),
 });
 
-export default function ProdutoVenda({ produtos }) {
+export default function ProdutoVenda({
+  produtos,
+  statusVenda,
+  handleValorVenda,
+}) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
   const [stateProduto, setStateProduto] = useState("");
-  const [statePrecoUnitario, setStatePrecoUnitario] = useState(0);
-  const [stateOutrasDespesas, setStateOutrasDespesas] = useState(0);
-  const [stateDesconto, setStateDesconto] = useState(0);
-  const [stateValorTotal, setStateValorTotal] = useState(0);
   const [idProdutoVenda, setIdProdutoVenda] = useState();
   const [addProduto, setAddProduto] = useState(true);
   const toast = createStandaloneToast({ theme: customTheme });
@@ -68,7 +73,7 @@ export default function ProdutoVenda({ produtos }) {
         produto: { id: 0, descricao: "" },
       },
     ],
-    totalCount: 0,
+    total: 0,
   });
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -76,7 +81,7 @@ export default function ProdutoVenda({ produtos }) {
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
-  const { register, formState, setValue, getValues } = useForm({
+  const { register, formState, handleSubmit, setValue, getValues } = useForm({
     resolver: yupResolver(produtoVendaFormSchema),
   });
 
@@ -112,17 +117,27 @@ export default function ProdutoVenda({ produtos }) {
     }
   }
 
+  const handleProduto = (produto) => {
+    setValue("precoUnitario", produto.precos?.precoVendaVarejo);
+    setValue("quantidade", "");
+    setValue("outrasDespesas", "");
+    setValue("desconto", "");
+    setStateProduto(produto.value);
+    setAddProduto(true);
+    calculaTotal();
+  };
+
   const handleEditProduto = (produtoVenda) => {
     setStateProduto(String(produtoVenda.produto.id));
+    setValue("precoUnitario", produtoVenda.precoUnitario);
     setValue("quantidade", produtoVenda.quantidade);
-    setStatePrecoUnitario(parseFloat(produtoVenda.precoUnitario));
-    setStateOutrasDespesas(parseFloat(produtoVenda.outrasDespesas));
-    setStateDesconto(parseFloat(produtoVenda.desconto));
-    setStateValorTotal(parseFloat(produtoVenda.valorTotal));
+    setValue("outrasDespesas", produtoVenda.outrasDespesas);
+    setValue("desconto", produtoVenda.desconto);
+    setValue("valorTotal", produtoVenda.valorTotal);
     setIdProdutoVenda(produtoVenda.id);
   };
 
-  async function adicionarProduto() {
+  const adicionarProduto: SubmitHandler<FormData> = async (values) => {
     if (!stateProduto) {
       setAddProduto(false);
     }
@@ -130,11 +145,11 @@ export default function ProdutoVenda({ produtos }) {
     if (stateProduto) {
       const params = {
         produto: stateProduto,
-        quantidade: getValues("quantidade"),
-        precoUnitario: statePrecoUnitario,
-        outrasDespesas: stateOutrasDespesas,
-        desconto: stateDesconto,
-        valorTotal: stateValorTotal,
+        quantidade: values.quantidade,
+        precoUnitario: values.precoUnitario,
+        outrasDespesas: values.outrasDespesas,
+        desconto: values.desconto,
+        valorTotal: values.valorTotal,
       };
 
       const result = await api.post(`/vendas/produtoVenda/${vendaId}`, params);
@@ -158,40 +173,34 @@ export default function ProdutoVenda({ produtos }) {
       resetInputs();
       setRefreshKey((oldKey) => oldKey + 1);
     }
-  }
+  };
 
   const resetInputs = () => {
     setStateProduto("");
-    setValue("quantidade", null);
-    setStatePrecoUnitario(0);
-    setStateOutrasDespesas(0);
-    setStateDesconto(0);
-    setStateValorTotal(0);
+    setValue("quantidade", "");
+    setValue("precoUnitario", "");
+    setValue("outrasDespesas", "");
+    setValue("desconto", "");
+    setValue("valorTotal", "");
   };
 
   const calculaTotal = () => {
     const quantidade = getValues("quantidade");
+    const precoUnitario = getValues("precoUnitario");
+    const outrasDespesas = getValues("outrasDespesas");
+    const desconto = getValues("desconto");
 
-    let total = quantidade * statePrecoUnitario;
+    if (precoUnitario) {
+      let total =
+        (quantidade ? Number(quantidade) : 0) *
+        (precoUnitario ? parseFloat(precoUnitario.replace(/,/g, ".")) : 0);
+      total += outrasDespesas
+        ? parseFloat(outrasDespesas.replace(/,/g, "."))
+        : 0;
+      total -= desconto ? parseFloat(desconto.replace(/,/g, ".")) : 0;
 
-    setStateValorTotal(total);
-  };
-
-  const handleProduto = (produto) => {
-    setStatePrecoUnitario(parseFloat(produto.precos?.precoVendaVarejo) ?? 0);
-    setStateProduto(produto.value);
-    setAddProduto(true);
-    setStateValorTotal(parseFloat(produto.precos?.precoVendaVarejo) ?? 0);
-  };
-
-  const handleOutrasDespesas = (value) => {
-    setStateOutrasDespesas(value.floatValue);
-    setStateValorTotal(stateValorTotal + (value.floatValue ?? 0));
-  };
-
-  const handleDesconto = (value) => {
-    setStateDesconto(value.floatValue);
-    setStateValorTotal(stateValorTotal - (value.floatValue ?? 0));
+      setValue("valorTotal", total);
+    }
   };
 
   return (
@@ -201,6 +210,7 @@ export default function ProdutoVenda({ produtos }) {
           <VStack align="left" spacing="4">
             <Text fontWeight="bold">Produto: *</Text>
             <Select
+              isDisabled={statusVenda !== 0}
               id="produto"
               {...register("produto")}
               value={produtos.filter(function (option) {
@@ -216,101 +226,67 @@ export default function ProdutoVenda({ produtos }) {
               </Text>
             )}{" "}
           </VStack>
-          <FormControl isInvalid={!!errors.quantidade}>
-            <Input
-              name="quantidade"
-              label="Quantidade: *"
-              error={errors.quantidade}
-              {...register("quantidade")}
-              onBlur={calculaTotal}
-            ></Input>
-          </FormControl>
+          <Input
+            isDisabled={statusVenda !== 0}
+            name="quantidade"
+            label="Quantidade: *"
+            error={errors.quantidade}
+            {...register("quantidade")}
+            onBlur={calculaTotal}
+          ></Input>
         </SimpleGrid>
       </VStack>
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Stack spacing="4">
-            <Text fontWeight="bold">Preço unitário:</Text>
-            <NumberFormat
-              isReadOnly={true}
-              decimalScale={2}
-              fixedDecimalScale={true}
-              value={statePrecoUnitario}
-              onValueChange={(val) => setStatePrecoUnitario(val.floatValue)}
-              customInput={ChakraInput}
-              variant="flushed"
-              borderColor="gray.400"
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix={"R$"}
-            />
-          </Stack>
-          <Stack spacing="4">
-            <Text fontWeight="bold">Outras despesas:</Text>
-            <NumberFormat
-              decimalScale={2}
-              fixedDecimalScale={true}
-              value={stateOutrasDespesas}
-              onValueChange={(val) => handleOutrasDespesas(val)}
-              customInput={ChakraInput}
-              variant="flushed"
-              borderColor="gray.400"
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix={"R$"}
-            />
-          </Stack>
+          <Input
+            isReadOnly
+            name="precoUnitario"
+            label="Preço unitário: *"
+            error={errors.precoUnitario}
+            {...register("precoUnitario")}
+          ></Input>
+          <Input
+            isDisabled={statusVenda !== 0}
+            name="outrasDespesas"
+            label="Outras despesas:"
+            error={errors.outrasDespesas}
+            {...register("outrasDespesas")}
+            onBlur={calculaTotal}
+          ></Input>
         </SimpleGrid>
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Stack spacing="4">
-            <Text fontWeight="bold">Desconto:</Text>
-            <NumberFormat
-              decimalScale={2}
-              fixedDecimalScale={true}
-              value={stateDesconto}
-              onValueChange={(val) => handleDesconto(val)}
-              customInput={ChakraInput}
-              variant="flushed"
-              borderColor="gray.400"
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix={"R$"}
-            />
-          </Stack>
-          <Stack spacing="4">
-            <Text fontWeight="bold">Total:</Text>
-            <NumberFormat
-              isReadOnly={true}
-              decimalScale={2}
-              fixedDecimalScale={true}
-              value={stateValorTotal}
-              onValueChange={(val) => setStateValorTotal(val.floatValue)}
-              customInput={ChakraInput}
-              variant="flushed"
-              borderColor="gray.400"
-              thousandSeparator="."
-              decimalSeparator=","
-              prefix={"R$"}
-            />
-          </Stack>
+          <Input
+            isDisabled={statusVenda !== 0}
+            name="desconto"
+            label="Desconto:"
+            error={errors.desconto}
+            {...register("desconto")}
+            onBlur={calculaTotal}
+          ></Input>
+          <Input
+            isReadOnly
+            name="total"
+            label="Total: *"
+            error={errors.valorTotal}
+            {...register("valorTotal")}
+          ></Input>
         </SimpleGrid>
-        <Box alignSelf="flex-end">
-          <HStack>
-            <Button
-              width="120px"
-              fontSize="14px"
-              type="submit"
-              color="white"
-              backgroundColor="yellow.500"
-              onClick={(event) => {
-                event.preventDefault();
-                adicionarProduto();
-              }}
-            >
-              {idProdutoVenda ? "ATUALIZAR" : "ADICIONAR"}
-            </Button>
-          </HStack>
-        </Box>
+        {statusVenda === 0 && (
+          <Box alignSelf="flex-end">
+            <HStack>
+              <Button
+                width="120px"
+                fontSize="14px"
+                type="submit"
+                color="white"
+                backgroundColor="yellow.500"
+                onClick={handleSubmit(adicionarProduto)}
+              >
+                {idProdutoVenda ? "ATUALIZAR" : "ADICIONAR"}
+              </Button>
+            </HStack>
+          </Box>
+        )}
       </VStack>
       <Divider mt="12" />
       <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
@@ -340,25 +316,29 @@ export default function ProdutoVenda({ produtos }) {
                 </Td>
                 <Td>
                   <HStack>
-                    <IconButton
-                      variant="outline"
-                      color="blue.800"
-                      aria-label="Editar produto"
-                      icon={<RiPencilLine />}
-                      onClick={() => {
-                        handleEditProduto(produtoVenda);
-                      }}
-                    />
-                    <IconButton
-                      variant="outline"
-                      color="red.800"
-                      aria-label="Remover produto"
-                      icon={<RiDeleteBinLine />}
-                      onClick={() => {
-                        setSelectedProduto(produtoVenda);
-                        setIsOpen(true);
-                      }}
-                    />
+                    {statusVenda === 0 && (
+                      <>
+                        <IconButton
+                          variant="outline"
+                          color="blue.800"
+                          aria-label="Editar produto"
+                          icon={<RiPencilLine />}
+                          onClick={() => {
+                            handleEditProduto(produtoVenda);
+                          }}
+                        />
+                        <IconButton
+                          variant="outline"
+                          color="red.800"
+                          aria-label="Remover produto"
+                          icon={<RiDeleteBinLine />}
+                          onClick={() => {
+                            setSelectedProduto(produtoVenda);
+                            setIsOpen(true);
+                          }}
+                        />
+                      </>
+                    )}
                   </HStack>
 
                   <AlertDialogList
@@ -377,7 +357,7 @@ export default function ProdutoVenda({ produtos }) {
         </Tbody>
       </Table>
       <Pagination
-        totalCountOfRegisters={data?.totalCount}
+        totalCountOfRegisters={data?.total}
         currentPage={page}
         onPageChange={setPage}
       />
