@@ -44,7 +44,11 @@ const produtoVendaFormSchema = yup.object().shape({
   valorTotal: yup.string(),
 });
 
-export default function ServicoVenda({ servicos, statusVenda }) {
+export default function ServicoVenda({
+  servicos,
+  statusVenda,
+  handleValorVenda,
+}) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
   const [stateServico, setStateServico] = useState("");
@@ -123,6 +127,8 @@ export default function ServicoVenda({ servicos, statusVenda }) {
           isClosable: true,
         });
       }
+
+      handleValorVenda(result.data?.valorVenda);
     }
 
     resetInputs();
@@ -149,7 +155,7 @@ export default function ServicoVenda({ servicos, statusVenda }) {
   async function excluirServico(servicoVenda) {
     try {
       onClose();
-      await api.delete(`/vendas/servicosVenda/${vendaId}`, {
+      const result = await api.delete(`/vendas/servicosVenda/${vendaId}`, {
         data: {
           servico: servicoVenda.servico.id,
           servicoVenda: servicoVenda.id,
@@ -162,6 +168,9 @@ export default function ServicoVenda({ servicos, statusVenda }) {
         duration: 2000,
         isClosable: true,
       });
+
+      handleValorVenda(result.data?.valorVenda);
+
       setRefreshKey((oldKey) => oldKey - 1);
     } catch (error) {
       console.log(error);

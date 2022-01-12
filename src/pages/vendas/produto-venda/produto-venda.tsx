@@ -98,7 +98,7 @@ export default function ProdutoVenda({
   async function excluirProduto(produtoVenda) {
     try {
       onClose();
-      await api.delete(`/vendas/produtoVenda/${vendaId}`, {
+      const result = await api.delete(`/vendas/produtoVenda/${vendaId}`, {
         data: {
           produto: produtoVenda.produto.id,
           produtoVenda: produtoVenda.id,
@@ -111,6 +111,8 @@ export default function ProdutoVenda({
         duration: 2000,
         isClosable: true,
       });
+
+      handleValorVenda(result.data?.valorVenda);
       setRefreshKey((oldKey) => oldKey - 1);
     } catch (error) {
       console.log(error);
@@ -169,6 +171,8 @@ export default function ProdutoVenda({
           isClosable: true,
         });
       }
+
+      handleValorVenda(result.data?.valorVenda);
 
       resetInputs();
       setRefreshKey((oldKey) => oldKey + 1);

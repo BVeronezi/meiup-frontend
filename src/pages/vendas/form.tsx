@@ -340,7 +340,11 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                 />
               </TabPanel>
               <TabPanel>
-                <ServicoVenda servicos={servicos} statusVenda={venda.status} />
+                <ServicoVenda
+                  servicos={servicos}
+                  statusVenda={venda.status}
+                  handleValorVenda={handleValorVenda}
+                />
               </TabPanel>
               <TabPanel>
                 <VStack marginTop="14px" spacing="12">
