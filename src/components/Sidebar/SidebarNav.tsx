@@ -21,7 +21,13 @@ export function SidebarNav() {
 
   return (
     <>
-      <NavItem icon={RiDashboardLine} children="INÍCIO" href="/dashboard" />
+      <Divider />
+      <NavItem
+        mt={4}
+        icon={RiDashboardLine}
+        children="INÍCIO"
+        href="/dashboard"
+      />
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">EMPRESA</Text>
@@ -35,7 +41,7 @@ export function SidebarNav() {
       <NavItem icon={RiContactsLine} children="Usuários" href="/usuarios" />
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
-        <Text color="gray.500"> CATALÓGO</Text>
+        <Text color="gray.500"> CATÁLOGO</Text>
       </Flex>
 
       <NavItem icon={RiStackFill} children="Produtos" href="/produtos" />
@@ -47,7 +53,7 @@ export function SidebarNav() {
       </Flex>
       <NavItem icon={RiShoppingBasket2Line} children="Vendas" href="/vendas" />
       <NavItem icon={RiGroupLine} children="Clientes" href="/clientes" />
-      <NavItem icon={RiPriceTag3Line} children="Promoções" href="/promocoes" />
+      {/* <NavItem icon={RiPriceTag3Line} children="Promoções" href="/promocoes" />
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">COMPRAS</Text>
@@ -61,7 +67,9 @@ export function SidebarNav() {
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">RELATÓRIOS </Text>
-      </Flex>
+      </Flex> */}
+
+      <Divider />
 
       <NavItem
         icon={RiLoginBoxLine}

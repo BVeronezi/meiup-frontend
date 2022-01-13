@@ -171,7 +171,12 @@ export default function FormVendas({ clientes, produtos, servicos }) {
         setStateNovaVenda(false);
       }
     } catch (err) {
-      console.log(err);
+      toast({
+        title: err.response.data.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -199,7 +204,12 @@ export default function FormVendas({ clientes, produtos, servicos }) {
 
       router.back();
     } catch (error) {
-      console.log(error);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   }
 

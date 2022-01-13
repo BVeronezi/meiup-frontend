@@ -140,7 +140,12 @@ export default function FormServico(produtos) {
         setStateNovoServico(false);
       }
     } catch (err) {
-      console.log(err);
+      toast({
+        title: err.response.data.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 

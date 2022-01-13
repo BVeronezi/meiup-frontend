@@ -185,7 +185,12 @@ export default function DadosGerais() {
         isClosable: true,
       });
     } catch (err) {
-      console.log(err);
+      toast({
+        title: err.response.data.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 

@@ -99,7 +99,12 @@ export default function Usuarios() {
         isClosable: true,
       });
     } catch (error) {
-      console.log(error);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
     setIsLoadingPage(false);
   }

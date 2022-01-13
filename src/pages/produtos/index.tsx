@@ -34,7 +34,7 @@ import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 import { LoadPage } from "../../components/Load";
 
-export default function Produtos({ produtos }) {
+export default function Produtos() {
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
@@ -95,7 +95,12 @@ export default function Produtos({ produtos }) {
         });
       }
     } catch (error) {
-      console.log(error);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
     setIsLoadingPage(false);
   }

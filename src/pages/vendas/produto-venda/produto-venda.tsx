@@ -121,7 +121,12 @@ export default function ProdutoVenda({
       handleValorVenda(result.data?.valorVenda);
       setRefreshKey((oldKey) => oldKey - 1);
     } catch (error) {
-      console.log(error);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
     }
 
     handleLoad(false);

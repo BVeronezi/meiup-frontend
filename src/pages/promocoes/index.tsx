@@ -5,7 +5,7 @@ import { withSSRAuth } from "../../utils/withSSRAuth";
 export default function Promocoes() {
   return (
     <Sidebar>
-      <Text>Promoções</Text>
+      <></>
     </Sidebar>
   );
 }

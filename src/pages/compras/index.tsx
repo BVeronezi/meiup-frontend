@@ -5,7 +5,7 @@ import { withSSRAuth } from "../../utils/withSSRAuth";
 export default function Compras() {
   return (
     <Sidebar>
-      <Text>Compras</Text>;
+      <></>
     </Sidebar>
   );
 }
