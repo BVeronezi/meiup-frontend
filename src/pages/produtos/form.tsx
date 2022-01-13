@@ -14,6 +14,7 @@ import {
   Tab,
   TabPanels,
   TabPanel,
+  Skeleton,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -31,6 +32,7 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import NumberFormat from "react-number-format";
 import { Sidebar } from "../../components/Sidebar";
+import { LoadPage } from "../../components/Load";
 
 type FormData = {
   descricao: string;
@@ -66,7 +68,7 @@ export default function FormProduto(optionsCategoria) {
   const [stateMargemLucro, setStateMargemLucro] = useState(0.0);
   const router = useRouter();
   const { user } = useContext(AuthContext);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const toast = createStandaloneToast({ theme: customTheme });
 
   const { register, handleSubmit, formState, setValue } = useForm({
@@ -90,7 +92,7 @@ export default function FormProduto(optionsCategoria) {
 
   useEffect(() => {
     async function findProduto() {
-      setIsLoading(false);
+      setIsLoading(true);
 
       const produtoId: any = Object.keys(router.query)[0];
 
@@ -141,7 +143,7 @@ export default function FormProduto(optionsCategoria) {
         }
       }
 
-      setIsLoading(true);
+      setIsLoading(false);
     }
 
     if (Object.keys(router.query)[0]) {
@@ -208,231 +210,251 @@ export default function FormProduto(optionsCategoria) {
   };
 
   return (
-    <Sidebar>
-      <Stack as="form" onSubmit={handleSubmit(handleProduto)}>
-        <Box
-          borderBottom="1px"
-          borderLeft="1px"
-          borderRight="1px"
-          borderRadius="lg"
-          borderColor="gray.300"
-        >
-          <Tabs isFitted variant="enclosed">
-            <TabList>
-              <Tab>Produto</Tab>
-              <Tab>Estoque</Tab>
-              <Tab>Preços</Tab>
-            </TabList>
+    <LoadPage active={isLoading}>
+      <Sidebar>
+        <Stack as="form" onSubmit={handleSubmit(handleProduto)}>
+          <Box
+            borderBottom="1px"
+            borderLeft="1px"
+            borderRight="1px"
+            borderRadius="lg"
+            borderColor="gray.300"
+          >
+            <Tabs isFitted variant="enclosed">
+              <TabList>
+                <Tab>Produto</Tab>
+                <Tab>Estoque</Tab>
+                <Tab>Preços</Tab>
+              </TabList>
 
-            <TabPanels>
-              <TabPanel>
-                <VStack marginTop="14px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <FormControl isInvalid={!!errors.descricao}>
+              <TabPanels>
+                <TabPanel>
+                  <VStack marginTop="14px" spacing="12">
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <FormControl isInvalid={!!errors.descricao}>
+                        <Input
+                          isLoading={isLoading}
+                          name="descricao"
+                          autoFocus={true}
+                          label="Descrição: *"
+                          error={errors.descricao}
+                          {...register("descricao")}
+                        ></Input>
+                      </FormControl>
+                      <VStack align="left" spacing="4">
+                        <Text fontWeight="bold">Tipo Item:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <Select
+                            {...register("tipoItem")}
+                            value={optionsTipoItem.filter(function (option) {
+                              return option.value === stateTipoItem;
+                            })}
+                            id="tipoItem"
+                            options={optionsTipoItem}
+                            onChange={(value) => handleTipoItem(value)}
+                            placeholder="Selecione o tipo do item"
+                          />
+                        </Skeleton>
+                      </VStack>
+                    </SimpleGrid>
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <VStack align="left" spacing="4">
+                        <Text fontWeight="bold">Unidade:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <Select
+                            {...register("unidade")}
+                            value={optionsUnidade.filter(function (option) {
+                              return option.value === stateUnidade;
+                            })}
+                            id="unidade"
+                            options={optionsUnidade}
+                            onChange={handleUnidade}
+                            placeholder="Selecione a unidade"
+                          />
+                        </Skeleton>
+                      </VStack>
+                      <VStack align="left" spacing="4">
+                        <Text fontWeight="bold">Categoria:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <Select
+                            id="categoria"
+                            {...register("categoria")}
+                            value={optionsCategoria.result.filter(function (
+                              option
+                            ) {
+                              return option.value === stateCategoria;
+                            })}
+                            options={optionsCategoria.result}
+                            onChange={handleCategoria}
+                            placeholder="Selecione a categoria"
+                          />
+                        </Skeleton>
+                      </VStack>
+                    </SimpleGrid>
+                  </VStack>
+                </TabPanel>
+                <TabPanel>
+                  <VStack marginTop="14px" spacing="12">
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <FormControl isInvalid={!!errors.estoque}>
+                        <Input
+                          isLoading={isLoading}
+                          type="number"
+                          name="estoque"
+                          label="Estoque: *"
+                          error={errors.estoque}
+                          {...register("estoque")}
+                        ></Input>
+                      </FormControl>
                       <Input
-                        name="descricao"
-                        autoFocus={true}
-                        label="Descrição: *"
-                        error={errors.descricao}
-                        {...register("descricao")}
-                      ></Input>
-                    </FormControl>
-                    <VStack align="left" spacing="4">
-                      <Text fontWeight="bold">Tipo Item:</Text>
-                      <Select
-                        {...register("tipoItem")}
-                        value={optionsTipoItem.filter(function (option) {
-                          return option.value === stateTipoItem;
-                        })}
-                        id="tipoItem"
-                        options={optionsTipoItem}
-                        onChange={(value) => handleTipoItem(value)}
-                        placeholder="Selecione o tipo do item"
-                      />
-                    </VStack>
-                  </SimpleGrid>
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <VStack align="left" spacing="4">
-                      <Text fontWeight="bold">Unidade:</Text>
-                      <Select
-                        {...register("unidade")}
-                        value={optionsUnidade.filter(function (option) {
-                          return option.value === stateUnidade;
-                        })}
-                        id="unidade"
-                        options={optionsUnidade}
-                        onChange={handleUnidade}
-                        placeholder="Selecione a unidade"
-                      />
-                    </VStack>
-                    <VStack align="left" spacing="4">
-                      <Text fontWeight="bold">Categoria:</Text>
-                      <Select
-                        id="categoria"
-                        {...register("categoria")}
-                        value={optionsCategoria.result.filter(function (
-                          option
-                        ) {
-                          return option.value === stateCategoria;
-                        })}
-                        options={optionsCategoria.result}
-                        onChange={handleCategoria}
-                        placeholder="Selecione a categoria"
-                      />
-                    </VStack>
-                  </SimpleGrid>
-                </VStack>
-              </TabPanel>
-              <TabPanel>
-                <VStack marginTop="14px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <FormControl isInvalid={!!errors.estoque}>
-                      <Input
+                        isLoading={isLoading}
                         type="number"
-                        name="estoque"
-                        label="Estoque: *"
-                        error={errors.estoque}
-                        {...register("estoque")}
+                        name="estoqueMinimo"
+                        label="Estoque Mínimo:"
+                        error={errors.estoqueMinimo}
+                        {...register("estoqueMinimo")}
                       ></Input>
-                    </FormControl>
-                    <Input
-                      type="number"
-                      name="estoqueMinimo"
-                      label="Estoque Mínimo:"
-                      error={errors.estoqueMinimo}
-                      {...register("estoqueMinimo")}
-                    ></Input>
-                    <Input
-                      type="number"
-                      name="estoqueMaximo"
-                      label="Estoque Máximo:"
-                      error={errors.estoqueMaximo}
-                      {...register("estoqueMaximo")}
-                    ></Input>
-                  </SimpleGrid>
-                </VStack>
-              </TabPanel>
-              <TabPanel>
-                <VStack marginTop="14px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Stack spacing="4">
-                      <Text fontWeight="bold">Preço de venda varejo:</Text>
-                      <NumberFormat
-                        value={statePrecoVendaVarejo}
-                        onValueChange={(val) =>
-                          setStatePrecoVendaVarejo(val.floatValue)
-                        }
-                        customInput={ChakraInput}
-                        variant="flushed"
-                        borderColor="gray.400"
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        prefix={"R$"}
-                      />
-                    </Stack>
-                    <Stack spacing="4">
-                      <Text fontWeight="bold">Preço de venda atacado:</Text>
-                      <NumberFormat
-                        value={statePrecoVendaAtacado}
-                        onValueChange={(val) =>
-                          setStatePrecoVendaAtacado(val.floatValue)
-                        }
-                        customInput={ChakraInput}
-                        variant="flushed"
-                        borderColor="gray.400"
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        prefix={"R$"}
-                      />
-                    </Stack>
-                  </SimpleGrid>
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Stack spacing="4">
-                      <Text fontWeight="bold">Preço de compra:</Text>
-                      <NumberFormat
-                        value={statePrecoCompra}
-                        onValueChange={(val) =>
-                          setStatePrecoCompra(val.floatValue)
-                        }
-                        customInput={ChakraInput}
-                        variant="flushed"
-                        borderColor="gray.400"
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        prefix={"R$"}
-                      />
-                    </Stack>
-                    <Stack spacing="4">
-                      <Text fontWeight="bold">Margem de lucro:</Text>
-                      <NumberFormat
-                        value={stateMargemLucro}
-                        onValueChange={(val) =>
-                          setStateMargemLucro(val.floatValue)
-                        }
-                        customInput={ChakraInput}
-                        variant="flushed"
-                        borderColor="gray.400"
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        prefix={"R$"}
-                      />
-                    </Stack>
-                  </SimpleGrid>
-                </VStack>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Box>
-        <Box>
-          <HStack spacing="24px" mt="10px" justify="flex-end">
-            <Button
-              width={["150px", "200px"]}
-              type="submit"
-              color="white"
-              fontSize={["14px", "16px"]}
-              backgroundColor="red.700"
-              onClick={(event) => {
-                event.preventDefault();
-                router.back();
-              }}
-            >
-              VOLTAR
-            </Button>
+                      <Input
+                        isLoading={isLoading}
+                        type="number"
+                        name="estoqueMaximo"
+                        label="Estoque Máximo:"
+                        error={errors.estoqueMaximo}
+                        {...register("estoqueMaximo")}
+                      ></Input>
+                    </SimpleGrid>
+                  </VStack>
+                </TabPanel>
+                <TabPanel>
+                  <VStack marginTop="14px" spacing="12">
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <Stack spacing="4">
+                        <Text fontWeight="bold">Preço de venda varejo:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <NumberFormat
+                            value={statePrecoVendaVarejo}
+                            onValueChange={(val) =>
+                              setStatePrecoVendaVarejo(val.floatValue)
+                            }
+                            customInput={ChakraInput}
+                            variant="flushed"
+                            borderColor="gray.400"
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            prefix={"R$"}
+                          />
+                        </Skeleton>
+                      </Stack>
+                      <Stack spacing="4">
+                        <Text fontWeight="bold">Preço de venda atacado:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <NumberFormat
+                            value={statePrecoVendaAtacado}
+                            onValueChange={(val) =>
+                              setStatePrecoVendaAtacado(val.floatValue)
+                            }
+                            customInput={ChakraInput}
+                            variant="flushed"
+                            borderColor="gray.400"
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            prefix={"R$"}
+                          />
+                        </Skeleton>
+                      </Stack>
+                    </SimpleGrid>
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <Stack spacing="4">
+                        <Text fontWeight="bold">Preço de compra:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <NumberFormat
+                            value={statePrecoCompra}
+                            onValueChange={(val) =>
+                              setStatePrecoCompra(val.floatValue)
+                            }
+                            customInput={ChakraInput}
+                            variant="flushed"
+                            borderColor="gray.400"
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            prefix={"R$"}
+                          />
+                        </Skeleton>
+                      </Stack>
+                      <Stack spacing="4">
+                        <Text fontWeight="bold">Margem de lucro:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <NumberFormat
+                            value={stateMargemLucro}
+                            onValueChange={(val) =>
+                              setStateMargemLucro(val.floatValue)
+                            }
+                            customInput={ChakraInput}
+                            variant="flushed"
+                            borderColor="gray.400"
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            prefix={"R$"}
+                          />
+                        </Skeleton>
+                      </Stack>
+                    </SimpleGrid>
+                  </VStack>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+          <Box>
+            <HStack spacing="24px" mt="10px" justify="flex-end">
+              <Button
+                width={["150px", "200px"]}
+                type="submit"
+                color="white"
+                fontSize={["14px", "16px"]}
+                backgroundColor="red.700"
+                onClick={(event) => {
+                  event.preventDefault();
+                  router.back();
+                }}
+              >
+                VOLTAR
+              </Button>
 
-            <Button
-              width={["150px", "200px"]}
-              fontSize={["14px", "16px"]}
-              type="submit"
-              color="white"
-              backgroundColor="blue.500"
-              isLoading={formState.isSubmitting}
-            >
-              SALVAR
-            </Button>
-          </HStack>
-        </Box>
-      </Stack>
-    </Sidebar>
+              <Button
+                width={["150px", "200px"]}
+                fontSize={["14px", "16px"]}
+                type="submit"
+                color="white"
+                backgroundColor="blue.500"
+                isLoading={formState.isSubmitting}
+              >
+                SALVAR
+              </Button>
+            </HStack>
+          </Box>
+        </Stack>
+      </Sidebar>
+    </LoadPage>
   );
 }
 

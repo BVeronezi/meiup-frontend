@@ -4,9 +4,11 @@ import {
   Button,
   createStandaloneToast,
   Divider,
+  Flex,
   HStack,
   IconButton,
   SimpleGrid,
+  Skeleton,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -48,6 +50,8 @@ export default function ProdutoVenda({
   produtos,
   statusVenda,
   handleValorVenda,
+  isLoading,
+  handleLoad,
 }) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
@@ -96,6 +100,8 @@ export default function ProdutoVenda({
   }, [refreshKey]);
 
   async function excluirProduto(produtoVenda) {
+    handleLoad(true);
+
     try {
       onClose();
       const result = await api.delete(`/vendas/produtoVenda/${vendaId}`, {
@@ -117,6 +123,8 @@ export default function ProdutoVenda({
     } catch (error) {
       console.log(error);
     }
+
+    handleLoad(false);
   }
 
   const handleProduto = (produto) => {
@@ -140,6 +148,8 @@ export default function ProdutoVenda({
   };
 
   const adicionarProduto: SubmitHandler<FormData> = async (values) => {
+    handleLoad(true);
+
     if (!stateProduto) {
       setAddProduto(false);
     }
@@ -177,6 +187,8 @@ export default function ProdutoVenda({
       resetInputs();
       setRefreshKey((oldKey) => oldKey + 1);
     }
+
+    handleLoad(false);
   };
 
   const resetInputs = () => {
@@ -213,17 +225,19 @@ export default function ProdutoVenda({
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <VStack align="left" spacing="4">
             <Text fontWeight="bold">Produto: *</Text>
-            <Select
-              isDisabled={statusVenda !== 0}
-              id="produto"
-              {...register("produto")}
-              value={produtos.filter(function (option) {
-                return option.value === stateProduto;
-              })}
-              options={produtos}
-              onChange={handleProduto}
-              placeholder="Selecione o produto *"
-            />
+            <Skeleton isLoaded={!isLoading}>
+              <Select
+                isDisabled={statusVenda !== 0}
+                id="produto"
+                {...register("produto")}
+                value={produtos.filter(function (option) {
+                  return option.value === stateProduto;
+                })}
+                options={produtos}
+                onChange={handleProduto}
+                placeholder="Selecione o produto *"
+              />
+            </Skeleton>
             {!addProduto && (
               <Text color="red" fontSize="14px">
                 Produto obrigatório
@@ -231,6 +245,7 @@ export default function ProdutoVenda({
             )}{" "}
           </VStack>
           <Input
+            isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="quantidade"
             label="Quantidade: *"
@@ -243,6 +258,7 @@ export default function ProdutoVenda({
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <Input
+            isLoading={isLoading}
             isReadOnly
             name="precoUnitario"
             label="Preço unitário: *"
@@ -250,6 +266,7 @@ export default function ProdutoVenda({
             {...register("precoUnitario")}
           ></Input>
           <Input
+            isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="outrasDespesas"
             label="Outras despesas:"
@@ -260,6 +277,7 @@ export default function ProdutoVenda({
         </SimpleGrid>
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <Input
+            isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="desconto"
             label="Desconto:"
@@ -268,6 +286,7 @@ export default function ProdutoVenda({
             onBlur={calculaTotal}
           ></Input>
           <Input
+            isLoading={isLoading}
             isReadOnly
             name="total"
             label="Total: *"
@@ -293,78 +312,86 @@ export default function ProdutoVenda({
         )}
       </VStack>
       <Divider mt="12" />
-      <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
+      <Text fontSize="20px" fontWeight="medium" mt="8" mb="10">
         Produtos adicionados na venda
       </Text>
-      <Table variant="striped" colorScheme="blackAlpha" size="md">
-        <Thead>
-          <Tr>
-            <Th>Descrição</Th>
-            <Th>Quantidade</Th>
-            <Th>Valor Total</Th>
-            <Th width="8">Ações</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {data.produtosVenda.map((produtoVenda, index) => {
-            return (
-              <Tr key={index}>
-                <Td>
-                  <Text>{produtoVenda.produto.descricao}</Text>
-                </Td>
-                <Td>
-                  <Text>{produtoVenda.quantidade}</Text>
-                </Td>
-                <Td>
-                  <Text>{produtoVenda.valorTotal}</Text>
-                </Td>
-                <Td>
-                  <HStack>
-                    {statusVenda === 0 && (
-                      <>
-                        <IconButton
-                          variant="outline"
-                          color="blue.800"
-                          aria-label="Editar produto"
-                          icon={<RiPencilLine />}
-                          onClick={() => {
-                            handleEditProduto(produtoVenda);
-                          }}
-                        />
-                        <IconButton
-                          variant="outline"
-                          color="red.800"
-                          aria-label="Remover produto"
-                          icon={<RiDeleteBinLine />}
-                          onClick={() => {
-                            setSelectedProduto(produtoVenda);
-                            setIsOpen(true);
-                          }}
-                        />
-                      </>
-                    )}
-                  </HStack>
-
-                  <AlertDialogList
-                    isOpen={isOpen}
-                    cancelRef={cancelRef}
-                    onClose={onClose}
-                    header="Remover Produto"
-                    body="Tem certeza que deseja remover o produto"
-                    description={selectedProduto.produto?.descricao}
-                    onClick={() => excluirProduto(selectedProduto)}
-                  />
-                </Td>
+      {data.produtosVenda.length == 0 ? (
+        <Flex justify="center">
+          <Text>Nenhum produto adicionado</Text>
+        </Flex>
+      ) : (
+        <Box>
+          <Table variant="striped" colorScheme="blackAlpha" size="md">
+            <Thead>
+              <Tr>
+                <Th>Descrição</Th>
+                <Th>Quantidade</Th>
+                <Th>Valor Total</Th>
+                <Th width="8">Ações</Th>
               </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
-      <Pagination
-        totalCountOfRegisters={data?.total}
-        currentPage={page}
-        onPageChange={setPage}
-      />
+            </Thead>
+            <Tbody>
+              {data.produtosVenda.map((produtoVenda, index) => {
+                return (
+                  <Tr key={index}>
+                    <Td>
+                      <Text>{produtoVenda.produto.descricao}</Text>
+                    </Td>
+                    <Td>
+                      <Text>{produtoVenda.quantidade}</Text>
+                    </Td>
+                    <Td>
+                      <Text>{produtoVenda.valorTotal}</Text>
+                    </Td>
+                    <Td>
+                      <HStack>
+                        {statusVenda === 0 && (
+                          <>
+                            <IconButton
+                              variant="outline"
+                              color="blue.800"
+                              aria-label="Editar produto"
+                              icon={<RiPencilLine />}
+                              onClick={() => {
+                                handleEditProduto(produtoVenda);
+                              }}
+                            />
+                            <IconButton
+                              variant="outline"
+                              color="red.800"
+                              aria-label="Remover produto"
+                              icon={<RiDeleteBinLine />}
+                              onClick={() => {
+                                setSelectedProduto(produtoVenda);
+                                setIsOpen(true);
+                              }}
+                            />
+                          </>
+                        )}
+                      </HStack>
+
+                      <AlertDialogList
+                        isOpen={isOpen}
+                        cancelRef={cancelRef}
+                        onClose={onClose}
+                        header="Remover Produto"
+                        body="Tem certeza que deseja remover o produto"
+                        description={selectedProduto.produto?.descricao}
+                        onClick={() => excluirProduto(selectedProduto)}
+                      />
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+          <Pagination
+            totalCountOfRegisters={data?.total}
+            currentPage={page}
+            onPageChange={setPage}
+          />
+        </Box>
+      )}
     </>
   );
 }

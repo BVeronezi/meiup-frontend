@@ -14,6 +14,7 @@ import {
   Text,
   VStack,
   Input as InputChakra,
+  Skeleton,
 } from "@chakra-ui/react";
 import * as yup from "yup";
 import { Input } from "../../components/Input";
@@ -39,6 +40,7 @@ import ProdutoVenda from "./produto-venda/produto-venda";
 import { Sidebar } from "../../components/Sidebar";
 import ServicoVenda from "./servico-venda/servico-venda";
 import NumberFormat from "react-number-format";
+import { LoadPage } from "../../components/Load";
 registerLocale("pt", pt);
 
 type FormData = {
@@ -48,6 +50,9 @@ type FormData = {
   email: string;
   celular: string;
   telefone: string;
+  pagamento: string;
+  troco: string;
+  valorTotal: string;
 };
 
 const vendaFormSchema = yup.object().shape({
@@ -56,6 +61,9 @@ const vendaFormSchema = yup.object().shape({
   email: yup.string(),
   celular: yup.string(),
   telefone: yup.string(),
+  pagamento: yup.string(),
+  troco: yup.string(),
+  valorTotal: yup.string(),
 });
 
 export default function FormVendas({ clientes, produtos, servicos }) {
@@ -67,7 +75,8 @@ export default function FormVendas({ clientes, produtos, servicos }) {
   const [stateTroco, setStateTroco] = useState(0);
   const [stateValorTotal, setStateValorTotal] = useState(0);
   const [tabIndex, setTabIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingFetch, setIsLoadingFetch] = useState(false);
   const toast = createStandaloneToast({ theme: customTheme });
   const [date, setDate] = useState(moment().toDate());
   const router = useRouter();
@@ -82,7 +91,7 @@ export default function FormVendas({ clientes, produtos, servicos }) {
 
   useEffect(() => {
     async function findVenda() {
-      setIsLoading(false);
+      setIsLoading(true);
 
       if (vendaId) {
         const response: any = await api.get(`/vendas/${vendaId}`);
@@ -100,7 +109,7 @@ export default function FormVendas({ clientes, produtos, servicos }) {
         setStateTroco(troco ? parseFloat(troco) : 0);
       }
 
-      setIsLoading(true);
+      setIsLoading(false);
     }
 
     if (Object.keys(router.query)[0]) {
@@ -111,6 +120,10 @@ export default function FormVendas({ clientes, produtos, servicos }) {
 
     focus();
   }, []);
+
+  const handleLoad = (value) => {
+    setIsLoadingFetch(value);
+  };
 
   const handleVenda: SubmitHandler<FormData> = async (values) => {
     if (!stateCliente) {
@@ -126,6 +139,9 @@ export default function FormVendas({ clientes, produtos, servicos }) {
       email: values.email,
       celular: values.celular,
       telefone: values.telefone,
+      pagamento: statePagamento,
+      troco: stateTroco,
+      valorTotal: stateValorTotal,
     };
 
     try {
@@ -214,256 +230,275 @@ export default function FormVendas({ clientes, produtos, servicos }) {
   };
 
   return (
-    <Sidebar>
-      <Stack as="form" onSubmit={handleSubmit(handleVenda)} flex="1">
-        <Box
-          borderBottom="1px"
-          borderLeft="1px"
-          borderRight="1px"
-          borderRadius="lg"
-          borderColor="gray.300"
-        >
-          <Tabs
-            isFitted
-            variant="enclosed"
-            index={tabIndex}
-            onChange={handleTabsChange}
+    <LoadPage active={isLoadingFetch || isLoading}>
+      <Sidebar>
+        <Stack as="form" onSubmit={handleSubmit(handleVenda)} flex="1">
+          <Box
+            borderBottom="1px"
+            borderLeft="1px"
+            borderRight="1px"
+            borderRadius="lg"
+            borderColor="gray.300"
           >
-            <TabList overflowX="auto">
-              <Tab>Dados básicos</Tab>
-              <Tab isDisabled={stateNovaVenda}>Produtos</Tab>
-              <Tab isDisabled={stateNovaVenda}>Serviços</Tab>
-              <Tab isDisabled={stateNovaVenda}>Pagamento</Tab>
-            </TabList>
-
-            <TabPanels>
-              <TabPanel>
-                {stateNovaVenda && (
-                  <HStack>
-                    <RiInformationLine />
-                    <Text color="gray.900" fontSize="14px">
-                      Necessário selecionar o cliente para prosseguir com a
-                      venda!
-                    </Text>
-                  </HStack>
-                )}
-                <VStack marginTop="20px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <HStack alignSelf="normal">
-                      <Text fontWeight="bold">Vendedor(a):</Text>
-                      <Text>{user?.nome}</Text>
-                    </HStack>
-                    <Box>
-                      <VStack align="left" spacing="4">
-                        <Text fontWeight="bold">Data da venda: *</Text>
-                        <DatePicker
-                          locale="pt"
-                          dateFormat="dd MMMM, yyy"
-                          showPopperArrow={false}
-                          selected={date}
-                          onChange={(date) => setDate(date)}
-                          customInput={<Input />}
-                        />
-                      </VStack>
-                    </Box>
-                  </SimpleGrid>
-
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <VStack align="left" spacing="4">
-                      <Text fontWeight="bold">Cliente: *</Text>
-                      <Select
-                        isDisabled={venda.status !== 0}
-                        id="cliente"
-                        {...register("cliente")}
-                        value={clientes.filter(function (option) {
-                          return option.value === stateCliente;
-                        })}
-                        options={clientes}
-                        onChange={handleCliente}
-                        placeholder="Selecione o cliente *"
-                      />
-                      {!stateContinuarVenda && (
-                        <Text color="red" fontSize="14px">
-                          Cliente obrigatório
-                        </Text>
-                      )}
-                    </VStack>
-                    <FormControl isInvalid={!!errors.email}>
-                      <Input
-                        isDisabled={venda.status !== 0}
-                        name="email"
-                        label="Email: "
-                        error={errors.email}
-                        {...register("email")}
-                      ></Input>
-                    </FormControl>
-                  </SimpleGrid>
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <FormControl isInvalid={!!errors.celular}>
-                      <Input
-                        isDisabled={venda.status !== 0}
-                        name="celular"
-                        label="Celular: "
-                        error={errors.celular}
-                        {...register("celular")}
-                      ></Input>
-                    </FormControl>
-                    <FormControl isInvalid={!!errors.telefone}>
-                      <Input
-                        isDisabled={venda.status !== 0}
-                        name="telefone"
-                        label="Telefone: "
-                        error={errors.telefone}
-                        {...register("telefone")}
-                      ></Input>
-                    </FormControl>
-                  </SimpleGrid>
-                </VStack>
-              </TabPanel>
-              <TabPanel>
-                <ProdutoVenda
-                  produtos={produtos}
-                  statusVenda={venda.status}
-                  handleValorVenda={handleValorVenda}
-                />
-              </TabPanel>
-              <TabPanel>
-                <ServicoVenda
-                  servicos={servicos}
-                  statusVenda={venda.status}
-                  handleValorVenda={handleValorVenda}
-                />
-              </TabPanel>
-              <TabPanel>
-                <VStack marginTop="14px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Stack spacing="4">
-                      <Text fontWeight="bold">Pagamento:</Text>
-                      <NumberFormat
-                        isDisabled={venda.status !== 0}
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        value={statePagamento}
-                        onValueChange={(val) => handlePagamento(val)}
-                        customInput={InputChakra}
-                        variant="flushed"
-                        borderColor="gray.400"
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        prefix={"R$"}
-                      />
-                    </Stack>
-                    <Stack spacing="4">
-                      <Text fontWeight="bold">Troco:</Text>
-                      <NumberFormat
-                        isReadOnly={true}
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        value={stateTroco}
-                        onValueChange={(val) => handleTroco(val)}
-                        customInput={InputChakra}
-                        variant="flushed"
-                        borderColor="gray.400"
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        prefix={"R$"}
-                      />
-                    </Stack>
-                  </SimpleGrid>
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Stack spacing="4">
-                      <Text fontWeight="bold">Valor total:</Text>
-                      <NumberFormat
-                        isReadOnly={true}
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        value={stateValorTotal}
-                        onValueChange={(val) =>
-                          setStateValorTotal(val.floatValue)
-                        }
-                        customInput={InputChakra}
-                        variant="flushed"
-                        borderColor="gray.400"
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        prefix={"R$"}
-                      />
-                    </Stack>
-                    <Box></Box>
-                  </SimpleGrid>
-                </VStack>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Box>
-        <Box>
-          <HStack spacing="24px" mt="10px" justify="flex-end">
-            <Button
-              width={["150px", "200px"]}
-              type="submit"
-              color="white"
-              fontSize={["14px", "16px"]}
-              backgroundColor="red.700"
-              onClick={(event) => {
-                event.preventDefault();
-                router.back();
-              }}
+            <Tabs
+              isFitted
+              variant="enclosed"
+              index={tabIndex}
+              onChange={handleTabsChange}
             >
-              VOLTAR
-            </Button>
+              <TabList overflowX="auto">
+                <Tab>Dados básicos</Tab>
+                <Tab isDisabled={stateNovaVenda}>Produtos</Tab>
+                <Tab isDisabled={stateNovaVenda}>Serviços</Tab>
+                <Tab isDisabled={stateNovaVenda}>Pagamento</Tab>
+              </TabList>
 
-            {venda.status === 0 && (
+              <TabPanels>
+                <TabPanel>
+                  {stateNovaVenda && (
+                    <HStack>
+                      <RiInformationLine />
+                      <Text color="gray.900" fontSize="14px">
+                        Necessário selecionar o cliente para prosseguir com a
+                        venda!
+                      </Text>
+                    </HStack>
+                  )}
+                  <VStack marginTop="20px" spacing="12">
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <HStack alignSelf="normal">
+                        <Text fontWeight="bold">Vendedor(a):</Text>
+                        <Text>{user?.nome}</Text>
+                      </HStack>
+                      <Box>
+                        <VStack align="left" spacing="4">
+                          <Text fontWeight="bold">Data da venda: *</Text>
+                          <Skeleton isLoaded={!isLoading}>
+                            <DatePicker
+                              locale="pt"
+                              dateFormat="dd MMMM, yyy"
+                              showPopperArrow={false}
+                              selected={date}
+                              onChange={(date) => setDate(date)}
+                              customInput={<Input />}
+                            />
+                          </Skeleton>
+                        </VStack>
+                      </Box>
+                    </SimpleGrid>
+
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <VStack align="left" spacing="4">
+                        <Text fontWeight="bold">Cliente: *</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <Select
+                            isDisabled={venda.status !== 0}
+                            id="cliente"
+                            {...register("cliente")}
+                            value={clientes.filter(function (option) {
+                              return option.value === stateCliente;
+                            })}
+                            options={clientes}
+                            onChange={handleCliente}
+                            placeholder="Selecione o cliente *"
+                          />
+                        </Skeleton>
+                        {!stateContinuarVenda && (
+                          <Text color="red" fontSize="14px">
+                            Cliente obrigatório
+                          </Text>
+                        )}
+                      </VStack>
+                      <FormControl isInvalid={!!errors.email}>
+                        <Input
+                          isLoading={isLoading}
+                          isDisabled={venda.status !== 0}
+                          name="email"
+                          label="Email: "
+                          error={errors.email}
+                          {...register("email")}
+                        ></Input>
+                      </FormControl>
+                    </SimpleGrid>
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <FormControl isInvalid={!!errors.celular}>
+                        <Input
+                          isLoading={isLoading}
+                          isDisabled={venda.status !== 0}
+                          name="celular"
+                          label="Celular: "
+                          error={errors.celular}
+                          {...register("celular")}
+                        ></Input>
+                      </FormControl>
+                      <FormControl isInvalid={!!errors.telefone}>
+                        <Input
+                          isLoading={isLoading}
+                          isDisabled={venda.status !== 0}
+                          name="telefone"
+                          label="Telefone: "
+                          error={errors.telefone}
+                          {...register("telefone")}
+                        ></Input>
+                      </FormControl>
+                    </SimpleGrid>
+                  </VStack>
+                </TabPanel>
+                <TabPanel>
+                  <ProdutoVenda
+                    produtos={produtos}
+                    statusVenda={venda.status}
+                    handleValorVenda={handleValorVenda}
+                    isLoading={isLoading}
+                    handleLoad={handleLoad}
+                  />
+                </TabPanel>
+                <TabPanel>
+                  <ServicoVenda
+                    servicos={servicos}
+                    statusVenda={venda.status}
+                    handleValorVenda={handleValorVenda}
+                    isLoading={isLoading}
+                    handleLoad={handleLoad}
+                  />
+                </TabPanel>
+                <TabPanel>
+                  <VStack marginTop="14px" spacing="12">
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <Stack spacing="4">
+                        <Text fontWeight="bold">Pagamento:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <NumberFormat
+                            isDisabled={venda.status !== 0}
+                            decimalScale={2}
+                            fixedDecimalScale={true}
+                            value={statePagamento}
+                            onValueChange={(val) => handlePagamento(val)}
+                            customInput={InputChakra}
+                            variant="flushed"
+                            borderColor="gray.400"
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            prefix={"R$"}
+                          />
+                        </Skeleton>
+                      </Stack>
+                      <Stack spacing="4">
+                        <Text fontWeight="bold">Troco:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <NumberFormat
+                            isReadOnly={true}
+                            decimalScale={2}
+                            fixedDecimalScale={true}
+                            value={stateTroco}
+                            onValueChange={(val) => handleTroco(val)}
+                            customInput={InputChakra}
+                            variant="flushed"
+                            borderColor="gray.400"
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            prefix={"R$"}
+                          />
+                        </Skeleton>
+                      </Stack>
+                    </SimpleGrid>
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <Stack spacing="4">
+                        <Text fontWeight="bold">Valor total:</Text>
+                        <Skeleton isLoaded={!isLoading}>
+                          <NumberFormat
+                            isReadOnly={true}
+                            decimalScale={2}
+                            fixedDecimalScale={true}
+                            value={stateValorTotal}
+                            onValueChange={(val) =>
+                              setStateValorTotal(val.floatValue)
+                            }
+                            customInput={InputChakra}
+                            variant="flushed"
+                            borderColor="gray.400"
+                            thousandSeparator="."
+                            decimalSeparator=","
+                            prefix={"R$"}
+                          />
+                        </Skeleton>
+                      </Stack>
+                      <Box></Box>
+                    </SimpleGrid>
+                  </VStack>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+          <Box>
+            <HStack spacing="24px" mt="10px" justify="flex-end">
               <Button
                 width={["150px", "200px"]}
-                fontSize={["14px", "16px"]}
                 type="submit"
                 color="white"
-                backgroundColor="blue.500"
-                isLoading={formState.isSubmitting}
-              >
-                {stateNovaVenda ? "CONTINUAR" : "SALVAR"}
-              </Button>
-            )}
-
-            {!stateNovaVenda && venda.status === 0 && (
-              <Button
-                width={["150px", "200px"]}
                 fontSize={["14px", "16px"]}
-                type="submit"
-                color="white"
-                backgroundColor="teal.500"
+                backgroundColor="red.700"
                 onClick={(event) => {
                   event.preventDefault();
-                  finalizaVenda();
+                  router.back();
                 }}
               >
-                FINALIZAR
+                VOLTAR
               </Button>
-            )}
-          </HStack>
-        </Box>
-      </Stack>
-    </Sidebar>
+
+              {venda.status === 0 && (
+                <Button
+                  width={["150px", "200px"]}
+                  fontSize={["14px", "16px"]}
+                  type="submit"
+                  color="white"
+                  backgroundColor="blue.500"
+                  isLoading={formState.isSubmitting}
+                >
+                  {stateNovaVenda ? "CONTINUAR" : "SALVAR"}
+                </Button>
+              )}
+
+              {!stateNovaVenda && venda.status === 0 && (
+                <Button
+                  width={["150px", "200px"]}
+                  fontSize={["14px", "16px"]}
+                  type="submit"
+                  color="white"
+                  backgroundColor="teal.500"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    finalizaVenda();
+                  }}
+                >
+                  FINALIZAR
+                </Button>
+              )}
+            </HStack>
+          </Box>
+        </Stack>
+      </Sidebar>
+    </LoadPage>
   );
 }
 

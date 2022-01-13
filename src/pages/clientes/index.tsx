@@ -1,4 +1,5 @@
-import { Text } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
+import { LoadPage } from "../../components/Load";
 import { Sidebar } from "../../components/Sidebar";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 

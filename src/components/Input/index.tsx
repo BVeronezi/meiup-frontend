@@ -6,15 +6,17 @@ import {
   FormControl,
   FormErrorMessage,
   InputProps as ChakraInputProps,
+  Skeleton,
 } from "@chakra-ui/react";
 interface InputProps extends ChakraInputProps {
   name?: string;
   label?: string;
   error?: FieldError;
+  isLoading?: boolean;
 }
 
 const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
-  { name, label, error = null, ...rest },
+  { name, label, error = null, isLoading = false, ...rest },
   ref
 ) => {
   return (
@@ -24,19 +26,21 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
           {label}
         </FormLabel>
       )}
-      <ChakraInput
-        name={name}
-        id={name}
-        focusBorderColor="yellow.500"
-        variant="flushed"
-        bg="white"
-        borderColor="gray.400"
-        size="lg"
-        ref={ref}
-        {...rest}
-      />
+      <Skeleton isLoaded={!isLoading}>
+        <ChakraInput
+          name={name}
+          id={name}
+          focusBorderColor="yellow.500"
+          variant="flushed"
+          bg="white"
+          borderColor="gray.400"
+          size="lg"
+          ref={ref}
+          {...rest}
+        />
 
-      {!!error && <FormErrorMessage>{error.message}</FormErrorMessage>}
+        {!!error && <FormErrorMessage>{error.message}</FormErrorMessage>}
+      </Skeleton>
     </FormControl>
   );
 };

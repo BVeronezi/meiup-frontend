@@ -1,15 +1,15 @@
 import {
   createStandaloneToast,
   SimpleGrid,
-  Stack,
   Text,
-  Input as ChakraInput,
   VStack,
+  Skeleton,
   Box,
   HStack,
   Button,
   Divider,
   IconButton,
+  Flex,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { theme as customTheme } from "../../../styles/theme";
@@ -20,7 +20,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 const { yupResolver } = require("@hookform/resolvers/yup");
 import * as yup from "yup";
 import { getServicosVenda } from "../../../hooks/vendas/useServicoVenda";
-import NumberFormat from "react-number-format";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
 import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
@@ -48,6 +47,8 @@ export default function ServicoVenda({
   servicos,
   statusVenda,
   handleValorVenda,
+  isLoading,
+  handleLoad,
 }) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
@@ -97,6 +98,8 @@ export default function ServicoVenda({
   }, [refreshKey]);
 
   const adicionarServico: SubmitHandler<FormData> = async (values) => {
+    handleLoad(true);
+
     if (!stateServico) {
       setAddServico(false);
     }
@@ -112,7 +115,7 @@ export default function ServicoVenda({
 
       const result = await api.post(`/vendas/servicosVenda/${vendaId}`, params);
 
-      if (!result.data?.servicosVenda) {
+      if (!result.data?.servicoVenda) {
         toast({
           title: "Serviço atualizado com sucesso!",
           status: "success",
@@ -133,6 +136,7 @@ export default function ServicoVenda({
 
     resetInputs();
     setRefreshKey((oldKey) => oldKey + 1);
+    handleLoad(false);
   };
 
   const resetInputs = () => {
@@ -153,6 +157,7 @@ export default function ServicoVenda({
   };
 
   async function excluirServico(servicoVenda) {
+    handleLoad(true);
     try {
       onClose();
       const result = await api.delete(`/vendas/servicosVenda/${vendaId}`, {
@@ -175,6 +180,8 @@ export default function ServicoVenda({
     } catch (error) {
       console.log(error);
     }
+
+    handleLoad(false);
   }
 
   const handleServico = (servico) => {
@@ -210,17 +217,19 @@ export default function ServicoVenda({
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <VStack align="left" spacing="4">
             <Text fontWeight="bold">Serviço: *</Text>
-            <Select
-              isDisabled={statusVenda !== 0}
-              id="servico"
-              {...register("servico")}
-              value={servicos.filter(function (option) {
-                return option.value === stateServico;
-              })}
-              options={servicos}
-              onChange={handleServico}
-              placeholder="Selecione o serviço *"
-            />
+            <Skeleton isLoaded={!isLoading}>
+              <Select
+                isDisabled={statusVenda !== 0}
+                id="servico"
+                {...register("servico")}
+                value={servicos.filter(function (option) {
+                  return option.value === stateServico;
+                })}
+                options={servicos}
+                onChange={handleServico}
+                placeholder="Selecione o serviço *"
+              />
+            </Skeleton>
             {!addServico && (
               <Text color="red" fontSize="14px">
                 Serviço obrigatório
@@ -228,6 +237,7 @@ export default function ServicoVenda({
             )}{" "}
           </VStack>
           <Input
+            isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="valorServico"
             label="Valor serviço: *"
@@ -240,6 +250,7 @@ export default function ServicoVenda({
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <Input
+            isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="outrasDespesas"
             label="Outras despesas:"
@@ -248,6 +259,7 @@ export default function ServicoVenda({
             onBlur={calculaTotal}
           ></Input>
           <Input
+            isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="desconto"
             label="Desconto:"
@@ -258,6 +270,7 @@ export default function ServicoVenda({
         </SimpleGrid>
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <Input
+            isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="valorTotal"
             label="Valor total:"
@@ -287,83 +300,91 @@ export default function ServicoVenda({
       <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
         Serviços adicionados na venda
       </Text>
-      <Table variant="striped" colorScheme="blackAlpha" size="md">
-        <Thead>
-          <Tr>
-            <Th>Nome</Th>
-            <Th>Valor serviço</Th>
-            <Th>Outras despesas</Th>
-            <Th>Desconto</Th>
-            <Th>Valor total</Th>
-            <Th width="8">Ações</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {data.servicosVenda.map((servicoVenda, index) => {
-            return (
-              <Tr key={index}>
-                <Td>
-                  <Text>{servicoVenda.servico.nome}</Text>
-                </Td>
-                <Td>
-                  <Text>{servicoVenda.valorServico}</Text>
-                </Td>
-                <Td>
-                  <Text>{servicoVenda.outrasDespesas}</Text>
-                </Td>
-                <Td>
-                  <Text>{servicoVenda.desconto}</Text>
-                </Td>
-                <Td>
-                  <Text>{servicoVenda.valorTotal}</Text>
-                </Td>
-                <Td>
-                  <HStack>
-                    {statusVenda === 0 && (
-                      <>
-                        <IconButton
-                          variant="outline"
-                          color="blue.800"
-                          aria-label="Editar serviço"
-                          icon={<RiPencilLine />}
-                          onClick={() => {
-                            handleEditServico(servicoVenda);
-                          }}
-                        />
-                        <IconButton
-                          variant="outline"
-                          color="red.800"
-                          aria-label="Remover serviço"
-                          icon={<RiDeleteBinLine />}
-                          onClick={() => {
-                            setSelectedServico(servicoVenda);
-                            setIsOpen(true);
-                          }}
-                        />
-                      </>
-                    )}
-                  </HStack>
-
-                  <AlertDialogList
-                    isOpen={isOpen}
-                    cancelRef={cancelRef}
-                    onClose={onClose}
-                    header="Remover Serviço"
-                    body="Tem certeza que deseja remover o serviço"
-                    description={selectedServico.servico?.nome}
-                    onClick={() => excluirServico(selectedServico)}
-                  />
-                </Td>
+      {data.servicosVenda.length === 0 ? (
+        <Flex justify="center">
+          <Text>Nenhum serviço adicionado</Text>
+        </Flex>
+      ) : (
+        <Box>
+          <Table variant="striped" colorScheme="blackAlpha" size="md">
+            <Thead>
+              <Tr>
+                <Th>Nome</Th>
+                <Th>Valor serviço</Th>
+                <Th>Outras despesas</Th>
+                <Th>Desconto</Th>
+                <Th>Valor total</Th>
+                <Th width="8">Ações</Th>
               </Tr>
-            );
-          })}
-        </Tbody>
-      </Table>
-      <Pagination
-        totalCountOfRegisters={data?.totalCount}
-        currentPage={page}
-        onPageChange={setPage}
-      />
+            </Thead>
+            <Tbody>
+              {data.servicosVenda.map((servicoVenda, index) => {
+                return (
+                  <Tr key={index}>
+                    <Td>
+                      <Text>{servicoVenda.servico.nome}</Text>
+                    </Td>
+                    <Td>
+                      <Text>{servicoVenda.valorServico}</Text>
+                    </Td>
+                    <Td>
+                      <Text>{servicoVenda.outrasDespesas}</Text>
+                    </Td>
+                    <Td>
+                      <Text>{servicoVenda.desconto}</Text>
+                    </Td>
+                    <Td>
+                      <Text>{servicoVenda.valorTotal}</Text>
+                    </Td>
+                    <Td>
+                      <HStack>
+                        {statusVenda === 0 && (
+                          <>
+                            <IconButton
+                              variant="outline"
+                              color="blue.800"
+                              aria-label="Editar serviço"
+                              icon={<RiPencilLine />}
+                              onClick={() => {
+                                handleEditServico(servicoVenda);
+                              }}
+                            />
+                            <IconButton
+                              variant="outline"
+                              color="red.800"
+                              aria-label="Remover serviço"
+                              icon={<RiDeleteBinLine />}
+                              onClick={() => {
+                                setSelectedServico(servicoVenda);
+                                setIsOpen(true);
+                              }}
+                            />
+                          </>
+                        )}
+                      </HStack>
+
+                      <AlertDialogList
+                        isOpen={isOpen}
+                        cancelRef={cancelRef}
+                        onClose={onClose}
+                        header="Remover Serviço"
+                        body="Tem certeza que deseja remover o serviço"
+                        description={selectedServico.servico?.nome}
+                        onClick={() => excluirServico(selectedServico)}
+                      />
+                    </Td>
+                  </Tr>
+                );
+              })}
+            </Tbody>
+          </Table>
+          <Pagination
+            totalCountOfRegisters={data?.totalCount}
+            currentPage={page}
+            onPageChange={setPage}
+          />
+        </Box>
+      )}
     </>
   );
 }

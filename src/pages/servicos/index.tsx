@@ -32,6 +32,7 @@ import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-
 import { Pagination } from "../../components/Pagination";
 import { api } from "../../services/apiClient";
 import { queryClient } from "../../services/queryClient";
+import { LoadPage } from "../../components/Load";
 
 export default function Servicos() {
   const isWideVersion = useBreakpointValue({
@@ -43,6 +44,7 @@ export default function Servicos() {
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
   const [isFetching, setIsFetching] = useState(false);
+  const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
@@ -51,7 +53,6 @@ export default function Servicos() {
     servicos: [],
     totalCount: 0,
   });
-  const [refreshKey, setRefreshKey] = useState(0);
 
   let { data, isLoading, error } = useServicos(page, {
     initialData: null,
@@ -62,13 +63,17 @@ export default function Servicos() {
       setValue(data);
     }
     fetchData();
-  }, [data, refreshKey]);
+  }, [data]);
 
   async function deleteServico(servicoId: string) {
+    setIsLoadingPage(true);
     try {
       onClose();
 
       await api.delete(`/servicos/${servicoId}`);
+
+      const data = await getServicos(page, null);
+      setValue(data);
 
       toast({
         title: "Serviço removido com sucesso!",
@@ -76,11 +81,10 @@ export default function Servicos() {
         duration: 2000,
         isClosable: true,
       });
-
-      setRefreshKey((oldKey) => oldKey - 1);
     } catch (error) {
       console.log(error);
     }
+    setIsLoadingPage(false);
   }
 
   async function handlePrefetchServico(servicoId: number) {
@@ -115,145 +119,147 @@ export default function Servicos() {
   }
 
   return (
-    <Sidebar>
-      <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
-        <Flex mb="8" justify="space-between" align="center">
-          <Pesquisa handleChange={handlePesquisaServico} />
-          <Box ml="4">
-            {isWideVersion && (
-              <NextLink href="/servicos/form" passHref>
-                <Button
-                  _hover={{
-                    bg: "blue.500",
-                  }}
-                  as="a"
-                  size="sm"
-                  fontSize="sm"
-                  color="white"
-                  backgroundColor="blue.800"
-                  leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-                >
-                  Novo serviço
-                </Button>
-              </NextLink>
-            )}
+    <LoadPage active={isLoadingPage}>
+      <Sidebar>
+        <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
+          <Flex mb="8" justify="space-between" align="center">
+            <Pesquisa handleChange={handlePesquisaServico} />
+            <Box ml="4">
+              {isWideVersion && (
+                <NextLink href="/servicos/form" passHref>
+                  <Button
+                    _hover={{
+                      bg: "blue.500",
+                    }}
+                    as="a"
+                    size="sm"
+                    fontSize="sm"
+                    color="white"
+                    backgroundColor="blue.800"
+                    leftIcon={<Icon as={RiAddLine} fontSize="20" />}
+                  >
+                    Novo serviço
+                  </Button>
+                </NextLink>
+              )}
 
-            {!isWideVersion && (
-              <Tooltip label="Novo servico">
-                <IconButton
-                  variant="outline"
-                  color="blue.800"
-                  aria-label="Novo servico"
-                  onClick={() => router.push("/servicos/form")}
-                  icon={<RiAddBoxLine />}
-                />
-              </Tooltip>
-            )}
-          </Box>
-        </Flex>
-
-        {isFetching && <Progress size="xs" isIndeterminate />}
-
-        {isLoading ? (
-          <Flex justify="center">
-            <Spinner />
+              {!isWideVersion && (
+                <Tooltip label="Novo servico">
+                  <IconButton
+                    variant="outline"
+                    color="blue.800"
+                    aria-label="Novo servico"
+                    onClick={() => router.push("/servicos/form")}
+                    icon={<RiAddBoxLine />}
+                  />
+                </Tooltip>
+              )}
+            </Box>
           </Flex>
-        ) : error ? (
-          <Flex justify="center">
-            <Text>Falha ao obter dados dos servicos.</Text>
-          </Flex>
-        ) : (
-          <>
-            <Table variant="striped" colorScheme="blackAlpha">
-              <Thead>
-                <Tr>
-                  <Th>Serviço</Th>
-                  <Th>Custo</Th>
-                  <Th>Lucro</Th>
-                  <Th>Margem Lucro</Th>
-                  <Th width="8">Ações</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {value?.servicos.map((servico) => {
-                  return (
-                    <Tr key={servico.id}>
-                      <Td>
-                        <Box>
-                          <Link
-                            color="gray.900"
-                            onMouseEnter={() =>
-                              handlePrefetchServico(Number(servico.id))
-                            }
-                          >
-                            <Text>{servico.nome}</Text>
-                          </Link>
-                        </Box>
-                      </Td>
 
-                      <Td>
-                        <Text>{servico.custo}</Text>
-                      </Td>
+          {isFetching && <Progress size="xs" isIndeterminate />}
 
-                      <Td>
-                        <Text>{servico.valor}</Text>
-                      </Td>
+          {isLoading ? (
+            <Flex justify="center">
+              <Spinner />
+            </Flex>
+          ) : error ? (
+            <Flex justify="center">
+              <Text>Falha ao obter dados dos servicos.</Text>
+            </Flex>
+          ) : (
+            <>
+              <Table variant="striped" colorScheme="blackAlpha">
+                <Thead>
+                  <Tr>
+                    <Th>Serviço</Th>
+                    <Th>Custo</Th>
+                    <Th>Lucro</Th>
+                    <Th>Margem Lucro</Th>
+                    <Th width="8">Ações</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {value?.servicos.map((servico) => {
+                    return (
+                      <Tr key={servico.id}>
+                        <Td>
+                          <Box>
+                            <Link
+                              color="gray.900"
+                              onMouseEnter={() =>
+                                handlePrefetchServico(Number(servico.id))
+                              }
+                            >
+                              <Text>{servico.nome}</Text>
+                            </Link>
+                          </Box>
+                        </Td>
 
-                      <Td>
-                        <Text>{servico.margemLucro}</Text>
-                      </Td>
+                        <Td>
+                          <Text>{servico.custo}</Text>
+                        </Td>
 
-                      <Td>
-                        <HStack>
-                          <IconButton
-                            variant="outline"
-                            color="blue.800"
-                            aria-label="Editar serviço"
-                            icon={<RiPencilLine />}
-                            onClick={() => {
-                              router.push({
-                                pathname: "/servicos/form",
-                                query: String(servico.id),
-                              });
-                            }}
+                        <Td>
+                          <Text>{servico.valor}</Text>
+                        </Td>
+
+                        <Td>
+                          <Text>{servico.margemLucro}</Text>
+                        </Td>
+
+                        <Td>
+                          <HStack>
+                            <IconButton
+                              variant="outline"
+                              color="blue.800"
+                              aria-label="Editar serviço"
+                              icon={<RiPencilLine />}
+                              onClick={() => {
+                                router.push({
+                                  pathname: "/servicos/form",
+                                  query: String(servico.id),
+                                });
+                              }}
+                            />
+
+                            <IconButton
+                              variant="outline"
+                              color="red.800"
+                              aria-label="Excluir serviço"
+                              icon={<RiDeleteBinLine />}
+                              onClick={() => {
+                                setIsOpen(true);
+                              }}
+                            />
+                          </HStack>
+
+                          <AlertDialogList
+                            isOpen={isOpen}
+                            cancelRef={cancelRef}
+                            onClose={onClose}
+                            header="Remover Serviço"
+                            body="Tem certeza que deseja remover o serviço"
+                            description={servico.nome}
+                            onClick={() => deleteServico(String(servico.id))}
                           />
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
 
-                          <IconButton
-                            variant="outline"
-                            color="red.800"
-                            aria-label="Excluir serviço"
-                            icon={<RiDeleteBinLine />}
-                            onClick={() => {
-                              setIsOpen(true);
-                            }}
-                          />
-                        </HStack>
-
-                        <AlertDialogList
-                          isOpen={isOpen}
-                          cancelRef={cancelRef}
-                          onClose={onClose}
-                          header="Remover Serviço"
-                          body="Tem certeza que deseja remover o serviço"
-                          description={servico.nome}
-                          onClick={() => deleteServico(String(servico.id))}
-                        />
-                      </Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-
-            <Pagination
-              totalCountOfRegisters={data.totalCount}
-              currentPage={page}
-              onPageChange={setPage}
-            />
-          </>
-        )}
-      </Box>
-    </Sidebar>
+              <Pagination
+                totalCountOfRegisters={data.totalCount}
+                currentPage={page}
+                onPageChange={setPage}
+              />
+            </>
+          )}
+        </Box>
+      </Sidebar>
+    </LoadPage>
   );
 }
 

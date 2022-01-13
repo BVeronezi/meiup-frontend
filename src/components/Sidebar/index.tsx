@@ -12,7 +12,7 @@ export function Sidebar({ children }) {
   const { isOpen, onClose, onOpen } = useDisclosure();
 
   return (
-    <Box bg={useColorModeValue("white", "gray.900")}>
+    <Box height="100vh" bg={useColorModeValue("white", "gray.900")}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}

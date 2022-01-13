@@ -14,6 +14,7 @@ import {
   InputRightElement,
   Select,
   SimpleGrid,
+  Skeleton,
   Stack,
   Tab,
   TabList,
@@ -27,8 +28,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
-
-import { Headings } from "../../components/Heading";
 import { Input } from "../../components/Input";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 import { useContext, useEffect, useState } from "react";
@@ -40,6 +39,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { Endereco } from "../../fragments/endereco";
 import axios from "axios";
 import { Sidebar } from "../../components/Sidebar";
+import { LoadPage } from "../../components/Load";
 
 type FormData = {
   nome: string;
@@ -69,7 +69,7 @@ export default function FormUsuario() {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const [show, setShow] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const toast = createStandaloneToast({ theme: customTheme });
 
   const { register, handleSubmit, formState, setValue } = useForm({
@@ -80,7 +80,7 @@ export default function FormUsuario() {
 
   useEffect(() => {
     async function findUsuario() {
-      setIsLoading(false);
+      setIsLoading(true);
 
       const usuarioId: any = Object.keys(router.query)[0];
 
@@ -102,7 +102,7 @@ export default function FormUsuario() {
         }
       }
 
-      setIsLoading(true);
+      setIsLoading(false);
     }
 
     if (Object.keys(router.query)[0]) {
@@ -192,158 +192,166 @@ export default function FormUsuario() {
   };
 
   return (
-    <Sidebar>
-      <Stack as="form" onSubmit={handleSubmit(handleUsuario)} flex="1">
-        <Box
-          borderBottom="1px"
-          borderLeft="1px"
-          borderRight="1px"
-          borderRadius="lg"
-          borderColor="gray.300"
-        >
-          <Tabs isFitted variant="enclosed">
-            <TabList>
-              <Tab>Dados básicos</Tab>
-              <Tab>Endereço</Tab>
-            </TabList>
-            <TabPanels>
-              <TabPanel>
-                <VStack marginTop="14px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Input
-                      name="nome"
-                      autoFocus={true}
-                      label="Nome: *"
-                      error={errors.nome}
-                      {...register("nome")}
-                    ></Input>
+    <LoadPage active={isLoading}>
+      <Sidebar>
+        <Stack as="form" onSubmit={handleSubmit(handleUsuario)} flex="1">
+          <Box
+            borderBottom="1px"
+            borderLeft="1px"
+            borderRight="1px"
+            borderRadius="lg"
+            borderColor="gray.300"
+          >
+            <Tabs isFitted variant="enclosed">
+              <TabList>
+                <Tab>Dados básicos</Tab>
+                <Tab>Endereço</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                  <VStack marginTop="14px" spacing="12">
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <Input
+                        isLoading={isLoading}
+                        name="nome"
+                        autoFocus={true}
+                        label="Nome: *"
+                        error={errors.nome}
+                        {...register("nome")}
+                      ></Input>
 
-                    <Input
-                      name="email"
-                      type="email"
-                      label="E-mail: *"
-                      error={errors.email}
-                      {...register("email")}
-                    ></Input>
-                  </SimpleGrid>
+                      <Input
+                        isLoading={isLoading}
+                        name="email"
+                        type="email"
+                        label="E-mail: *"
+                        error={errors.email}
+                        {...register("email")}
+                      ></Input>
+                    </SimpleGrid>
 
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Input
-                      name="celular"
-                      label="Celular:"
-                      {...register("celular")}
-                    ></Input>
-                    <Input
-                      name="telefone"
-                      label="Telefone:"
-                      {...register("telefone")}
-                    ></Input>
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <Input
+                        isLoading={isLoading}
+                        name="celular"
+                        label="Celular:"
+                        {...register("celular")}
+                      ></Input>
+                      <Input
+                        isLoading={isLoading}
+                        name="telefone"
+                        label="Telefone:"
+                        {...register("telefone")}
+                      ></Input>
 
-                    <Box>
-                      <FormLabel fontWeight="bold" htmlFor="perfil">
-                        Perfil: *
-                      </FormLabel>
-                      <Select
-                        {...register("role")}
-                        variant="flushed"
-                        error={errors.role}
-                        borderBottomColor="gray.400"
-                        focusBorderColor="yellow.500"
-                        size="lg"
-                      >
-                        <option value="USER">Funcionário</option>
-                        <option value="ADMIN">Administrador</option>
-                      </Select>
-                    </Box>
-
-                    {!Object.keys(router.query)[0] && (
-                      <FormControl isInvalid={!!errors.senha}>
-                        <FormLabel htmlFor="senha">
-                          SENHA
-                          <Tooltip
-                            label="Senha gerada automaticamente para o primeiro acesso"
-                            fontSize="md"
-                          >
-                            <Icon as={InfoOutlineIcon} size="10px" ml="2" />
-                          </Tooltip>
+                      <Box>
+                        <FormLabel fontWeight="bold" htmlFor="perfil">
+                          Perfil: *
                         </FormLabel>
-                        <InputGroup size="md">
-                          <Input
+                        <Skeleton isLoaded={!isLoading}>
+                          <Select
+                            {...register("role")}
                             variant="flushed"
-                            isDisabled
-                            type={show ? "text" : "password"}
-                            {...register("senha")}
-                          />
-                          <InputRightElement width="2.5rem">
-                            <IconButton
-                              aria-label="Input Password"
-                              icon={<ViewIcon />}
-                              size="sm"
-                              onClick={handleClick}
-                            />
-                          </InputRightElement>
-                        </InputGroup>
+                            error={errors.role}
+                            borderBottomColor="gray.400"
+                            focusBorderColor="yellow.500"
+                            size="lg"
+                          >
+                            <option value="USER">Funcionário</option>
+                            <option value="ADMIN">Administrador</option>
+                          </Select>
+                        </Skeleton>
+                      </Box>
 
-                        {!!errors.senha && (
-                          <FormErrorMessage>
-                            {errors.senha.message}
-                          </FormErrorMessage>
-                        )}
-                      </FormControl>
-                    )}
-                  </SimpleGrid>
-                </VStack>
-              </TabPanel>
-              <TabPanel>
-                <Endereco
-                  register={register}
-                  errors={errors}
-                  isLoading={isLoading}
-                  buscaCep={buscaCep}
-                />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Box>
-        <Box>
-          <Flex mt="8" justify="flex-end">
-            <HStack spacing="24px">
-              <Button
-                width={["150px", "200px"]}
-                fontSize={["14px", "16px"]}
-                type="submit"
-                color="white"
-                backgroundColor="red.700"
-                onClick={(event) => {
-                  event.preventDefault();
-                  router.back();
-                }}
-              >
-                VOLTAR
-              </Button>
-              <Button
-                width={["150px", "200px"]}
-                fontSize={["14px", "16px"]}
-                type="submit"
-                color="white"
-                backgroundColor="blue.500"
-                isLoading={formState.isSubmitting}
-              >
-                SALVAR
-              </Button>
-            </HStack>
-          </Flex>
-        </Box>
-      </Stack>
-    </Sidebar>
+                      {!Object.keys(router.query)[0] && (
+                        <FormControl isInvalid={!!errors.senha}>
+                          <FormLabel htmlFor="senha">
+                            SENHA
+                            <Tooltip
+                              label="Senha gerada automaticamente para o primeiro acesso"
+                              fontSize="md"
+                            >
+                              <Icon as={InfoOutlineIcon} size="10px" ml="2" />
+                            </Tooltip>
+                          </FormLabel>
+                          <InputGroup size="md">
+                            <Input
+                              variant="flushed"
+                              isDisabled
+                              type={show ? "text" : "password"}
+                              {...register("senha")}
+                            />
+                            <InputRightElement width="2.5rem">
+                              <IconButton
+                                aria-label="Input Password"
+                                icon={<ViewIcon />}
+                                size="sm"
+                                onClick={handleClick}
+                              />
+                            </InputRightElement>
+                          </InputGroup>
+
+                          {!!errors.senha && (
+                            <FormErrorMessage>
+                              {errors.senha.message}
+                            </FormErrorMessage>
+                          )}
+                        </FormControl>
+                      )}
+                    </SimpleGrid>
+                  </VStack>
+                </TabPanel>
+                <TabPanel>
+                  <Endereco
+                    register={register}
+                    errors={errors}
+                    isLoading={isLoading}
+                    buscaCep={buscaCep}
+                  />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+          <Box>
+            <Flex mt="8" justify="flex-end">
+              <HStack spacing="24px">
+                <Button
+                  width={["150px", "200px"]}
+                  fontSize={["14px", "16px"]}
+                  type="submit"
+                  color="white"
+                  backgroundColor="red.700"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    router.back();
+                  }}
+                >
+                  VOLTAR
+                </Button>
+                <Button
+                  width={["150px", "200px"]}
+                  fontSize={["14px", "16px"]}
+                  type="submit"
+                  color="white"
+                  backgroundColor="blue.500"
+                  isLoading={formState.isSubmitting}
+                >
+                  SALVAR
+                </Button>
+              </HStack>
+            </Flex>
+          </Box>
+        </Stack>
+      </Sidebar>
+    </LoadPage>
   );
 }
 

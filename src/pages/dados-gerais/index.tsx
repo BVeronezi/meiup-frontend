@@ -5,6 +5,7 @@ import {
   createStandaloneToast,
   Flex,
   SimpleGrid,
+  Skeleton,
   Stack,
   Tab,
   TabList,
@@ -26,6 +27,7 @@ import { api } from "../../services/apiClient";
 import { theme as customTheme } from "../../styles/theme";
 import { Endereco } from "../../fragments/endereco";
 import { Sidebar } from "../../components/Sidebar";
+import { LoadPage } from "../../components/Load";
 
 type FormData = {
   cnpj: string;
@@ -51,7 +53,7 @@ const empresaFormSchema = yup.object().shape({
 });
 
 export default function DadosGerais() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const { user } = useContext(AuthContext);
   const toast = createStandaloneToast({ theme: customTheme });
 
@@ -63,7 +65,7 @@ export default function DadosGerais() {
 
   useEffect(() => {
     async function findEmpresa() {
-      setIsLoading(false);
+      setIsLoading(true);
       const empresaId: any = user?.empresa?.id;
 
       if (empresaId) {
@@ -82,7 +84,7 @@ export default function DadosGerais() {
             }
           );
         }
-        setIsLoading(true);
+        setIsLoading(false);
       }
     }
 
@@ -188,109 +190,117 @@ export default function DadosGerais() {
   };
 
   return (
-    <Sidebar>
-      <Stack as="form" onSubmit={handleSubmit(handleDadosGerais)} flex="1">
-        <Box
-          borderBottom="1px"
-          borderLeft="1px"
-          borderRight="1px"
-          borderRadius="lg"
-          borderColor="gray.300"
-        >
-          <Tabs isFitted variant="enclosed">
-            <TabList>
-              <Tab>Informações da empresa</Tab>
-              <Tab>Endereço</Tab>
-            </TabList>
-
-            <TabPanels>
-              <TabPanel>
-                <VStack marginTop="14px" spacing="12">
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Input
-                      name="cnpj"
-                      autoFocus={true}
-                      label="CNPJ *:"
-                      error={errors.cnpj}
-                      {...register("cnpj")}
-                      onChange={(c) => consultaCpfCnpj(c.target.value)}
-                    ></Input>
-                    <Input
-                      name="ie"
-                      label="Inscrição Estadual:"
-                      {...register("ie")}
-                    ></Input>
-                  </SimpleGrid>
-
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Input
-                      name="razaoSocial"
-                      label="Razão Social *:"
-                      error={errors.razaoSocial}
-                      {...register("razaoSocial")}
-                    ></Input>
-                  </SimpleGrid>
-
-                  <SimpleGrid
-                    minChildWidth="240px"
-                    spacing={["6", "8"]}
-                    w="100%"
-                  >
-                    <Input
-                      name="telefone"
-                      label="Telefone:"
-                      {...register("telefone")}
-                    ></Input>
-
-                    <Input
-                      name="celular"
-                      label="Celular:"
-                      {...register("celular")}
-                    ></Input>
-
-                    <Input
-                      name="email"
-                      type="email"
-                      label="E-mail:"
-                      {...register("email")}
-                    ></Input>
-                  </SimpleGrid>
-                </VStack>
-              </TabPanel>
-              <TabPanel>
-                <Endereco
-                  register={register}
-                  errors={errors}
-                  isLoading={isLoading}
-                  buscaCep={buscaCep}
-                />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Box>
-        <Flex justify="flex-end">
-          <Button
-            width={["150px", "200px"]}
-            fontSize={["14px", "16px"]}
-            mt="8"
-            type="submit"
-            color="white"
-            backgroundColor="blue.500"
-            isLoading={formState.isSubmitting}
+    <LoadPage active={isLoading}>
+      <Sidebar>
+        <Stack as="form" onSubmit={handleSubmit(handleDadosGerais)} flex="1">
+          <Box
+            borderBottom="1px"
+            borderLeft="1px"
+            borderRight="1px"
+            borderRadius="lg"
+            borderColor="gray.300"
           >
-            SALVAR
-          </Button>
-        </Flex>
-      </Stack>
-    </Sidebar>
+            <Tabs isFitted variant="enclosed">
+              <TabList>
+                <Tab>Informações da empresa</Tab>
+                <Tab>Endereço</Tab>
+              </TabList>
+
+              <TabPanels>
+                <TabPanel>
+                  <VStack marginTop="14px" spacing="12">
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <Input
+                        isLoading={isLoading}
+                        name="cnpj"
+                        autoFocus={true}
+                        label="CNPJ *:"
+                        error={errors.cnpj}
+                        {...register("cnpj")}
+                        onChange={(c) => consultaCpfCnpj(c.target.value)}
+                      ></Input>
+                      <Input
+                        isLoading={isLoading}
+                        name="ie"
+                        label="Inscrição Estadual:"
+                        {...register("ie")}
+                      ></Input>
+                    </SimpleGrid>
+
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <Input
+                        isLoading={isLoading}
+                        name="razaoSocial"
+                        label="Razão Social *:"
+                        error={errors.razaoSocial}
+                        {...register("razaoSocial")}
+                      ></Input>
+                    </SimpleGrid>
+
+                    <SimpleGrid
+                      minChildWidth="240px"
+                      spacing={["6", "8"]}
+                      w="100%"
+                    >
+                      <Input
+                        isLoading={isLoading}
+                        name="telefone"
+                        label="Telefone:"
+                        {...register("telefone")}
+                      ></Input>
+
+                      <Input
+                        isLoading={isLoading}
+                        name="celular"
+                        label="Celular:"
+                        {...register("celular")}
+                      ></Input>
+
+                      <Input
+                        isLoading={isLoading}
+                        name="email"
+                        type="email"
+                        label="E-mail:"
+                        {...register("email")}
+                      ></Input>
+                    </SimpleGrid>
+                  </VStack>
+                </TabPanel>
+                <TabPanel>
+                  <Endereco
+                    register={register}
+                    errors={errors}
+                    isLoading={isLoading}
+                    buscaCep={buscaCep}
+                  />
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+          <Flex justify="flex-end">
+            <Button
+              width={["150px", "200px"]}
+              fontSize={["14px", "16px"]}
+              mt="8"
+              type="submit"
+              color="white"
+              backgroundColor="blue.500"
+              isLoading={formState.isSubmitting}
+            >
+              SALVAR
+            </Button>
+          </Flex>
+        </Stack>
+      </Sidebar>
+    </LoadPage>
   );
 }
 

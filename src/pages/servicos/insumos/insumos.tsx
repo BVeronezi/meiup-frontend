@@ -36,7 +36,7 @@ const insumoFormSchema = yup.object().shape({
   quantidade: yup.string().required("Quantidade obrigatória"),
 });
 
-export default function Insumos({ produtos }) {
+export default function Insumos({ produtos, handleLoad }) {
   const router = useRouter();
   const servicoId: any = Object.keys(router.query)[0];
   const [page, setPage] = useState(1);
@@ -91,6 +91,7 @@ export default function Insumos({ produtos }) {
   };
 
   const adicionarInsumo: SubmitHandler<FormData> = async (values) => {
+    handleLoad(true);
     if (!stateProduto) {
       setAddProduto(false);
     }
@@ -122,6 +123,7 @@ export default function Insumos({ produtos }) {
         });
       }
 
+      handleLoad(false);
       resetInputs();
       setRefreshKey((oldKey) => oldKey + 1);
     }
@@ -133,6 +135,7 @@ export default function Insumos({ produtos }) {
   };
 
   async function excluirInsumo(produtoServico) {
+    handleLoad(true);
     try {
       onClose();
       await api.delete(`/servicos/produtosServico/${servicoId}`, {
@@ -152,6 +155,7 @@ export default function Insumos({ produtos }) {
     } catch (error) {
       console.log(error);
     }
+    handleLoad(false);
   }
 
   return (

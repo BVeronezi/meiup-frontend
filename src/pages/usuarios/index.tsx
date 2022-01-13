@@ -31,6 +31,8 @@ import { Pesquisa } from "../../fragments/pesquisa";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
 import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
+import { getUsuarios, useUsuarios } from "../../hooks/usuario/useUsers";
+import { LoadPage } from "../../components/Load";
 interface UsuariosProps {
   users: User[];
   totalCount: number;
@@ -53,28 +55,38 @@ export default function Usuarios() {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const toast = createStandaloneToast({ theme: customTheme });
-
+  const [isFetching, setIsFetching] = useState(false);
+  const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = React.useRef() as React.MutableRefObject<HTMLButtonElement>;
 
   const [valuePesquisa, setValuePesquisa] = useState("");
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<UsuariosProps>();
-  const [error] = useState("");
+
+  const [value, setValue] = useState({
+    users: [],
+    totalCount: 0,
+  });
 
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
   });
 
+  let { data, isLoading, error } = useUsuarios(page, {
+    initialData: null,
+  });
+
   useEffect(() => {
-    fetchUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+    async function fetchData() {
+      setValue(data);
+    }
+    fetchData();
+  }, [data]);
 
   async function deleteUser(userId: string) {
+    setIsLoadingPage(true);
     try {
       onClose();
 
@@ -86,56 +98,27 @@ export default function Usuarios() {
         duration: 2000,
         isClosable: true,
       });
-
-      fetchUsers();
     } catch (error) {
       console.log(error);
     }
+    setIsLoadingPage(false);
   }
 
-  async function handleChange(event) {
-    setValuePesquisa(event.target.value);
-
+  async function handlePesquisa(event) {
     if (event.target.value.length > 3) {
-      fetchUsers(event.target.value);
+      setIsFetching(true);
+      const usuariosPesquisados = await getUsuarios(
+        1,
+        undefined,
+        event.target.value
+      );
+      setValue(usuariosPesquisados);
+      setIsFetching(false);
     } else {
-      fetchUsers();
+      setIsFetching(true);
+      setValue(data);
+      setIsFetching(false);
     }
-  }
-
-  async function fetchUsers(event?: string) {
-    setIsLoading(true);
-
-    const response: any = await api.get("/usuario", {
-      params: {
-        nome: event,
-        email: event,
-        empresa: user.empresa.id,
-        page,
-        limit: 100,
-      },
-    });
-
-    const users = response.data.found.users.map((user) => {
-      return {
-        id: user.id,
-        nome: user.nome,
-        email: user.email,
-        perfil: user.role,
-        createdAt: new Date(user.dataCriacao).toLocaleDateString("pt-BR", {
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-        }),
-      };
-    });
-
-    setData({
-      users,
-      totalCount: response.data.found.total,
-    });
-
-    setIsLoading(false);
   }
 
   async function handlePrefetchUser(userId: string) {
@@ -153,135 +136,137 @@ export default function Usuarios() {
   }
 
   return (
-    <Sidebar>
-      <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
-        <Flex mb="8" justify="space-between" align="center">
-          <Pesquisa handleChange={handleChange} />
-          <Box ml="4">
-            {isWideVersion && (
-              <NextLink href="/usuarios/form" passHref>
-                <Button
-                  _hover={{
-                    bg: "blue.500",
-                  }}
-                  as="a"
-                  size="sm"
-                  fontSize="sm"
-                  color="white"
-                  backgroundColor="blue.800"
-                  leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-                >
-                  Novo usuário
-                </Button>
-              </NextLink>
-            )}
+    <LoadPage active={isLoadingPage}>
+      <Sidebar>
+        <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
+          <Flex mb="8" justify="space-between" align="center">
+            <Pesquisa handleChange={handlePesquisa} />
+            <Box ml="4">
+              {isWideVersion && (
+                <NextLink href="/usuarios/form" passHref>
+                  <Button
+                    _hover={{
+                      bg: "blue.500",
+                    }}
+                    as="a"
+                    size="sm"
+                    fontSize="sm"
+                    color="white"
+                    backgroundColor="blue.800"
+                    leftIcon={<Icon as={RiAddLine} fontSize="20" />}
+                  >
+                    Novo usuário
+                  </Button>
+                </NextLink>
+              )}
 
-            {!isWideVersion && (
-              <Tooltip label="Novo usuário">
-                <IconButton
-                  variant="outline"
-                  color="blue.800"
-                  aria-label="Novo usuário"
-                  onClick={() => router.push("/usuarios/form")}
-                  icon={<RiAddBoxLine />}
-                />
-              </Tooltip>
-            )}
-          </Box>
-        </Flex>
-
-        {isLoading ? (
-          <Flex justify="center">
-            <Spinner />
+              {!isWideVersion && (
+                <Tooltip label="Novo usuário">
+                  <IconButton
+                    variant="outline"
+                    color="blue.800"
+                    aria-label="Novo usuário"
+                    onClick={() => router.push("/usuarios/form")}
+                    icon={<RiAddBoxLine />}
+                  />
+                </Tooltip>
+              )}
+            </Box>
           </Flex>
-        ) : error ? (
-          <Flex justify="center">
-            <Text>Falha ao obter dados dos usuários.</Text>
-          </Flex>
-        ) : (
-          <Box color="black">
-            <Table colorScheme="blackAlpha">
-              <Thead>
-                <Tr>
-                  <Th>Usuário</Th>
-                  <Th>Perfil</Th>
-                  {isWideVersion && <Th>Data de cadastro</Th>}
-                  <Th width="8">Ações</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {data?.users.map((user) => {
-                  return (
-                    <Tr key={user.id}>
-                      <Td>
-                        <Box>
-                          <Link
-                            color="gray.900"
-                            onMouseEnter={() => handlePrefetchUser(user.id)}
-                          >
-                            <Text fontWeight="bold">{user.nome}</Text>
-                          </Link>
 
-                          <Text fontSize="sm">{user.email}</Text>
-                        </Box>
-                      </Td>
+          {isLoading ? (
+            <Flex justify="center">
+              <Spinner />
+            </Flex>
+          ) : error ? (
+            <Flex justify="center">
+              <Text>Falha ao obter dados dos usuários.</Text>
+            </Flex>
+          ) : (
+            <Box color="black">
+              <Table colorScheme="blackAlpha">
+                <Thead>
+                  <Tr>
+                    <Th>Usuário</Th>
+                    <Th>Perfil</Th>
+                    {isWideVersion && <Th>Data de cadastro</Th>}
+                    <Th width="8">Ações</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {data?.users.map((user) => {
+                    return (
+                      <Tr key={user.id}>
+                        <Td>
+                          <Box>
+                            <Link
+                              color="gray.900"
+                              onMouseEnter={() => handlePrefetchUser(user.id)}
+                            >
+                              <Text fontWeight="bold">{user.nome}</Text>
+                            </Link>
 
-                      <Td>
-                        <Text>{Perfil[user.perfil]}</Text>
-                      </Td>
+                            <Text fontSize="sm">{user.email}</Text>
+                          </Box>
+                        </Td>
 
-                      {isWideVersion && <Td>{user.createdAt}</Td>}
-                      <Td>
-                        <HStack>
-                          <IconButton
-                            variant="outline"
-                            color="blue.800"
-                            aria-label="Editar usuário"
-                            icon={<RiPencilLine />}
-                            onClick={() => {
-                              router.push({
-                                pathname: "/usuarios/form",
-                                query: user.id,
-                              });
-                            }}
+                        <Td>
+                          <Text>{Perfil[user.perfil]}</Text>
+                        </Td>
+
+                        {isWideVersion && <Td>{user.createdAt}</Td>}
+                        <Td>
+                          <HStack>
+                            <IconButton
+                              variant="outline"
+                              color="blue.800"
+                              aria-label="Editar usuário"
+                              icon={<RiPencilLine />}
+                              onClick={() => {
+                                router.push({
+                                  pathname: "/usuarios/form",
+                                  query: user.id,
+                                });
+                              }}
+                            />
+
+                            <IconButton
+                              variant="outline"
+                              color="red.800"
+                              aria-label="Excluir usuário"
+                              icon={<RiDeleteBinLine />}
+                              onClick={() => {
+                                setIsOpen(true);
+                              }}
+                            />
+                          </HStack>
+
+                          <AlertDialogList
+                            isOpen={isOpen}
+                            cancelRef={cancelRef}
+                            onClose={onClose}
+                            header="Remover Usuário"
+                            body="Tem certeza que deseja remover o usuário"
+                            description={user.email}
+                            onClick={() => deleteUser(user.id)}
                           />
+                        </Td>
+                      </Tr>
+                    );
+                  })}
+                </Tbody>
+              </Table>
 
-                          <IconButton
-                            variant="outline"
-                            color="red.800"
-                            aria-label="Excluir usuário"
-                            icon={<RiDeleteBinLine />}
-                            onClick={() => {
-                              setIsOpen(true);
-                            }}
-                          />
-                        </HStack>
-
-                        <AlertDialogList
-                          isOpen={isOpen}
-                          cancelRef={cancelRef}
-                          onClose={onClose}
-                          header="Remover Usuário"
-                          body="Tem certeza que deseja remover o usuário"
-                          description={user.email}
-                          handleDelete={() => deleteUser(user.id)}
-                        />
-                      </Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-
-            <Pagination
-              totalCountOfRegisters={data?.totalCount}
-              currentPage={page}
-              onPageChange={setPage}
-            />
-          </Box>
-        )}
-      </Box>
-    </Sidebar>
+              <Pagination
+                totalCountOfRegisters={data?.totalCount}
+                currentPage={page}
+                onPageChange={setPage}
+              />
+            </Box>
+          )}
+        </Box>
+      </Sidebar>
+    </LoadPage>
   );
 }
 

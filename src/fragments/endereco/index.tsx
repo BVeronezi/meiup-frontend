@@ -1,6 +1,4 @@
 import { Box, SimpleGrid, VStack } from "@chakra-ui/layout";
-import axios from "axios";
-import { Headings } from "../../components/Heading";
 import { Input } from "../../components/Input";
 
 export function Endereco({ register, errors, isLoading, buscaCep }) {
@@ -27,13 +25,14 @@ export function Endereco({ register, errors, isLoading, buscaCep }) {
         <Input name="numero" label="Número:" {...register("numero")}></Input>
 
         <Input name="bairro" label="Bairro:" {...register("bairro")}></Input>
-
-        <Input name="cidade" label="Cidade:" {...register("cidade")}></Input>
       </SimpleGrid>
 
       <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
+        <Input name="cidade" label="Cidade:" {...register("cidade")}></Input>
         <Input name="estado" label="Estado:" {...register("estado")}></Input>
+      </SimpleGrid>
 
+      <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
         <Input
           name="complemento"
           label="Complemento:"
