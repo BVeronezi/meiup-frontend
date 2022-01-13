@@ -306,32 +306,6 @@ export default function Vendas({ vendas }) {
                               </Tooltip>
                             )}
                           </HStack>
-
-                          {isFinalizaVenda ? (
-                            <AlertDialogList
-                              isOpen={isOpen}
-                              cancelRef={cancelRef}
-                              onClose={onClose}
-                              header="Finalizar venda"
-                              body="Tem certeza que deseja finalizar a venda"
-                              description={selectedVenda}
-                              textButton1="Não"
-                              textButton2="Sim"
-                              onClick={() => finalizarVenda(selectedVenda)}
-                            />
-                          ) : (
-                            <AlertDialogList
-                              isOpen={isOpen}
-                              cancelRef={cancelRef}
-                              onClose={onClose}
-                              header="Cancelar venda"
-                              body="Tem certeza que deseja cancelar a venda"
-                              description={selectedVenda}
-                              textButton1="Não"
-                              textButton2="Sim"
-                              onClick={() => cancelaVenda(selectedVenda)}
-                            />
-                          )}
                         </Td>
                       </Tr>
                     );
@@ -345,6 +319,32 @@ export default function Vendas({ vendas }) {
                 onPageChange={setPage}
               />
             </Box>
+          )}
+
+          {isFinalizaVenda ? (
+            <AlertDialogList
+              isOpen={isOpen}
+              cancelRef={cancelRef}
+              onClose={onClose}
+              header="Finalizar venda"
+              body="Tem certeza que deseja finalizar a venda"
+              description={selectedVenda}
+              textButton1="Não"
+              textButton2="Sim"
+              onClick={() => finalizarVenda(selectedVenda)}
+            />
+          ) : (
+            <AlertDialogList
+              isOpen={isOpen}
+              cancelRef={cancelRef}
+              onClose={onClose}
+              header="Cancelar venda"
+              body="Tem certeza que deseja cancelar a venda"
+              description={selectedVenda}
+              textButton1="Não"
+              textButton2="Sim"
+              onClick={() => cancelaVenda(selectedVenda)}
+            />
           )}
         </Box>
       </Sidebar>

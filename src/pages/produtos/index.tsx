@@ -48,6 +48,10 @@ export default function Produtos({ produtos }) {
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
+  const [selectedProduto, setSelectedProduto] = useState({
+    id: "",
+    descricao: "",
+  });
 
   const [value, setValue] = useState({
     produtos: [],
@@ -233,20 +237,11 @@ export default function Produtos({ produtos }) {
                               aria-label="Excluir produto"
                               icon={<RiDeleteBinLine />}
                               onClick={() => {
+                                setSelectedProduto(produto);
                                 setIsOpen(true);
                               }}
                             />
                           </HStack>
-
-                          <AlertDialogList
-                            isOpen={isOpen}
-                            cancelRef={cancelRef}
-                            onClose={onClose}
-                            header="Remover Produto"
-                            body="Tem certeza que deseja remover o produto"
-                            description={produto.descricao}
-                            onClick={() => deleteProduto(String(produto.id))}
-                          />
                         </Td>
                       </Tr>
                     );
@@ -263,6 +258,16 @@ export default function Produtos({ produtos }) {
               )}
             </Box>
           )}
+
+          <AlertDialogList
+            isOpen={isOpen}
+            cancelRef={cancelRef}
+            onClose={onClose}
+            header="Remover Produto"
+            body="Tem certeza que deseja remover o produto"
+            description={selectedProduto.descricao}
+            onClick={() => deleteProduto(String(selectedProduto.id))}
+          />
         </Box>
       </Sidebar>
     </LoadPage>

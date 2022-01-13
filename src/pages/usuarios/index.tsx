@@ -60,7 +60,7 @@ export default function Usuarios() {
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = React.useRef() as React.MutableRefObject<HTMLButtonElement>;
-
+  const [selectedUsuario, setSelectedUsuario] = useState({ id: "", email: "" });
   const [valuePesquisa, setValuePesquisa] = useState("");
   const [page, setPage] = useState(1);
 
@@ -236,20 +236,13 @@ export default function Usuarios() {
                               aria-label="Excluir usuário"
                               icon={<RiDeleteBinLine />}
                               onClick={() => {
-                                setIsOpen(true);
+                                {
+                                  setSelectedUsuario(user);
+                                  setIsOpen(true);
+                                }
                               }}
                             />
                           </HStack>
-
-                          <AlertDialogList
-                            isOpen={isOpen}
-                            cancelRef={cancelRef}
-                            onClose={onClose}
-                            header="Remover Usuário"
-                            body="Tem certeza que deseja remover o usuário"
-                            description={user.email}
-                            onClick={() => deleteUser(user.id)}
-                          />
                         </Td>
                       </Tr>
                     );
@@ -264,6 +257,16 @@ export default function Usuarios() {
               />
             </Box>
           )}
+
+          <AlertDialogList
+            isOpen={isOpen}
+            cancelRef={cancelRef}
+            onClose={onClose}
+            header="Remover Usuário"
+            body="Tem certeza que deseja remover o usuário"
+            description={selectedUsuario.email}
+            onClick={() => deleteUser(selectedUsuario.id)}
+          />
         </Box>
       </Sidebar>
     </LoadPage>

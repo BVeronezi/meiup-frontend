@@ -48,6 +48,10 @@ export default function Servicos() {
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
+  const [selectedServico, setSelectedServico] = useState({
+    id: "",
+    nome: "",
+  });
 
   const [value, setValue] = useState({
     servicos: [],
@@ -229,20 +233,11 @@ export default function Servicos() {
                               aria-label="Excluir serviço"
                               icon={<RiDeleteBinLine />}
                               onClick={() => {
+                                setSelectedServico(servico);
                                 setIsOpen(true);
                               }}
                             />
                           </HStack>
-
-                          <AlertDialogList
-                            isOpen={isOpen}
-                            cancelRef={cancelRef}
-                            onClose={onClose}
-                            header="Remover Serviço"
-                            body="Tem certeza que deseja remover o serviço"
-                            description={servico.nome}
-                            onClick={() => deleteServico(String(servico.id))}
-                          />
                         </Td>
                       </Tr>
                     );
@@ -257,6 +252,16 @@ export default function Servicos() {
               />
             </>
           )}
+
+          <AlertDialogList
+            isOpen={isOpen}
+            cancelRef={cancelRef}
+            onClose={onClose}
+            header="Remover Serviço"
+            body="Tem certeza que deseja remover o serviço"
+            description={selectedServico.nome}
+            onClick={() => deleteServico(String(selectedServico.id))}
+          />
         </Box>
       </Sidebar>
     </LoadPage>
