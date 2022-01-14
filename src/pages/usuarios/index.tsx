@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import Head from "next/head";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -25,7 +26,6 @@ import { api } from "../../services/apiClient";
 import { queryClient } from "../../services/queryClient";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 import { useRouter } from "next/router";
-import { AuthContext } from "../../contexts/AuthContext";
 import { theme as customTheme } from "../../styles/theme";
 import { Pesquisa } from "../../fragments/pesquisa";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
@@ -33,18 +33,6 @@ import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 import { getUsuarios, useUsuarios } from "../../hooks/usuario/useUsers";
 import { LoadPage } from "../../components/Load";
-interface UsuariosProps {
-  users: User[];
-  totalCount: number;
-}
-
-type User = {
-  id: string;
-  nome: string;
-  perfil: Perfil;
-  email: string;
-  createdAt: string;
-};
 
 enum Perfil {
   "ADMIN" = "Administrador",
@@ -53,13 +41,12 @@ enum Perfil {
 
 export default function Usuarios() {
   const router = useRouter();
-  const { user } = useContext(AuthContext);
   const toast = createStandaloneToast({ theme: customTheme });
   const [isFetching, setIsFetching] = useState(false);
   const [isLoadingPage, setIsLoadingPage] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
-  const cancelRef = React.useRef() as React.MutableRefObject<HTMLButtonElement>;
+  const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
   const [selectedUsuario, setSelectedUsuario] = useState({ id: "", email: "" });
   const [valuePesquisa, setValuePesquisa] = useState("");
   const [page, setPage] = useState(1);
@@ -91,6 +78,8 @@ export default function Usuarios() {
       onClose();
 
       await api.delete(`/usuario/${userId}`);
+      const data = await getUsuarios(page, null);
+      setValue(data);
 
       toast({
         title: "Usuário removido com sucesso!",
@@ -141,140 +130,156 @@ export default function Usuarios() {
   }
 
   return (
-    <LoadPage active={isLoadingPage}>
-      <Sidebar>
-        <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
-          <Flex mb="8" justify="space-between" align="center">
-            <Pesquisa handleChange={handlePesquisa} />
-            <Box ml="4">
-              {isWideVersion && (
-                <NextLink href="/usuarios/form" passHref>
-                  <Button
-                    _hover={{
-                      bg: "blue.500",
-                    }}
-                    as="a"
-                    size="sm"
-                    fontSize="sm"
-                    color="white"
-                    backgroundColor="blue.800"
-                    leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-                  >
-                    Novo usuário
-                  </Button>
-                </NextLink>
-              )}
+    <>
+      <Head>
+        <title>MEIUP | Usuários</title>
+      </Head>
 
-              {!isWideVersion && (
-                <Tooltip label="Novo usuário">
-                  <IconButton
-                    variant="outline"
-                    color="blue.800"
-                    aria-label="Novo usuário"
-                    onClick={() => router.push("/usuarios/form")}
-                    icon={<RiAddBoxLine />}
-                  />
-                </Tooltip>
-              )}
-            </Box>
-          </Flex>
+      <LoadPage active={isLoadingPage}>
+        <Sidebar>
+          <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
+            <Flex mb="8" justify="space-between" align="center">
+              <Pesquisa handleChange={handlePesquisa} />
+              <Box ml="4">
+                {isWideVersion && (
+                  <NextLink href="/usuarios/form" passHref>
+                    <Button
+                      _hover={{
+                        bg: "blue.500",
+                      }}
+                      as="a"
+                      size="sm"
+                      fontSize="sm"
+                      color="white"
+                      backgroundColor="blue.800"
+                      leftIcon={<Icon as={RiAddLine} fontSize="20" />}
+                    >
+                      Novo usuário
+                    </Button>
+                  </NextLink>
+                )}
 
-          {isLoading ? (
-            <Flex justify="center">
-              <Spinner />
+                {!isWideVersion && (
+                  <Tooltip label="Novo usuário">
+                    <IconButton
+                      variant="outline"
+                      color="blue.800"
+                      aria-label="Novo usuário"
+                      onClick={() => router.push("/usuarios/form")}
+                      icon={<RiAddBoxLine />}
+                    />
+                  </Tooltip>
+                )}
+              </Box>
             </Flex>
-          ) : error ? (
-            <Flex justify="center">
-              <Text>Falha ao obter dados dos usuários.</Text>
-            </Flex>
-          ) : (
-            <Box color="black">
-              <Table colorScheme="blackAlpha">
-                <Thead>
-                  <Tr>
-                    <Th>Usuário</Th>
-                    <Th>Perfil</Th>
-                    {isWideVersion && <Th>Data de cadastro</Th>}
-                    <Th width="8">Ações</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {data?.users.map((user) => {
-                    return (
-                      <Tr key={user.id}>
-                        <Td>
-                          <Box>
-                            <Link
-                              color="gray.900"
-                              onMouseEnter={() => handlePrefetchUser(user.id)}
-                            >
-                              <Text fontWeight="bold">{user.nome}</Text>
-                            </Link>
 
-                            <Text fontSize="sm">{user.email}</Text>
-                          </Box>
-                        </Td>
+            {isLoading ? (
+              <Flex justify="center">
+                <Spinner />
+              </Flex>
+            ) : error ? (
+              <Flex justify="center">
+                <Text>Falha ao obter dados dos usuários.</Text>
+              </Flex>
+            ) : (
+              <>
+                {data?.users.length === 0 ? (
+                  <Flex justify="center">
+                    <Text>Nenhum usuário encontrado.</Text>
+                  </Flex>
+                ) : (
+                  <Box color="black">
+                    <Table variant="striped" colorScheme="blackAlpha">
+                      <Thead>
+                        <Tr>
+                          <Th>Usuário</Th>
+                          <Th>Perfil</Th>
+                          {isWideVersion && <Th>Data de cadastro</Th>}
+                          <Th width="8">Ações</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {data?.users.map((user) => {
+                          return (
+                            <Tr key={user.id}>
+                              <Td>
+                                <Box>
+                                  <Link
+                                    color="gray.900"
+                                    onMouseEnter={() =>
+                                      handlePrefetchUser(user.id)
+                                    }
+                                  >
+                                    <Text fontWeight="bold">{user.nome}</Text>
+                                  </Link>
 
-                        <Td>
-                          <Text>{Perfil[user.perfil]}</Text>
-                        </Td>
+                                  <Text fontSize="sm">{user.email}</Text>
+                                </Box>
+                              </Td>
 
-                        {isWideVersion && <Td>{user.createdAt}</Td>}
-                        <Td>
-                          <HStack>
-                            <IconButton
-                              variant="outline"
-                              color="blue.800"
-                              aria-label="Editar usuário"
-                              icon={<RiPencilLine />}
-                              onClick={() => {
-                                router.push({
-                                  pathname: "/usuarios/form",
-                                  query: user.id,
-                                });
-                              }}
-                            />
+                              <Td>
+                                <Text>{Perfil[user.perfil]}</Text>
+                              </Td>
 
-                            <IconButton
-                              variant="outline"
-                              color="red.800"
-                              aria-label="Excluir usuário"
-                              icon={<RiDeleteBinLine />}
-                              onClick={() => {
-                                {
-                                  setSelectedUsuario(user);
-                                  setIsOpen(true);
-                                }
-                              }}
-                            />
-                          </HStack>
-                        </Td>
-                      </Tr>
-                    );
-                  })}
-                </Tbody>
-              </Table>
+                              {isWideVersion && <Td>{user.createdAt}</Td>}
+                              <Td>
+                                <HStack>
+                                  <IconButton
+                                    variant="outline"
+                                    color="blue.800"
+                                    aria-label="Editar usuário"
+                                    icon={<RiPencilLine />}
+                                    onClick={() => {
+                                      router.push({
+                                        pathname: "/usuarios/form",
+                                        query: user.id,
+                                      });
+                                    }}
+                                  />
 
-              <Pagination
-                totalCountOfRegisters={data?.totalCount}
-                currentPage={page}
-                onPageChange={setPage}
-              />
-            </Box>
-          )}
+                                  <IconButton
+                                    variant="outline"
+                                    color="red.800"
+                                    aria-label="Excluir usuário"
+                                    icon={<RiDeleteBinLine />}
+                                    onClick={() => {
+                                      {
+                                        setSelectedUsuario(user);
+                                        setIsOpen(true);
+                                      }
+                                    }}
+                                  />
+                                </HStack>
+                              </Td>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
 
-          <AlertDialogList
-            isOpen={isOpen}
-            cancelRef={cancelRef}
-            onClose={onClose}
-            header="Remover Usuário"
-            body="Tem certeza que deseja remover o usuário"
-            description={selectedUsuario.email}
-            onClick={() => deleteUser(selectedUsuario.id)}
-          />
-        </Box>
-      </Sidebar>
-    </LoadPage>
+                    <Pagination
+                      totalCountOfRegisters={data?.totalCount}
+                      currentPage={page}
+                      onPageChange={setPage}
+                    />
+                  </Box>
+                )}
+              </>
+            )}
+
+            <AlertDialogList
+              isOpen={isOpen}
+              cancelRef={cancelRef}
+              onClose={onClose}
+              header="Remover Usuário"
+              body="Tem certeza que deseja remover o usuário"
+              description={selectedUsuario.email}
+              onClick={() => deleteUser(selectedUsuario.id)}
+            />
+          </Box>
+        </Sidebar>
+      </LoadPage>
+    </>
   );
 }
 

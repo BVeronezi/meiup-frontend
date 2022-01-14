@@ -33,8 +33,9 @@ export async function getUsuarios(
   const users = response.data.found.users.map((user) => {
     return {
       id: user.id,
-      nome: user.name,
+      nome: user.nome,
       email: user.email,
+      perfil: user.role,
       createdAt: new Date(user.dataCriacao).toLocaleDateString("pt-BR", {
         day: "2-digit",
         month: "long",

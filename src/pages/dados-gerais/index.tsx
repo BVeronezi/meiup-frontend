@@ -1,3 +1,4 @@
+import Head from "next/head";
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
@@ -5,7 +6,6 @@ import {
   createStandaloneToast,
   Flex,
   SimpleGrid,
-  Skeleton,
   Stack,
   Tab,
   TabList,
@@ -16,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
 import { Input } from "../../components/Input";
@@ -129,26 +129,35 @@ export default function DadosGerais() {
     const cep = value.replace(/[^0-9]/g, "");
 
     if (cep.length === 8) {
-      const resultCep: any = await axios.get(
-        `https://api.cnpja.com.br/zip/${cep}`,
-        {
-          headers: {
-            Authorization:
-              "d7756953-d64d-46a3-8a7f-ffb409dd20a0-38e52cca-6626-41e9-950b-f69496b95a0a",
-          },
+      try {
+        const resultEndereco: any = await axios.get(
+          `https://api.cnpja.com.br/zip/${cep}`,
+          {
+            headers: {
+              Authorization:
+                "d7756953-d64d-46a3-8a7f-ffb409dd20a0-38e52cca-6626-41e9-950b-f69496b95a0a",
+            },
+          }
+        );
+
+        if (resultEndereco.data) {
+          const { zip, street, district, city, state } = resultEndereco.data;
+
+          setValue("cep", zip);
+          setValue("endereco", street);
+          setValue("numero", "");
+          setValue("bairro", district);
+          setValue("cidade", city);
+          setValue("estado", state);
+          setValue("complemento", "");
         }
-      );
-
-      if (resultCep.data) {
-        const { zip, street, district, city, state } = resultCep.data;
-
-        setValue("cep", zip);
-        setValue("endereco", street);
-        setValue("numero", "");
-        setValue("bairro", district);
-        setValue("cidade", city);
-        setValue("estado", state);
-        setValue("complemento", "");
+      } catch (error) {
+        toast({
+          title: "CEP não encontrado",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     }
   };
@@ -195,117 +204,123 @@ export default function DadosGerais() {
   };
 
   return (
-    <LoadPage active={isLoading}>
-      <Sidebar>
-        <Stack as="form" onSubmit={handleSubmit(handleDadosGerais)} flex="1">
-          <Box
-            borderBottom="1px"
-            borderLeft="1px"
-            borderRight="1px"
-            borderRadius="lg"
-            borderColor="gray.300"
-          >
-            <Tabs isFitted variant="enclosed">
-              <TabList>
-                <Tab>Informações da empresa</Tab>
-                <Tab>Endereço</Tab>
-              </TabList>
+    <>
+      <Head>
+        <title>MEIUP | Empresa</title>
+      </Head>
 
-              <TabPanels>
-                <TabPanel>
-                  <VStack marginTop="14px" spacing="12">
-                    <SimpleGrid
-                      minChildWidth="240px"
-                      spacing={["6", "8"]}
-                      w="100%"
-                    >
-                      <Input
-                        isLoading={isLoading}
-                        name="cnpj"
-                        autoFocus={true}
-                        label="CNPJ *:"
-                        error={errors.cnpj}
-                        {...register("cnpj")}
-                        onChange={(c) => consultaCpfCnpj(c.target.value)}
-                      ></Input>
-                      <Input
-                        isLoading={isLoading}
-                        name="ie"
-                        label="Inscrição Estadual:"
-                        {...register("ie")}
-                      ></Input>
-                    </SimpleGrid>
-
-                    <SimpleGrid
-                      minChildWidth="240px"
-                      spacing={["6", "8"]}
-                      w="100%"
-                    >
-                      <Input
-                        isLoading={isLoading}
-                        name="razaoSocial"
-                        label="Razão Social *:"
-                        error={errors.razaoSocial}
-                        {...register("razaoSocial")}
-                      ></Input>
-                    </SimpleGrid>
-
-                    <SimpleGrid
-                      minChildWidth="240px"
-                      spacing={["6", "8"]}
-                      w="100%"
-                    >
-                      <Input
-                        isLoading={isLoading}
-                        name="telefone"
-                        label="Telefone:"
-                        {...register("telefone")}
-                      ></Input>
-
-                      <Input
-                        isLoading={isLoading}
-                        name="celular"
-                        label="Celular:"
-                        {...register("celular")}
-                      ></Input>
-
-                      <Input
-                        isLoading={isLoading}
-                        name="email"
-                        type="email"
-                        label="E-mail:"
-                        {...register("email")}
-                      ></Input>
-                    </SimpleGrid>
-                  </VStack>
-                </TabPanel>
-                <TabPanel>
-                  <Endereco
-                    register={register}
-                    errors={errors}
-                    isLoading={isLoading}
-                    buscaCep={buscaCep}
-                  />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </Box>
-          <Flex justify="flex-end">
-            <Button
-              width={["150px", "200px"]}
-              fontSize={["14px", "16px"]}
-              mt="8"
-              type="submit"
-              color="white"
-              backgroundColor="blue.500"
-              isLoading={formState.isSubmitting}
+      <LoadPage active={isLoading}>
+        <Sidebar>
+          <Stack as="form" onSubmit={handleSubmit(handleDadosGerais)} flex="1">
+            <Box
+              borderBottom="1px"
+              borderLeft="1px"
+              borderRight="1px"
+              borderRadius="lg"
+              borderColor="gray.300"
             >
-              SALVAR
-            </Button>
-          </Flex>
-        </Stack>
-      </Sidebar>
-    </LoadPage>
+              <Tabs isFitted variant="enclosed">
+                <TabList>
+                  <Tab>Informações da empresa</Tab>
+                  <Tab>Endereço</Tab>
+                </TabList>
+
+                <TabPanels>
+                  <TabPanel>
+                    <VStack marginTop="14px" spacing="12">
+                      <SimpleGrid
+                        minChildWidth="240px"
+                        spacing={["6", "8"]}
+                        w="100%"
+                      >
+                        <Input
+                          isLoading={isLoading}
+                          name="cnpj"
+                          autoFocus={true}
+                          label="CNPJ *:"
+                          error={errors.cnpj}
+                          {...register("cnpj")}
+                          onChange={(c) => consultaCpfCnpj(c.target.value)}
+                        ></Input>
+                        <Input
+                          isLoading={isLoading}
+                          name="ie"
+                          label="Inscrição Estadual:"
+                          {...register("ie")}
+                        ></Input>
+                      </SimpleGrid>
+
+                      <SimpleGrid
+                        minChildWidth="240px"
+                        spacing={["6", "8"]}
+                        w="100%"
+                      >
+                        <Input
+                          isLoading={isLoading}
+                          name="razaoSocial"
+                          label="Razão Social *:"
+                          error={errors.razaoSocial}
+                          {...register("razaoSocial")}
+                        ></Input>
+                      </SimpleGrid>
+
+                      <SimpleGrid
+                        minChildWidth="240px"
+                        spacing={["6", "8"]}
+                        w="100%"
+                      >
+                        <Input
+                          isLoading={isLoading}
+                          name="telefone"
+                          label="Telefone:"
+                          {...register("telefone")}
+                        ></Input>
+
+                        <Input
+                          isLoading={isLoading}
+                          name="celular"
+                          label="Celular:"
+                          {...register("celular")}
+                        ></Input>
+
+                        <Input
+                          isLoading={isLoading}
+                          name="email"
+                          type="email"
+                          label="E-mail:"
+                          {...register("email")}
+                        ></Input>
+                      </SimpleGrid>
+                    </VStack>
+                  </TabPanel>
+                  <TabPanel>
+                    <Endereco
+                      register={register}
+                      errors={errors}
+                      isLoading={isLoading}
+                      buscaCep={buscaCep}
+                    />
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </Box>
+            <Flex justify="flex-end">
+              <Button
+                width={["150px", "200px"]}
+                fontSize={["14px", "16px"]}
+                mt="8"
+                type="submit"
+                color="white"
+                backgroundColor="blue.500"
+                isLoading={formState.isSubmitting}
+              >
+                SALVAR
+              </Button>
+            </Flex>
+          </Stack>
+        </Sidebar>
+      </LoadPage>
+    </>
   );
 }
 

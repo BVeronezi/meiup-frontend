@@ -59,9 +59,9 @@ export function SidebarNav() {
         href="/promocoes"
       />
 
-      <Flex align="center" fontWeight="bold" p="4" mx="4">
+      {/* <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">COMPRAS</Text>
-      </Flex>
+      </Flex> */}
 
       {/* <NavItem
         icon={RiShoppingCartLine}

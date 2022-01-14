@@ -3,35 +3,25 @@ import { useRouter } from "next/dist/client/router";
 import {
   Box,
   Button,
-  ColorModeScript,
   Container,
   Flex,
   Heading,
   Icon,
-  IconButton,
   Image,
   Stack,
   Text,
   useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { RiAccountCircleFill } from "react-icons/ri";
-import MButton from "../components/Button";
 import { withSSRGuest } from "../utils/withSSRGuest";
-import { theme as customTheme } from "../styles/theme";
 
 export default function Home() {
   const router = useRouter();
 
-  const isWideVersion = useBreakpointValue({
-    base: false,
-    lg: true,
-  });
-
   return (
     <>
       <Head>
-        <title> MEIUP</title>
+        <title>MEIUP</title>
       </Head>
 
       <Container maxW={"5xl"}>
