@@ -26,7 +26,7 @@ export async function getUsuarios(
     `http://localhost:8000/api/v1/usuario`,
     {
       headers: { Authorization: `Bearer ${token}` },
-      params: { page, empresa, descricao: valuePesquisa },
+      params: { page, empresa, nome: valuePesquisa },
     }
   );
 

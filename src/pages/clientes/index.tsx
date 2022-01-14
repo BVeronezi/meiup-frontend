@@ -175,79 +175,91 @@ export default function Clientes() {
                 <Text>Falha ao obter dados dos clientes.</Text>
               </Flex>
             ) : (
-              <Box color="black">
-                <Table variant="striped" colorScheme="blackAlpha">
-                  <Thead>
-                    <Tr>
-                      <Th>Nome</Th>
-                      <Th>Celular</Th>
-                      <Th width="8">Ações</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {data?.clientes.map((cliente) => {
-                      return (
-                        <Tr key={cliente.id}>
-                          <Td>
-                            <Box>
-                              <Link
-                                color="gray.900"
-                                onMouseEnter={() =>
-                                  handlePrefetcCliente(cliente.id)
-                                }
-                              >
-                                <Text fontWeight="bold">{cliente.nome}</Text>
-                              </Link>
+              <>
+                {value?.clientes.length === 0 ? (
+                  <Flex justify="center">
+                    <Text>Nenhum cliente encontrado.</Text>
+                  </Flex>
+                ) : (
+                  <>
+                    <Box color="black">
+                      <Table variant="striped" colorScheme="blackAlpha">
+                        <Thead>
+                          <Tr>
+                            <Th>Nome</Th>
+                            <Th>Celular</Th>
+                            <Th width="8">Ações</Th>
+                          </Tr>
+                        </Thead>
+                        <Tbody>
+                          {value?.clientes.map((cliente) => {
+                            return (
+                              <Tr key={cliente.id}>
+                                <Td>
+                                  <Box>
+                                    <Link
+                                      color="gray.900"
+                                      onMouseEnter={() =>
+                                        handlePrefetcCliente(cliente.id)
+                                      }
+                                    >
+                                      <Text fontWeight="bold">
+                                        {cliente.nome}
+                                      </Text>
+                                    </Link>
 
-                              <Text fontSize="sm">{cliente.email}</Text>
-                            </Box>
-                          </Td>
+                                    <Text fontSize="sm">{cliente.email}</Text>
+                                  </Box>
+                                </Td>
 
-                          <Td>
-                            <Text>{cliente.celular}</Text>
-                          </Td>
+                                <Td>
+                                  <Text>{cliente.celular}</Text>
+                                </Td>
 
-                          <Td>
-                            <HStack>
-                              <IconButton
-                                variant="outline"
-                                color="blue.800"
-                                aria-label="Editar cliente"
-                                icon={<RiPencilLine />}
-                                onClick={() => {
-                                  router.push({
-                                    pathname: "/clientes/form",
-                                    query: cliente.id,
-                                  });
-                                }}
-                              />
+                                <Td>
+                                  <HStack>
+                                    <IconButton
+                                      variant="outline"
+                                      color="blue.800"
+                                      aria-label="Editar cliente"
+                                      icon={<RiPencilLine />}
+                                      onClick={() => {
+                                        router.push({
+                                          pathname: "/clientes/form",
+                                          query: cliente.id,
+                                        });
+                                      }}
+                                    />
 
-                              <IconButton
-                                variant="outline"
-                                color="red.800"
-                                aria-label="Excluir cliente"
-                                icon={<RiDeleteBinLine />}
-                                onClick={() => {
-                                  {
-                                    setSelectedCliente(cliente);
-                                    setIsOpen(true);
-                                  }
-                                }}
-                              />
-                            </HStack>
-                          </Td>
-                        </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
+                                    <IconButton
+                                      variant="outline"
+                                      color="red.800"
+                                      aria-label="Excluir cliente"
+                                      icon={<RiDeleteBinLine />}
+                                      onClick={() => {
+                                        {
+                                          setSelectedCliente(cliente);
+                                          setIsOpen(true);
+                                        }
+                                      }}
+                                    />
+                                  </HStack>
+                                </Td>
+                              </Tr>
+                            );
+                          })}
+                        </Tbody>
+                      </Table>
 
-                <Pagination
-                  totalCountOfRegisters={data?.totalCount}
-                  currentPage={page}
-                  onPageChange={setPage}
-                />
-              </Box>
+                      <Pagination
+                        totalCountOfRegisters={data?.totalCount}
+                        currentPage={page}
+                        onPageChange={setPage}
+                      />
+                    </Box>
+                  </>
+                )}
+              </>
             )}
 
             <AlertDialogList

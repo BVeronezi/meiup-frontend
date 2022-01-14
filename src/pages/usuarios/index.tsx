@@ -48,7 +48,6 @@ export default function Usuarios() {
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
   const [selectedUsuario, setSelectedUsuario] = useState({ id: "", email: "" });
-  const [valuePesquisa, setValuePesquisa] = useState("");
   const [page, setPage] = useState(1);
 
   const [value, setValue] = useState({
@@ -106,6 +105,7 @@ export default function Usuarios() {
         undefined,
         event.target.value
       );
+
       setValue(usuariosPesquisados);
       setIsFetching(false);
     } else {
@@ -183,7 +183,7 @@ export default function Usuarios() {
               </Flex>
             ) : (
               <>
-                {data?.users.length === 0 ? (
+                {value?.users.length === 0 ? (
                   <Flex justify="center">
                     <Text>Nenhum usuário encontrado.</Text>
                   </Flex>
@@ -199,7 +199,7 @@ export default function Usuarios() {
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {data?.users.map((user) => {
+                        {value?.users.map((user) => {
                           return (
                             <Tr key={user.id}>
                               <Td>

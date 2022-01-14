@@ -189,77 +189,89 @@ export default function Categorias() {
                 <Text>Falha ao obter dados das categorias.</Text>
               </Flex>
             ) : (
-              <Box>
-                <Table variant="striped" colorScheme="blackAlpha">
-                  <Thead>
-                    <Tr>
-                      <Th>Código</Th>
-                      <Th>Categoria</Th>
-                      <Th width="8">Ações</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {value?.categorias.map((categoria) => {
-                      return (
-                        <Tr key={categoria.id}>
-                          <Td>
-                            <Box>
-                              <Link
-                                color="gray.900"
-                                onMouseEnter={() =>
-                                  handlePrefetchCategoria(Number(categoria.id))
-                                }
-                              >
-                                <Text>{categoria.id}</Text>
-                              </Link>
-                            </Box>
-                          </Td>
+              <>
+                {value?.categorias.length === 0 ? (
+                  <Flex justify="center">
+                    <Text>Nenhuma categoria encontrada.</Text>
+                  </Flex>
+                ) : (
+                  <>
+                    <Box>
+                      <Table variant="striped" colorScheme="blackAlpha">
+                        <Thead>
+                          <Tr>
+                            <Th>Código</Th>
+                            <Th>Categoria</Th>
+                            <Th width="8">Ações</Th>
+                          </Tr>
+                        </Thead>
+                        <Tbody>
+                          {value?.categorias.map((categoria) => {
+                            return (
+                              <Tr key={categoria.id}>
+                                <Td>
+                                  <Box>
+                                    <Link
+                                      color="gray.900"
+                                      onMouseEnter={() =>
+                                        handlePrefetchCategoria(
+                                          Number(categoria.id)
+                                        )
+                                      }
+                                    >
+                                      <Text>{categoria.id}</Text>
+                                    </Link>
+                                  </Box>
+                                </Td>
 
-                          <Td>
-                            <Text>{categoria.nome}</Text>
-                          </Td>
+                                <Td>
+                                  <Text>{categoria.nome}</Text>
+                                </Td>
 
-                          <Td>
-                            <HStack>
-                              <IconButton
-                                variant="outline"
-                                color="blue.800"
-                                aria-label="Editar categoria"
-                                icon={<RiPencilLine />}
-                                onClick={() => {
-                                  router.push({
-                                    pathname: "/categorias/form",
-                                    query: String(categoria.id),
-                                  });
-                                }}
-                              />
+                                <Td>
+                                  <HStack>
+                                    <IconButton
+                                      variant="outline"
+                                      color="blue.800"
+                                      aria-label="Editar categoria"
+                                      icon={<RiPencilLine />}
+                                      onClick={() => {
+                                        router.push({
+                                          pathname: "/categorias/form",
+                                          query: String(categoria.id),
+                                        });
+                                      }}
+                                    />
 
-                              <IconButton
-                                variant="outline"
-                                color="red.800"
-                                aria-label="Excluir categoria"
-                                icon={<RiDeleteBinLine />}
-                                onClick={() => {
-                                  setSelectedCategoria(categoria);
-                                  setIsOpen(true);
-                                }}
-                              />
-                            </HStack>
-                          </Td>
-                        </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
+                                    <IconButton
+                                      variant="outline"
+                                      color="red.800"
+                                      aria-label="Excluir categoria"
+                                      icon={<RiDeleteBinLine />}
+                                      onClick={() => {
+                                        setSelectedCategoria(categoria);
+                                        setIsOpen(true);
+                                      }}
+                                    />
+                                  </HStack>
+                                </Td>
+                              </Tr>
+                            );
+                          })}
+                        </Tbody>
+                      </Table>
 
-                {!isLoadingPage && (
-                  <Pagination
-                    totalCountOfRegisters={data.totalCount}
-                    currentPage={page}
-                    onPageChange={setPage}
-                  />
+                      {!isLoadingPage && (
+                        <Pagination
+                          totalCountOfRegisters={data.totalCount}
+                          currentPage={page}
+                          onPageChange={setPage}
+                        />
+                      )}
+                    </Box>
+                  </>
                 )}
-              </Box>
+              </>
             )}
 
             <AlertDialogList

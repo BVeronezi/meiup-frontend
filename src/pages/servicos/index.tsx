@@ -183,83 +183,91 @@ export default function Servicos() {
               </Flex>
             ) : (
               <>
-                <Table variant="striped" colorScheme="blackAlpha">
-                  <Thead>
-                    <Tr>
-                      <Th>Serviço</Th>
-                      <Th>Custo</Th>
-                      <Th>Lucro</Th>
-                      <Th>Margem Lucro</Th>
-                      <Th width="8">Ações</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {value?.servicos.map((servico) => {
-                      return (
-                        <Tr key={servico.id}>
-                          <Td>
-                            <Box>
-                              <Link
-                                color="gray.900"
-                                onMouseEnter={() =>
-                                  handlePrefetchServico(Number(servico.id))
-                                }
-                              >
-                                <Text>{servico.nome}</Text>
-                              </Link>
-                            </Box>
-                          </Td>
-
-                          <Td>
-                            <Text>{servico.custo}</Text>
-                          </Td>
-
-                          <Td>
-                            <Text>{servico.valor}</Text>
-                          </Td>
-
-                          <Td>
-                            <Text>{servico.margemLucro}</Text>
-                          </Td>
-
-                          <Td>
-                            <HStack>
-                              <IconButton
-                                variant="outline"
-                                color="blue.800"
-                                aria-label="Editar serviço"
-                                icon={<RiPencilLine />}
-                                onClick={() => {
-                                  router.push({
-                                    pathname: "/servicos/form",
-                                    query: String(servico.id),
-                                  });
-                                }}
-                              />
-
-                              <IconButton
-                                variant="outline"
-                                color="red.800"
-                                aria-label="Excluir serviço"
-                                icon={<RiDeleteBinLine />}
-                                onClick={() => {
-                                  setSelectedServico(servico);
-                                  setIsOpen(true);
-                                }}
-                              />
-                            </HStack>
-                          </Td>
+                {value?.servicos.length === 0 ? (
+                  <Flex justify="center">
+                    <Text>Nenhum serviço encontrado.</Text>
+                  </Flex>
+                ) : (
+                  <>
+                    <Table variant="striped" colorScheme="blackAlpha">
+                      <Thead>
+                        <Tr>
+                          <Th>Serviço</Th>
+                          <Th>Custo</Th>
+                          <Th>Lucro</Th>
+                          <Th>Margem Lucro</Th>
+                          <Th width="8">Ações</Th>
                         </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
+                      </Thead>
+                      <Tbody>
+                        {value?.servicos.map((servico) => {
+                          return (
+                            <Tr key={servico.id}>
+                              <Td>
+                                <Box>
+                                  <Link
+                                    color="gray.900"
+                                    onMouseEnter={() =>
+                                      handlePrefetchServico(Number(servico.id))
+                                    }
+                                  >
+                                    <Text>{servico.nome}</Text>
+                                  </Link>
+                                </Box>
+                              </Td>
 
-                <Pagination
-                  totalCountOfRegisters={data.totalCount}
-                  currentPage={page}
-                  onPageChange={setPage}
-                />
+                              <Td>
+                                <Text>{servico.custo}</Text>
+                              </Td>
+
+                              <Td>
+                                <Text>{servico.valor}</Text>
+                              </Td>
+
+                              <Td>
+                                <Text>{servico.margemLucro}</Text>
+                              </Td>
+
+                              <Td>
+                                <HStack>
+                                  <IconButton
+                                    variant="outline"
+                                    color="blue.800"
+                                    aria-label="Editar serviço"
+                                    icon={<RiPencilLine />}
+                                    onClick={() => {
+                                      router.push({
+                                        pathname: "/servicos/form",
+                                        query: String(servico.id),
+                                      });
+                                    }}
+                                  />
+
+                                  <IconButton
+                                    variant="outline"
+                                    color="red.800"
+                                    aria-label="Excluir serviço"
+                                    icon={<RiDeleteBinLine />}
+                                    onClick={() => {
+                                      setSelectedServico(servico);
+                                      setIsOpen(true);
+                                    }}
+                                  />
+                                </HStack>
+                              </Td>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
+
+                    <Pagination
+                      totalCountOfRegisters={data.totalCount}
+                      currentPage={page}
+                      onPageChange={setPage}
+                    />
+                  </>
+                )}
               </>
             )}
 

@@ -191,82 +191,90 @@ export default function Produtos() {
                 <Text>Falha ao obter dados dos produtos.</Text>
               </Flex>
             ) : (
-              <Box>
-                <Table variant="striped" colorScheme="blackAlpha">
-                  <Thead>
-                    <Tr>
-                      <Th>Produto</Th>
-                      <Th>Categoria</Th>
-                      <Th>Preço venda</Th>
-                      <Th width="8">Ações</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {value?.produtos.map((produto) => {
-                      return (
-                        <Tr key={produto.id}>
-                          <Td>
-                            <Box>
-                              <Link
-                                color="gray.900"
-                                onMouseEnter={() =>
-                                  handlePrefetchProduto(Number(produto.id))
-                                }
-                              >
-                                <Text>{produto.descricao}</Text>
-                              </Link>
-                            </Box>
-                          </Td>
-
-                          <Td>
-                            <Text>{produto.categoria}</Text>
-                          </Td>
-
-                          <Td>
-                            <Text>{produto.precoVarejo}</Text>
-                          </Td>
-
-                          <Td>
-                            <HStack>
-                              <IconButton
-                                variant="outline"
-                                color="blue.800"
-                                aria-label="Editar produto"
-                                icon={<RiPencilLine />}
-                                onClick={() => {
-                                  router.push({
-                                    pathname: "/produtos/form",
-                                    query: String(produto.id),
-                                  });
-                                }}
-                              />
-
-                              <IconButton
-                                variant="outline"
-                                color="red.800"
-                                aria-label="Excluir produto"
-                                icon={<RiDeleteBinLine />}
-                                onClick={() => {
-                                  setSelectedProduto(produto);
-                                  setIsOpen(true);
-                                }}
-                              />
-                            </HStack>
-                          </Td>
+              <>
+                {value?.produtos.length === 0 ? (
+                  <Flex justify="center">
+                    <Text>Nenhum produto encontrado.</Text>
+                  </Flex>
+                ) : (
+                  <Box>
+                    <Table variant="striped" colorScheme="blackAlpha">
+                      <Thead>
+                        <Tr>
+                          <Th>Produto</Th>
+                          <Th>Categoria</Th>
+                          <Th>Preço venda</Th>
+                          <Th width="8">Ações</Th>
                         </Tr>
-                      );
-                    })}
-                  </Tbody>
-                </Table>
+                      </Thead>
+                      <Tbody>
+                        {value?.produtos.map((produto) => {
+                          return (
+                            <Tr key={produto.id}>
+                              <Td>
+                                <Box>
+                                  <Link
+                                    color="gray.900"
+                                    onMouseEnter={() =>
+                                      handlePrefetchProduto(Number(produto.id))
+                                    }
+                                  >
+                                    <Text>{produto.descricao}</Text>
+                                  </Link>
+                                </Box>
+                              </Td>
 
-                {!isLoadingPage && (
-                  <Pagination
-                    totalCountOfRegisters={data.totalCount}
-                    currentPage={page}
-                    onPageChange={setPage}
-                  />
+                              <Td>
+                                <Text>{produto.categoria}</Text>
+                              </Td>
+
+                              <Td>
+                                <Text>{produto.precoVarejo}</Text>
+                              </Td>
+
+                              <Td>
+                                <HStack>
+                                  <IconButton
+                                    variant="outline"
+                                    color="blue.800"
+                                    aria-label="Editar produto"
+                                    icon={<RiPencilLine />}
+                                    onClick={() => {
+                                      router.push({
+                                        pathname: "/produtos/form",
+                                        query: String(produto.id),
+                                      });
+                                    }}
+                                  />
+
+                                  <IconButton
+                                    variant="outline"
+                                    color="red.800"
+                                    aria-label="Excluir produto"
+                                    icon={<RiDeleteBinLine />}
+                                    onClick={() => {
+                                      setSelectedProduto(produto);
+                                      setIsOpen(true);
+                                    }}
+                                  />
+                                </HStack>
+                              </Td>
+                            </Tr>
+                          );
+                        })}
+                      </Tbody>
+                    </Table>
+
+                    {!isLoadingPage && (
+                      <Pagination
+                        totalCountOfRegisters={data.totalCount}
+                        currentPage={page}
+                        onPageChange={setPage}
+                      />
+                    )}
+                  </Box>
                 )}
-              </Box>
+              </>
             )}
 
             <AlertDialogList

@@ -27,7 +27,7 @@ export async function getServicos(
     `http://localhost:8000/api/v1/servicos`,
     {
       headers: { Authorization: `Bearer ${token}` },
-      params: { page, empresa, descricao: valuePesquisa },
+      params: { page, empresa, nome: valuePesquisa },
     }
   );
 
