@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { theme as customTheme } from "../../styles/theme";
 import * as yup from "yup";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -150,151 +151,156 @@ export default function FormServico(produtos) {
   };
 
   return (
-    <LoadPage active={isLoading || isLoadingFetch}>
-      <Sidebar>
-        <Stack as="form" onSubmit={handleSubmit(handleServico)}>
-          <Box
-            borderBottom="1px"
-            borderLeft="1px"
-            borderRight="1px"
-            borderRadius="lg"
-            borderColor="gray.300"
-          >
-            <Tabs isFitted variant="enclosed">
-              <TabList>
-                <Tab>Serviço</Tab>
-                <Tab isDisabled={stateNovoServico}>Insumos</Tab>
-              </TabList>
+    <>
+      <Head>
+        <title>MEIUP | Serviço</title>
+      </Head>
+      <LoadPage active={isLoading || isLoadingFetch}>
+        <Sidebar>
+          <Stack as="form" onSubmit={handleSubmit(handleServico)}>
+            <Box
+              borderBottom="1px"
+              borderLeft="1px"
+              borderRight="1px"
+              borderRadius="lg"
+              borderColor="gray.300"
+            >
+              <Tabs isFitted variant="enclosed">
+                <TabList>
+                  <Tab>Serviço</Tab>
+                  <Tab isDisabled={stateNovoServico}>Insumos</Tab>
+                </TabList>
 
-              <TabPanels>
-                <TabPanel>
-                  {stateNovoServico && (
-                    <HStack>
-                      <RiInformationLine />
-                      <Text color="gray.900" fontSize="14px">
-                        Necessário informar o nome do serviço para prosseguir
-                        com valores e adição de insumos.
-                      </Text>
-                    </HStack>
-                  )}
-                  <VStack marginTop="14px" spacing="12">
-                    <SimpleGrid
-                      minChildWidth="240px"
-                      spacing={["6", "8"]}
-                      w="100%"
-                    >
-                      <FormControl isInvalid={!!errors.nome}>
-                        <Input
-                          isLoading={isLoading}
-                          name="nome"
-                          autoFocus={true}
-                          label="Nome: *"
-                          error={errors.nome}
-                          {...register("nome")}
-                        ></Input>
-                      </FormControl>
-                      {!stateNovoServico && (
-                        <Stack spacing="4">
-                          <Text fontWeight="bold">Custo:</Text>
-                          <Skeleton isLoaded={!isLoading}>
-                            <NumberFormat
-                              value={stateCusto}
-                              onValueChange={(val) =>
-                                setStateCusto(val.floatValue)
-                              }
-                              customInput={ChakraInput}
-                              variant="flushed"
-                              borderColor="gray.400"
-                              thousandSeparator="."
-                              decimalSeparator=","
-                              prefix={"R$"}
-                            />
-                          </Skeleton>
-                        </Stack>
-                      )}
-                    </SimpleGrid>
-                    {!stateNovoServico && (
+                <TabPanels>
+                  <TabPanel>
+                    {stateNovoServico && (
+                      <HStack>
+                        <RiInformationLine />
+                        <Text color="gray.900" fontSize="14px">
+                          Necessário informar o nome do serviço para prosseguir
+                          com valores e adição de insumos.
+                        </Text>
+                      </HStack>
+                    )}
+                    <VStack marginTop="14px" spacing="12">
                       <SimpleGrid
                         minChildWidth="240px"
                         spacing={["6", "8"]}
                         w="100%"
                       >
-                        <Stack spacing="4">
-                          <Text fontWeight="bold">Valor:</Text>
-                          <Skeleton isLoaded={!isLoading}>
-                            <NumberFormat
-                              value={stateValor}
-                              onValueChange={(val) =>
-                                setStateValor(val.floatValue)
-                              }
-                              customInput={ChakraInput}
-                              variant="flushed"
-                              borderColor="gray.400"
-                              thousandSeparator="."
-                              decimalSeparator=","
-                              prefix={"R$"}
-                            />
-                          </Skeleton>
-                        </Stack>
-                        <Stack spacing="4">
-                          <Text fontWeight="bold">Margem lucro:</Text>
-                          <Skeleton isLoaded={!isLoading}>
-                            <NumberFormat
-                              value={stateMargemLucro}
-                              onValueChange={(val) =>
-                                setStateMargemLucro(val.floatValue)
-                              }
-                              customInput={ChakraInput}
-                              variant="flushed"
-                              borderColor="gray.400"
-                              thousandSeparator="."
-                              decimalSeparator=","
-                              prefix={"R$"}
-                            />
-                          </Skeleton>
-                        </Stack>
+                        <FormControl isInvalid={!!errors.nome}>
+                          <Input
+                            isLoading={isLoading}
+                            name="nome"
+                            autoFocus={true}
+                            label="Nome: *"
+                            error={errors.nome}
+                            {...register("nome")}
+                          ></Input>
+                        </FormControl>
+                        {!stateNovoServico && (
+                          <Stack spacing="4">
+                            <Text fontWeight="bold">Custo:</Text>
+                            <Skeleton isLoaded={!isLoading}>
+                              <NumberFormat
+                                value={stateCusto}
+                                onValueChange={(val) =>
+                                  setStateCusto(val.floatValue)
+                                }
+                                customInput={ChakraInput}
+                                variant="flushed"
+                                borderColor="gray.400"
+                                thousandSeparator="."
+                                decimalSeparator=","
+                                prefix={"R$"}
+                              />
+                            </Skeleton>
+                          </Stack>
+                        )}
                       </SimpleGrid>
-                    )}
-                  </VStack>
-                </TabPanel>
-                <TabPanel>
-                  <Insumos produtos={produtos} handleLoad={handleLoad} />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </Box>
+                      {!stateNovoServico && (
+                        <SimpleGrid
+                          minChildWidth="240px"
+                          spacing={["6", "8"]}
+                          w="100%"
+                        >
+                          <Stack spacing="4">
+                            <Text fontWeight="bold">Valor:</Text>
+                            <Skeleton isLoaded={!isLoading}>
+                              <NumberFormat
+                                value={stateValor}
+                                onValueChange={(val) =>
+                                  setStateValor(val.floatValue)
+                                }
+                                customInput={ChakraInput}
+                                variant="flushed"
+                                borderColor="gray.400"
+                                thousandSeparator="."
+                                decimalSeparator=","
+                                prefix={"R$"}
+                              />
+                            </Skeleton>
+                          </Stack>
+                          <Stack spacing="4">
+                            <Text fontWeight="bold">Margem lucro:</Text>
+                            <Skeleton isLoaded={!isLoading}>
+                              <NumberFormat
+                                value={stateMargemLucro}
+                                onValueChange={(val) =>
+                                  setStateMargemLucro(val.floatValue)
+                                }
+                                customInput={ChakraInput}
+                                variant="flushed"
+                                borderColor="gray.400"
+                                thousandSeparator="."
+                                decimalSeparator=","
+                                prefix={"R$"}
+                              />
+                            </Skeleton>
+                          </Stack>
+                        </SimpleGrid>
+                      )}
+                    </VStack>
+                  </TabPanel>
+                  <TabPanel>
+                    <Insumos produtos={produtos} handleLoad={handleLoad} />
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </Box>
 
-          <Box>
-            <HStack spacing="24px" mt="10px" justify="flex-end">
-              <Button
-                width={["150px", "200px"]}
-                type="submit"
-                color="white"
-                fontSize={["14px", "16px"]}
-                backgroundColor="red.700"
-                onClick={(event) => {
-                  event.preventDefault();
-                  router.back();
-                }}
-              >
-                VOLTAR
-              </Button>
+            <Box>
+              <HStack spacing="24px" mt="10px" justify="flex-end">
+                <Button
+                  width={["150px", "200px"]}
+                  type="submit"
+                  color="white"
+                  fontSize={["14px", "16px"]}
+                  backgroundColor="red.700"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    router.back();
+                  }}
+                >
+                  VOLTAR
+                </Button>
 
-              <Button
-                width={["150px", "200px"]}
-                fontSize={["14px", "16px"]}
-                type="submit"
-                color="white"
-                backgroundColor="blue.500"
-                isLoading={formState.isSubmitting}
-              >
-                {stateNovoServico ? "CONTINUAR" : "SALVAR"}
-              </Button>
-            </HStack>
-          </Box>
-        </Stack>
-      </Sidebar>
-    </LoadPage>
+                <Button
+                  width={["150px", "200px"]}
+                  fontSize={["14px", "16px"]}
+                  type="submit"
+                  color="white"
+                  backgroundColor="blue.500"
+                  isLoading={formState.isSubmitting}
+                >
+                  {stateNovoServico ? "CONTINUAR" : "SALVAR"}
+                </Button>
+              </HStack>
+            </Box>
+          </Stack>
+        </Sidebar>
+      </LoadPage>
+    </>
   );
 }
 

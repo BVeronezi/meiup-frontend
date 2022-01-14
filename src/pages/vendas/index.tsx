@@ -1,3 +1,4 @@
+import Head from "next/head";
 import {
   Box,
   Button,
@@ -141,219 +142,224 @@ export default function Vendas({ vendas }) {
   async function handlePesquisaVenda(event) {}
 
   return (
-    <LoadPage active={isLoadingPage}>
-      <Sidebar>
-        <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
-          <Flex mb="8" justify="space-between" align="center">
-            <Pesquisa handleChange={handlePesquisaVenda} />
-            <Box ml="4">
-              {isWideVersion && (
-                <NextLink href="/vendas/form" passHref>
-                  <Button
-                    _hover={{
-                      bg: "blue.500",
-                    }}
-                    as="a"
-                    size="sm"
-                    fontSize="sm"
-                    color="white"
-                    backgroundColor="blue.800"
-                    leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-                  >
-                    Nova venda
-                  </Button>
-                </NextLink>
-              )}
+    <>
+      <Head>
+        <title>MEIUP | Vendas</title>
+      </Head>
+      <LoadPage active={isLoadingPage}>
+        <Sidebar>
+          <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
+            <Flex mb="8" justify="space-between" align="center">
+              <Pesquisa handleChange={handlePesquisaVenda} />
+              <Box ml="4">
+                {isWideVersion && (
+                  <NextLink href="/vendas/form" passHref>
+                    <Button
+                      _hover={{
+                        bg: "blue.500",
+                      }}
+                      as="a"
+                      size="sm"
+                      fontSize="sm"
+                      color="white"
+                      backgroundColor="blue.800"
+                      leftIcon={<Icon as={RiAddLine} fontSize="20" />}
+                    >
+                      Nova venda
+                    </Button>
+                  </NextLink>
+                )}
 
-              {!isWideVersion && (
-                <Tooltip label="Nova venda">
-                  <IconButton
-                    variant="outline"
-                    color="blue.800"
-                    aria-label="Nova venda"
-                    onClick={() => router.push("/vendas/form")}
-                    icon={<RiAddBoxLine />}
-                  />
-                </Tooltip>
-              )}
-            </Box>
-          </Flex>
-
-          {isFetching && <Progress size="xs" isIndeterminate />}
-
-          {isLoading ? (
-            <Flex justify="center">
-              <Spinner />
+                {!isWideVersion && (
+                  <Tooltip label="Nova venda">
+                    <IconButton
+                      variant="outline"
+                      color="blue.800"
+                      aria-label="Nova venda"
+                      onClick={() => router.push("/vendas/form")}
+                      icon={<RiAddBoxLine />}
+                    />
+                  </Tooltip>
+                )}
+              </Box>
             </Flex>
-          ) : error ? (
-            <Flex justify="center">
-              <Text>Falha ao obter dados das vendas.</Text>
-            </Flex>
-          ) : (
-            <Box color="black">
-              <Table variant="striped" colorScheme="blackAlpha">
-                <Thead>
-                  <Tr>
-                    <Th>Código</Th>
-                    <Th>Cliente</Th>
-                    <Th>Data da venda</Th>
-                    <Th>Valor total</Th>
-                    <Th>Status</Th>
-                    <Th width="8">Ações</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {theData?.vendas.map((venda) => {
-                    return (
-                      <Tr key={venda.id}>
-                        <Td>
-                          <Box>
-                            <Link
-                              color="blue.900"
-                              onMouseEnter={() =>
-                                handlePrefetchVenda(Number(venda.id))
-                              }
-                            >
-                              <Text>{venda.id}</Text>
-                            </Link>
-                          </Box>
-                        </Td>
 
-                        <Td>
-                          <Text>{venda.cliente}</Text>
-                        </Td>
+            {isFetching && <Progress size="xs" isIndeterminate />}
 
-                        <Td>
-                          <Text>{venda.dataVenda}</Text>
-                        </Td>
+            {isLoading ? (
+              <Flex justify="center">
+                <Spinner />
+              </Flex>
+            ) : error ? (
+              <Flex justify="center">
+                <Text>Falha ao obter dados das vendas.</Text>
+              </Flex>
+            ) : (
+              <Box color="black">
+                <Table variant="striped" colorScheme="blackAlpha">
+                  <Thead>
+                    <Tr>
+                      <Th>Código</Th>
+                      <Th>Cliente</Th>
+                      <Th>Data da venda</Th>
+                      <Th>Valor total</Th>
+                      <Th>Status</Th>
+                      <Th width="8">Ações</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {theData?.vendas.map((venda) => {
+                      return (
+                        <Tr key={venda.id}>
+                          <Td>
+                            <Box>
+                              <Link
+                                color="blue.900"
+                                onMouseEnter={() =>
+                                  handlePrefetchVenda(Number(venda.id))
+                                }
+                              >
+                                <Text>{venda.id}</Text>
+                              </Link>
+                            </Box>
+                          </Td>
 
-                        <Td>
-                          <Text>{venda.valorTotal}</Text>
-                        </Td>
+                          <Td>
+                            <Text>{venda.cliente}</Text>
+                          </Td>
 
-                        <Td>
-                          <Text>{StatusVenda[venda.status].label}</Text>
-                        </Td>
+                          <Td>
+                            <Text>{venda.dataVenda}</Text>
+                          </Td>
 
-                        <Td>
-                          <HStack>
-                            {Number(venda.status) !== 0 && (
-                              <Tooltip label="Visualizar venda">
-                                <IconButton
-                                  size="sm"
-                                  variant="outline"
-                                  color="blue.800"
-                                  aria-label="Visualizar venda"
-                                  icon={<RiEyeLine />}
-                                  onClick={() => {
-                                    router.push({
-                                      pathname: "/vendas/form",
-                                      query: String(venda.id),
-                                    });
-                                  }}
-                                />
-                              </Tooltip>
-                            )}
+                          <Td>
+                            <Text>{venda.valorTotal}</Text>
+                          </Td>
 
-                            {Number(venda.status) === 0 && (
-                              <Tooltip label="Editar venda">
-                                <IconButton
-                                  size="sm"
-                                  variant="outline"
-                                  color="blue.800"
-                                  aria-label="Editar venda"
-                                  icon={<RiPencilLine />}
-                                  onClick={() => {
-                                    router.push({
-                                      pathname: "/vendas/form",
-                                      query: String(venda.id),
-                                    });
-                                  }}
-                                />
-                              </Tooltip>
-                            )}
+                          <Td>
+                            <Text>{StatusVenda[venda.status].label}</Text>
+                          </Td>
 
-                            {Number(venda.status) === 0 && (
-                              <Tooltip label="Finalizar venda">
-                                <IconButton
-                                  size="sm"
-                                  variant="outline"
-                                  color="blue.800"
-                                  aria-label="Finalizar venda"
-                                  icon={<RiCheckboxCircleLine />}
-                                  onClick={() => {
-                                    {
-                                      setSelectedVenda(String(venda.id));
-                                      setIsFinalizaVenda(true);
-                                      setIsOpen(true);
-                                    }
-                                  }}
-                                />
-                              </Tooltip>
-                            )}
+                          <Td>
+                            <HStack>
+                              {Number(venda.status) !== 0 && (
+                                <Tooltip label="Visualizar venda">
+                                  <IconButton
+                                    size="sm"
+                                    variant="outline"
+                                    color="blue.800"
+                                    aria-label="Visualizar venda"
+                                    icon={<RiEyeLine />}
+                                    onClick={() => {
+                                      router.push({
+                                        pathname: "/vendas/form",
+                                        query: String(venda.id),
+                                      });
+                                    }}
+                                  />
+                                </Tooltip>
+                              )}
 
-                            {Number(venda.status) !== 2 && (
-                              <Tooltip label="Cancelar venda">
-                                <IconButton
-                                  size="sm"
-                                  variant="outline"
-                                  color="red.800"
-                                  aria-label="Cancelar venda"
-                                  icon={<RiCloseCircleLine />}
-                                  onClick={() => {
-                                    {
-                                      setSelectedVenda(String(venda.id));
-                                      setIsFinalizaVenda(false);
-                                      setIsOpen(true);
-                                    }
-                                  }}
-                                />
-                              </Tooltip>
-                            )}
-                          </HStack>
-                        </Td>
-                      </Tr>
-                    );
-                  })}
-                </Tbody>
-              </Table>
+                              {Number(venda.status) === 0 && (
+                                <Tooltip label="Editar venda">
+                                  <IconButton
+                                    size="sm"
+                                    variant="outline"
+                                    color="blue.800"
+                                    aria-label="Editar venda"
+                                    icon={<RiPencilLine />}
+                                    onClick={() => {
+                                      router.push({
+                                        pathname: "/vendas/form",
+                                        query: String(venda.id),
+                                      });
+                                    }}
+                                  />
+                                </Tooltip>
+                              )}
 
-              <Pagination
-                totalCountOfRegisters={data.totalCount}
-                currentPage={page}
-                onPageChange={setPage}
+                              {Number(venda.status) === 0 && (
+                                <Tooltip label="Finalizar venda">
+                                  <IconButton
+                                    size="sm"
+                                    variant="outline"
+                                    color="blue.800"
+                                    aria-label="Finalizar venda"
+                                    icon={<RiCheckboxCircleLine />}
+                                    onClick={() => {
+                                      {
+                                        setSelectedVenda(String(venda.id));
+                                        setIsFinalizaVenda(true);
+                                        setIsOpen(true);
+                                      }
+                                    }}
+                                  />
+                                </Tooltip>
+                              )}
+
+                              {Number(venda.status) !== 2 && (
+                                <Tooltip label="Cancelar venda">
+                                  <IconButton
+                                    size="sm"
+                                    variant="outline"
+                                    color="red.800"
+                                    aria-label="Cancelar venda"
+                                    icon={<RiCloseCircleLine />}
+                                    onClick={() => {
+                                      {
+                                        setSelectedVenda(String(venda.id));
+                                        setIsFinalizaVenda(false);
+                                        setIsOpen(true);
+                                      }
+                                    }}
+                                  />
+                                </Tooltip>
+                              )}
+                            </HStack>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+
+                <Pagination
+                  totalCountOfRegisters={data.totalCount}
+                  currentPage={page}
+                  onPageChange={setPage}
+                />
+              </Box>
+            )}
+
+            {isFinalizaVenda ? (
+              <AlertDialogList
+                isOpen={isOpen}
+                cancelRef={cancelRef}
+                onClose={onClose}
+                header="Finalizar venda"
+                body="Tem certeza que deseja finalizar a venda"
+                description={selectedVenda}
+                textButton1="Não"
+                textButton2="Sim"
+                onClick={() => finalizarVenda(selectedVenda)}
               />
-            </Box>
-          )}
-
-          {isFinalizaVenda ? (
-            <AlertDialogList
-              isOpen={isOpen}
-              cancelRef={cancelRef}
-              onClose={onClose}
-              header="Finalizar venda"
-              body="Tem certeza que deseja finalizar a venda"
-              description={selectedVenda}
-              textButton1="Não"
-              textButton2="Sim"
-              onClick={() => finalizarVenda(selectedVenda)}
-            />
-          ) : (
-            <AlertDialogList
-              isOpen={isOpen}
-              cancelRef={cancelRef}
-              onClose={onClose}
-              header="Cancelar venda"
-              body="Tem certeza que deseja cancelar a venda"
-              description={selectedVenda}
-              textButton1="Não"
-              textButton2="Sim"
-              onClick={() => cancelaVenda(selectedVenda)}
-            />
-          )}
-        </Box>
-      </Sidebar>
-    </LoadPage>
+            ) : (
+              <AlertDialogList
+                isOpen={isOpen}
+                cancelRef={cancelRef}
+                onClose={onClose}
+                header="Cancelar venda"
+                body="Tem certeza que deseja cancelar a venda"
+                description={selectedVenda}
+                textButton1="Não"
+                textButton2="Sim"
+                onClick={() => cancelaVenda(selectedVenda)}
+              />
+            )}
+          </Box>
+        </Sidebar>
+      </LoadPage>
+    </>
   );
 }
 

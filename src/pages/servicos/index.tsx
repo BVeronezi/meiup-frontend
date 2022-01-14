@@ -1,3 +1,4 @@
+import Head from "next/head";
 import {
   Box,
   Button,
@@ -128,148 +129,153 @@ export default function Servicos() {
   }
 
   return (
-    <LoadPage active={isLoadingPage}>
-      <Sidebar>
-        <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
-          <Flex mb="8" justify="space-between" align="center">
-            <Pesquisa handleChange={handlePesquisaServico} />
-            <Box ml="4">
-              {isWideVersion && (
-                <NextLink href="/servicos/form" passHref>
-                  <Button
-                    _hover={{
-                      bg: "blue.500",
-                    }}
-                    as="a"
-                    size="sm"
-                    fontSize="sm"
-                    color="white"
-                    backgroundColor="blue.800"
-                    leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-                  >
-                    Novo serviço
-                  </Button>
-                </NextLink>
-              )}
+    <>
+      <Head>
+        <title>MEIUP | Serviços</title>
+      </Head>
+      <LoadPage active={isLoadingPage}>
+        <Sidebar>
+          <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
+            <Flex mb="8" justify="space-between" align="center">
+              <Pesquisa handleChange={handlePesquisaServico} />
+              <Box ml="4">
+                {isWideVersion && (
+                  <NextLink href="/servicos/form" passHref>
+                    <Button
+                      _hover={{
+                        bg: "blue.500",
+                      }}
+                      as="a"
+                      size="sm"
+                      fontSize="sm"
+                      color="white"
+                      backgroundColor="blue.800"
+                      leftIcon={<Icon as={RiAddLine} fontSize="20" />}
+                    >
+                      Novo serviço
+                    </Button>
+                  </NextLink>
+                )}
 
-              {!isWideVersion && (
-                <Tooltip label="Novo servico">
-                  <IconButton
-                    variant="outline"
-                    color="blue.800"
-                    aria-label="Novo servico"
-                    onClick={() => router.push("/servicos/form")}
-                    icon={<RiAddBoxLine />}
-                  />
-                </Tooltip>
-              )}
-            </Box>
-          </Flex>
-
-          {isFetching && <Progress size="xs" isIndeterminate />}
-
-          {isLoading ? (
-            <Flex justify="center">
-              <Spinner />
+                {!isWideVersion && (
+                  <Tooltip label="Novo servico">
+                    <IconButton
+                      variant="outline"
+                      color="blue.800"
+                      aria-label="Novo servico"
+                      onClick={() => router.push("/servicos/form")}
+                      icon={<RiAddBoxLine />}
+                    />
+                  </Tooltip>
+                )}
+              </Box>
             </Flex>
-          ) : error ? (
-            <Flex justify="center">
-              <Text>Falha ao obter dados dos servicos.</Text>
-            </Flex>
-          ) : (
-            <>
-              <Table variant="striped" colorScheme="blackAlpha">
-                <Thead>
-                  <Tr>
-                    <Th>Serviço</Th>
-                    <Th>Custo</Th>
-                    <Th>Lucro</Th>
-                    <Th>Margem Lucro</Th>
-                    <Th width="8">Ações</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {value?.servicos.map((servico) => {
-                    return (
-                      <Tr key={servico.id}>
-                        <Td>
-                          <Box>
-                            <Link
-                              color="gray.900"
-                              onMouseEnter={() =>
-                                handlePrefetchServico(Number(servico.id))
-                              }
-                            >
-                              <Text>{servico.nome}</Text>
-                            </Link>
-                          </Box>
-                        </Td>
 
-                        <Td>
-                          <Text>{servico.custo}</Text>
-                        </Td>
+            {isFetching && <Progress size="xs" isIndeterminate />}
 
-                        <Td>
-                          <Text>{servico.valor}</Text>
-                        </Td>
+            {isLoading ? (
+              <Flex justify="center">
+                <Spinner />
+              </Flex>
+            ) : error ? (
+              <Flex justify="center">
+                <Text>Falha ao obter dados dos servicos.</Text>
+              </Flex>
+            ) : (
+              <>
+                <Table variant="striped" colorScheme="blackAlpha">
+                  <Thead>
+                    <Tr>
+                      <Th>Serviço</Th>
+                      <Th>Custo</Th>
+                      <Th>Lucro</Th>
+                      <Th>Margem Lucro</Th>
+                      <Th width="8">Ações</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {value?.servicos.map((servico) => {
+                      return (
+                        <Tr key={servico.id}>
+                          <Td>
+                            <Box>
+                              <Link
+                                color="gray.900"
+                                onMouseEnter={() =>
+                                  handlePrefetchServico(Number(servico.id))
+                                }
+                              >
+                                <Text>{servico.nome}</Text>
+                              </Link>
+                            </Box>
+                          </Td>
 
-                        <Td>
-                          <Text>{servico.margemLucro}</Text>
-                        </Td>
+                          <Td>
+                            <Text>{servico.custo}</Text>
+                          </Td>
 
-                        <Td>
-                          <HStack>
-                            <IconButton
-                              variant="outline"
-                              color="blue.800"
-                              aria-label="Editar serviço"
-                              icon={<RiPencilLine />}
-                              onClick={() => {
-                                router.push({
-                                  pathname: "/servicos/form",
-                                  query: String(servico.id),
-                                });
-                              }}
-                            />
+                          <Td>
+                            <Text>{servico.valor}</Text>
+                          </Td>
 
-                            <IconButton
-                              variant="outline"
-                              color="red.800"
-                              aria-label="Excluir serviço"
-                              icon={<RiDeleteBinLine />}
-                              onClick={() => {
-                                setSelectedServico(servico);
-                                setIsOpen(true);
-                              }}
-                            />
-                          </HStack>
-                        </Td>
-                      </Tr>
-                    );
-                  })}
-                </Tbody>
-              </Table>
+                          <Td>
+                            <Text>{servico.margemLucro}</Text>
+                          </Td>
 
-              <Pagination
-                totalCountOfRegisters={data.totalCount}
-                currentPage={page}
-                onPageChange={setPage}
-              />
-            </>
-          )}
+                          <Td>
+                            <HStack>
+                              <IconButton
+                                variant="outline"
+                                color="blue.800"
+                                aria-label="Editar serviço"
+                                icon={<RiPencilLine />}
+                                onClick={() => {
+                                  router.push({
+                                    pathname: "/servicos/form",
+                                    query: String(servico.id),
+                                  });
+                                }}
+                              />
 
-          <AlertDialogList
-            isOpen={isOpen}
-            cancelRef={cancelRef}
-            onClose={onClose}
-            header="Remover Serviço"
-            body="Tem certeza que deseja remover o serviço"
-            description={selectedServico.nome}
-            onClick={() => deleteServico(String(selectedServico.id))}
-          />
-        </Box>
-      </Sidebar>
-    </LoadPage>
+                              <IconButton
+                                variant="outline"
+                                color="red.800"
+                                aria-label="Excluir serviço"
+                                icon={<RiDeleteBinLine />}
+                                onClick={() => {
+                                  setSelectedServico(servico);
+                                  setIsOpen(true);
+                                }}
+                              />
+                            </HStack>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+
+                <Pagination
+                  totalCountOfRegisters={data.totalCount}
+                  currentPage={page}
+                  onPageChange={setPage}
+                />
+              </>
+            )}
+
+            <AlertDialogList
+              isOpen={isOpen}
+              cancelRef={cancelRef}
+              onClose={onClose}
+              header="Remover Serviço"
+              body="Tem certeza que deseja remover o serviço"
+              description={selectedServico.nome}
+              onClick={() => deleteServico(String(selectedServico.id))}
+            />
+          </Box>
+        </Sidebar>
+      </LoadPage>
+    </>
   );
 }
 

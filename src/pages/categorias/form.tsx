@@ -1,3 +1,4 @@
+import Head from "next/head";
 import {
   Box,
   Button,
@@ -106,77 +107,82 @@ export default function FormCategoria() {
   };
 
   return (
-    <LoadPage active={isLoading}>
-      <Sidebar>
-        <Stack as="form" onSubmit={handleSubmit(handleCategoria)}>
-          <Box
-            borderBottom="1px"
-            borderLeft="1px"
-            borderRight="1px"
-            borderRadius="lg"
-            borderColor="gray.300"
-          >
-            <Tabs isFitted variant="enclosed">
-              <TabList>
-                <Tab>Categoria</Tab>
-              </TabList>
+    <>
+      <Head>
+        <title>MEIUP | Categoria</title>
+      </Head>
+      <LoadPage active={isLoading}>
+        <Sidebar>
+          <Stack as="form" onSubmit={handleSubmit(handleCategoria)}>
+            <Box
+              borderBottom="1px"
+              borderLeft="1px"
+              borderRight="1px"
+              borderRadius="lg"
+              borderColor="gray.300"
+            >
+              <Tabs isFitted variant="enclosed">
+                <TabList>
+                  <Tab>Categoria</Tab>
+                </TabList>
 
-              <TabPanels>
-                <TabPanel>
-                  <VStack marginTop="14px" spacing="12">
-                    <SimpleGrid
-                      minChildWidth="240px"
-                      spacing={["6", "8"]}
-                      w="100%"
-                    >
-                      <FormControl isInvalid={!!errors.nome}>
-                        <Input
-                          isLoading={isLoading}
-                          name="nome"
-                          autoFocus={true}
-                          label="Nome: *"
-                          error={errors.nome}
-                          {...register("nome")}
-                        ></Input>
-                      </FormControl>
-                    </SimpleGrid>
-                  </VStack>
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </Box>
+                <TabPanels>
+                  <TabPanel>
+                    <VStack marginTop="14px" spacing="12">
+                      <SimpleGrid
+                        minChildWidth="240px"
+                        spacing={["6", "8"]}
+                        w="100%"
+                      >
+                        <FormControl isInvalid={!!errors.nome}>
+                          <Input
+                            isLoading={isLoading}
+                            name="nome"
+                            autoFocus={true}
+                            label="Nome: *"
+                            error={errors.nome}
+                            {...register("nome")}
+                          ></Input>
+                        </FormControl>
+                      </SimpleGrid>
+                    </VStack>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </Box>
 
-          <Box>
-            <HStack spacing="24px" mt="10px" justify="flex-end">
-              <Button
-                width={["150px", "200px"]}
-                type="submit"
-                color="white"
-                fontSize={["14px", "16px"]}
-                backgroundColor="red.700"
-                onClick={(event) => {
-                  event.preventDefault();
-                  router.back();
-                }}
-              >
-                VOLTAR
-              </Button>
+            <Box>
+              <HStack spacing="24px" mt="10px" justify="flex-end">
+                <Button
+                  width={["150px", "200px"]}
+                  type="submit"
+                  color="white"
+                  fontSize={["14px", "16px"]}
+                  backgroundColor="red.700"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    router.back();
+                  }}
+                >
+                  VOLTAR
+                </Button>
 
-              <Button
-                width={["150px", "200px"]}
-                fontSize={["14px", "16px"]}
-                type="submit"
-                color="white"
-                backgroundColor="blue.500"
-                isLoading={formState.isSubmitting}
-              >
-                SALVAR
-              </Button>
-            </HStack>
-          </Box>
-        </Stack>
-      </Sidebar>
-    </LoadPage>
+                <Button
+                  width={["150px", "200px"]}
+                  fontSize={["14px", "16px"]}
+                  type="submit"
+                  color="white"
+                  backgroundColor="blue.500"
+                  isLoading={formState.isSubmitting}
+                >
+                  SALVAR
+                </Button>
+              </HStack>
+            </Box>
+          </Stack>
+        </Sidebar>
+      </LoadPage>
+    </>
   );
 }
 

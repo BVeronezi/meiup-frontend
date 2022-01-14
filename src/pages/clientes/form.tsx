@@ -1,3 +1,4 @@
+import Head from "next/head";
 import {
   Box,
   Button,
@@ -142,8 +143,6 @@ export default function FormUsuario() {
   };
 
   const handleUsuario: SubmitHandler<FormData> = async (values) => {
-    debugger;
-
     const data = {
       nome: values.nome,
       email: values.email,
@@ -192,129 +191,134 @@ export default function FormUsuario() {
   };
 
   return (
-    <LoadPage active={isLoading}>
-      <Sidebar>
-        <Stack as="form" onSubmit={handleSubmit(handleUsuario)} flex="1">
-          <Box
-            borderBottom="1px"
-            borderLeft="1px"
-            borderRight="1px"
-            borderRadius="lg"
-            borderColor="gray.300"
-          >
-            <Tabs isFitted variant="enclosed">
-              <TabList>
-                <Tab>Dados básicos</Tab>
-                <Tab>Endereço</Tab>
-              </TabList>
-              <TabPanels>
-                <TabPanel>
-                  <VStack marginTop="14px" spacing="12">
-                    <SimpleGrid
-                      minChildWidth="240px"
-                      spacing={["6", "8"]}
-                      w="100%"
-                    >
-                      <Input
-                        isLoading={isLoading}
-                        name="nome"
-                        autoFocus={true}
-                        label="Nome: *"
-                        error={errors.nome}
-                        {...register("nome")}
-                      ></Input>
+    <>
+      <Head>
+        <title>MEIUP | Cliente</title>
+      </Head>
+      <LoadPage active={isLoading}>
+        <Sidebar>
+          <Stack as="form" onSubmit={handleSubmit(handleUsuario)} flex="1">
+            <Box
+              borderBottom="1px"
+              borderLeft="1px"
+              borderRight="1px"
+              borderRadius="lg"
+              borderColor="gray.300"
+            >
+              <Tabs isFitted variant="enclosed">
+                <TabList>
+                  <Tab>Dados básicos</Tab>
+                  <Tab>Endereço</Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel>
+                    <VStack marginTop="14px" spacing="12">
+                      <SimpleGrid
+                        minChildWidth="240px"
+                        spacing={["6", "8"]}
+                        w="100%"
+                      >
+                        <Input
+                          isLoading={isLoading}
+                          name="nome"
+                          autoFocus={true}
+                          label="Nome: *"
+                          error={errors.nome}
+                          {...register("nome")}
+                        ></Input>
 
-                      <Input
-                        isLoading={isLoading}
-                        name="email"
-                        type="email"
-                        label="E-mail:"
-                        error={errors.email}
-                        {...register("email")}
-                      ></Input>
-                    </SimpleGrid>
-                    <SimpleGrid
-                      minChildWidth="240px"
-                      spacing={["6", "8"]}
-                      w="100%"
-                    >
-                      <Input
-                        isLoading={isLoading}
-                        name="celular"
-                        label="Celular:"
-                        {...register("celular")}
-                      ></Input>
-                      <Input
-                        isLoading={isLoading}
-                        name="telefone"
-                        label="Telefone:"
-                        {...register("telefone")}
-                      ></Input>
-                      <Box>
-                        <VStack align="left" spacing="4">
-                          <Text fontWeight="bold">Data nascimento:</Text>
-                          <Skeleton isLoaded={!isLoading}>
-                            <DatePicker
-                              locale="pt"
-                              dateFormat="dd MMMM, yyy"
-                              showPopperArrow={false}
-                              peekNextMonth
-                              showMonthDropdown
-                              showYearDropdown
-                              dropdownMode="select"
-                              selected={date}
-                              onChange={(date) => setDate(date)}
-                              customInput={<Input />}
-                            />
-                          </Skeleton>
-                        </VStack>
-                      </Box>
-                    </SimpleGrid>
-                  </VStack>
-                </TabPanel>
-                <TabPanel>
-                  <Endereco
-                    register={register}
-                    errors={errors}
-                    isLoading={isLoading}
-                    buscaCep={buscaCep}
-                  />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          </Box>
-          <Box>
-            <Flex mt="8" justify="flex-end">
-              <HStack spacing="24px">
-                <Button
-                  width={["150px", "200px"]}
-                  fontSize={["14px", "16px"]}
-                  type="submit"
-                  color="white"
-                  backgroundColor="red.700"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    router.back();
-                  }}
-                >
-                  VOLTAR
-                </Button>
-                <Button
-                  width={["150px", "200px"]}
-                  fontSize={["14px", "16px"]}
-                  type="submit"
-                  color="white"
-                  backgroundColor="blue.500"
-                  isLoading={formState.isSubmitting}
-                >
-                  SALVAR
-                </Button>
-              </HStack>
-            </Flex>
-          </Box>
-        </Stack>
-      </Sidebar>
-    </LoadPage>
+                        <Input
+                          isLoading={isLoading}
+                          name="email"
+                          type="email"
+                          label="E-mail:"
+                          error={errors.email}
+                          {...register("email")}
+                        ></Input>
+                      </SimpleGrid>
+                      <SimpleGrid
+                        minChildWidth="240px"
+                        spacing={["6", "8"]}
+                        w="100%"
+                      >
+                        <Input
+                          isLoading={isLoading}
+                          name="celular"
+                          label="Celular:"
+                          {...register("celular")}
+                        ></Input>
+                        <Input
+                          isLoading={isLoading}
+                          name="telefone"
+                          label="Telefone:"
+                          {...register("telefone")}
+                        ></Input>
+                        <Box>
+                          <VStack align="left" spacing="4">
+                            <Text fontWeight="bold">Data nascimento:</Text>
+                            <Skeleton isLoaded={!isLoading}>
+                              <DatePicker
+                                locale="pt"
+                                dateFormat="dd MMMM, yyy"
+                                showPopperArrow={false}
+                                peekNextMonth
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode="select"
+                                selected={date}
+                                onChange={(date) => setDate(date)}
+                                customInput={<Input />}
+                              />
+                            </Skeleton>
+                          </VStack>
+                        </Box>
+                      </SimpleGrid>
+                    </VStack>
+                  </TabPanel>
+                  <TabPanel>
+                    <Endereco
+                      register={register}
+                      errors={errors}
+                      isLoading={isLoading}
+                      buscaCep={buscaCep}
+                    />
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </Box>
+            <Box>
+              <Flex mt="8" justify="flex-end">
+                <HStack spacing="24px">
+                  <Button
+                    width={["150px", "200px"]}
+                    fontSize={["14px", "16px"]}
+                    type="submit"
+                    color="white"
+                    backgroundColor="red.700"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      router.back();
+                    }}
+                  >
+                    VOLTAR
+                  </Button>
+                  <Button
+                    width={["150px", "200px"]}
+                    fontSize={["14px", "16px"]}
+                    type="submit"
+                    color="white"
+                    backgroundColor="blue.500"
+                    isLoading={formState.isSubmitting}
+                  >
+                    SALVAR
+                  </Button>
+                </HStack>
+              </Flex>
+            </Box>
+          </Stack>
+        </Sidebar>
+      </LoadPage>
+    </>
   );
 }
 

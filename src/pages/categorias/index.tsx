@@ -1,3 +1,4 @@
+import Head from "next/head";
 import {
   Box,
   Button,
@@ -135,140 +136,145 @@ export default function Categorias() {
   }
 
   return (
-    <LoadPage active={isLoadingPage}>
-      <Sidebar>
-        <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
-          <Flex mb="8" justify="space-between" align="center">
-            <Pesquisa handleChange={handlePesquisaCategoria} />
-            <Box ml="4">
-              {isWideVersion && (
-                <NextLink href="/categorias/form" passHref>
-                  <Button
-                    _hover={{
-                      bg: "blue.500",
-                    }}
-                    as="a"
-                    size="sm"
-                    fontSize="sm"
-                    color="white"
-                    backgroundColor="blue.800"
-                    leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-                  >
-                    Nova categoria
-                  </Button>
-                </NextLink>
-              )}
+    <>
+      <Head>
+        <title>MEIUP | Categorias</title>
+      </Head>
+      <LoadPage active={isLoadingPage}>
+        <Sidebar>
+          <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
+            <Flex mb="8" justify="space-between" align="center">
+              <Pesquisa handleChange={handlePesquisaCategoria} />
+              <Box ml="4">
+                {isWideVersion && (
+                  <NextLink href="/categorias/form" passHref>
+                    <Button
+                      _hover={{
+                        bg: "blue.500",
+                      }}
+                      as="a"
+                      size="sm"
+                      fontSize="sm"
+                      color="white"
+                      backgroundColor="blue.800"
+                      leftIcon={<Icon as={RiAddLine} fontSize="20" />}
+                    >
+                      Nova categoria
+                    </Button>
+                  </NextLink>
+                )}
 
-              {!isWideVersion && (
-                <Tooltip label="Nova categoria">
-                  <IconButton
-                    variant="outline"
-                    color="blue.800"
-                    aria-label="Nova categoria"
-                    onClick={() => router.push("/categorias/form")}
-                    icon={<RiAddBoxLine />}
+                {!isWideVersion && (
+                  <Tooltip label="Nova categoria">
+                    <IconButton
+                      variant="outline"
+                      color="blue.800"
+                      aria-label="Nova categoria"
+                      onClick={() => router.push("/categorias/form")}
+                      icon={<RiAddBoxLine />}
+                    />
+                  </Tooltip>
+                )}
+              </Box>
+            </Flex>
+
+            {isFetching && <Progress size="xs" isIndeterminate />}
+
+            {isLoading ? (
+              <Flex justify="center">
+                <Spinner />
+              </Flex>
+            ) : error ? (
+              <Flex justify="center">
+                <Text>Falha ao obter dados das categorias.</Text>
+              </Flex>
+            ) : (
+              <Box>
+                <Table variant="striped" colorScheme="blackAlpha">
+                  <Thead>
+                    <Tr>
+                      <Th>Código</Th>
+                      <Th>Categoria</Th>
+                      <Th width="8">Ações</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {value?.categorias.map((categoria) => {
+                      return (
+                        <Tr key={categoria.id}>
+                          <Td>
+                            <Box>
+                              <Link
+                                color="gray.900"
+                                onMouseEnter={() =>
+                                  handlePrefetchCategoria(Number(categoria.id))
+                                }
+                              >
+                                <Text>{categoria.id}</Text>
+                              </Link>
+                            </Box>
+                          </Td>
+
+                          <Td>
+                            <Text>{categoria.nome}</Text>
+                          </Td>
+
+                          <Td>
+                            <HStack>
+                              <IconButton
+                                variant="outline"
+                                color="blue.800"
+                                aria-label="Editar categoria"
+                                icon={<RiPencilLine />}
+                                onClick={() => {
+                                  router.push({
+                                    pathname: "/categorias/form",
+                                    query: String(categoria.id),
+                                  });
+                                }}
+                              />
+
+                              <IconButton
+                                variant="outline"
+                                color="red.800"
+                                aria-label="Excluir categoria"
+                                icon={<RiDeleteBinLine />}
+                                onClick={() => {
+                                  setSelectedCategoria(categoria);
+                                  setIsOpen(true);
+                                }}
+                              />
+                            </HStack>
+                          </Td>
+                        </Tr>
+                      );
+                    })}
+                  </Tbody>
+                </Table>
+
+                {!isLoadingPage && (
+                  <Pagination
+                    totalCountOfRegisters={data.totalCount}
+                    currentPage={page}
+                    onPageChange={setPage}
                   />
-                </Tooltip>
-              )}
-            </Box>
-          </Flex>
+                )}
+              </Box>
+            )}
 
-          {isFetching && <Progress size="xs" isIndeterminate />}
-
-          {isLoading ? (
-            <Flex justify="center">
-              <Spinner />
-            </Flex>
-          ) : error ? (
-            <Flex justify="center">
-              <Text>Falha ao obter dados das categorias.</Text>
-            </Flex>
-          ) : (
-            <Box>
-              <Table variant="striped" colorScheme="blackAlpha">
-                <Thead>
-                  <Tr>
-                    <Th>Código</Th>
-                    <Th>Categoria</Th>
-                    <Th width="8">Ações</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {value?.categorias.map((categoria) => {
-                    return (
-                      <Tr key={categoria.id}>
-                        <Td>
-                          <Box>
-                            <Link
-                              color="gray.900"
-                              onMouseEnter={() =>
-                                handlePrefetchCategoria(Number(categoria.id))
-                              }
-                            >
-                              <Text>{categoria.id}</Text>
-                            </Link>
-                          </Box>
-                        </Td>
-
-                        <Td>
-                          <Text>{categoria.nome}</Text>
-                        </Td>
-
-                        <Td>
-                          <HStack>
-                            <IconButton
-                              variant="outline"
-                              color="blue.800"
-                              aria-label="Editar categoria"
-                              icon={<RiPencilLine />}
-                              onClick={() => {
-                                router.push({
-                                  pathname: "/categorias/form",
-                                  query: String(categoria.id),
-                                });
-                              }}
-                            />
-
-                            <IconButton
-                              variant="outline"
-                              color="red.800"
-                              aria-label="Excluir categoria"
-                              icon={<RiDeleteBinLine />}
-                              onClick={() => {
-                                setSelectedCategoria(categoria);
-                                setIsOpen(true);
-                              }}
-                            />
-                          </HStack>
-                        </Td>
-                      </Tr>
-                    );
-                  })}
-                </Tbody>
-              </Table>
-
-              {!isLoadingPage && (
-                <Pagination
-                  totalCountOfRegisters={data.totalCount}
-                  currentPage={page}
-                  onPageChange={setPage}
-                />
-              )}
-            </Box>
-          )}
-
-          <AlertDialogList
-            isOpen={isOpen}
-            cancelRef={cancelRef}
-            onClose={onClose}
-            header="Remover Categoria"
-            body="Tem certeza que deseja remover a categoria"
-            description={selectedCategoria.nome}
-            onClick={() => deleteCategoria(String(selectedCategoria.id))}
-          />
-        </Box>
-      </Sidebar>
-    </LoadPage>
+            <AlertDialogList
+              isOpen={isOpen}
+              cancelRef={cancelRef}
+              onClose={onClose}
+              header="Remover Categoria"
+              body="Tem certeza que deseja remover a categoria"
+              description={selectedCategoria.nome}
+              onClick={() => deleteCategoria(String(selectedCategoria.id))}
+            />
+          </Box>
+        </Sidebar>
+      </LoadPage>
+    </>
   );
 }
 

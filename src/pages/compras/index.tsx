@@ -1,12 +1,18 @@
+import Head from "next/head";
 import { Sidebar } from "../../components/Sidebar";
 import { PageNotFound } from "../../fragments/404/404";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 
 export default function Compras() {
   return (
-    <Sidebar>
-      <PageNotFound />
-    </Sidebar>
+    <>
+      <Head>
+        <title>MEIUP | Compras</title>
+      </Head>
+      <Sidebar>
+        <PageNotFound />
+      </Sidebar>
+    </>
   );
 }
 
