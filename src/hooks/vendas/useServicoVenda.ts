@@ -35,14 +35,26 @@ export async function getServicosVenda(
   let servicosVenda = [];
 
   if (servicos.length > 0) {
-    servicosVenda = servicos.map((p) => {
+    servicosVenda = servicos.map((servico) => {
       return {
-        id: p.id,
-        servico: p.servico,
-        valorServico: p.valorServico,
-        outrasDespesas: p.outrasDespesas,
-        desconto: p.desconto,
-        valorTotal: p.valorTotal,
+        id: servico.id,
+        servico: servico.servico,
+        valorServico: (servico.valorServico
+          ? Number(servico.valorServico)
+          : 0
+        ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
+        outrasDespesas: (servico.outrasDespesas
+          ? Number(servico.outrasDespesas)
+          : 0
+        ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
+        desconto: (servico.desconto
+          ? Number(servico.desconto)
+          : 0
+        ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
+        valorTotal: (servico.valorTotal
+          ? Number(servico.valorTotal)
+          : 0
+        ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
       };
     });
   }

@@ -230,8 +230,8 @@ export default function FormUsuario() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab>Dados básicos</Tab>
-                  <Tab>Endereço</Tab>
+                  <Tab fontWeight="bold">Dados básicos</Tab>
+                  <Tab fontWeight="bold">Endereço</Tab>
                 </TabList>
                 <TabPanels>
                   <TabPanel>
@@ -245,7 +245,7 @@ export default function FormUsuario() {
                           isLoading={isLoading}
                           name="nome"
                           autoFocus={true}
-                          label="Nome: *"
+                          label="Nome *"
                           error={errors.nome}
                           {...register("nome")}
                         ></Input>
@@ -254,7 +254,7 @@ export default function FormUsuario() {
                           isLoading={isLoading}
                           name="email"
                           type="email"
-                          label="E-mail: *"
+                          label="E-mail *"
                           error={errors.email}
                           {...register("email")}
                         ></Input>
@@ -268,19 +268,19 @@ export default function FormUsuario() {
                         <Input
                           isLoading={isLoading}
                           name="celular"
-                          label="Celular:"
+                          label="Celular"
                           {...register("celular")}
                         ></Input>
                         <Input
                           isLoading={isLoading}
                           name="telefone"
-                          label="Telefone:"
+                          label="Telefone"
                           {...register("telefone")}
                         ></Input>
 
                         <Box>
                           <FormLabel fontWeight="bold" htmlFor="perfil">
-                            Perfil: *
+                            Perfil *
                           </FormLabel>
                           <Skeleton isLoaded={!isLoading}>
                             <Select

@@ -29,11 +29,19 @@ export async function getVendas(
   });
 
   const vendas = response.data.found.vendas.map((venda) => {
+    const regex = new RegExp("^s*(?:[1-9]d{0,2}(?:.d{3})*|0)(?:,d{1,2})?$");
     return {
       id: venda.id,
       cliente: venda.cliente?.nome,
-      dataVenda: venda.dataVenda,
-      valorTotal: venda.valorTotal ?? "-",
+      dataVenda: new Date(venda.dataVenda).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "numeric",
+        year: "numeric",
+      }),
+      valorTotal: (venda.valorTotal
+        ? Number(venda.valorTotal)
+        : 0
+      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
       status: venda.status,
     };
   });

@@ -35,7 +35,10 @@ export async function getProdutos(
       id: produto.id,
       descricao: produto.descricao,
       categoria: produto.categoria?.nome ?? "-",
-      precoVarejo: produto.precos?.precoVendaVarejo ?? "-",
+      precoVarejo: (produto.precos?.precoVendaVarejo
+        ? Number(produto.precos?.precoVendaVarejo)
+        : 0
+      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
     };
   });
 

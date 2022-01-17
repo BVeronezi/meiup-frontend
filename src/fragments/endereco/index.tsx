@@ -8,7 +8,7 @@ export function Endereco({ register, errors, isLoading, buscaCep }) {
         <Input
           isLoading={isLoading}
           name="cep"
-          label="CEP:"
+          label="CEP"
           error={errors.cep}
           {...register("cep")}
           onChange={(c) => buscaCep(c.target.value)}
@@ -17,7 +17,7 @@ export function Endereco({ register, errors, isLoading, buscaCep }) {
         <Input
           isLoading={isLoading}
           name="endereco"
-          label="Endereço:"
+          label="Endereço"
           error={errors.endereco}
           {...register("endereco")}
         ></Input>
@@ -27,14 +27,14 @@ export function Endereco({ register, errors, isLoading, buscaCep }) {
         <Input
           isLoading={isLoading}
           name="numero"
-          label="Número:"
+          label="Número"
           {...register("numero")}
         ></Input>
 
         <Input
           isLoading={isLoading}
           name="bairro"
-          label="Bairro:"
+          label="Bairro"
           {...register("bairro")}
         ></Input>
       </SimpleGrid>
@@ -43,13 +43,13 @@ export function Endereco({ register, errors, isLoading, buscaCep }) {
         <Input
           isLoading={isLoading}
           name="cidade"
-          label="Cidade:"
+          label="Cidade"
           {...register("cidade")}
         ></Input>
         <Input
           isLoading={isLoading}
           name="estado"
-          label="Estado:"
+          label="Estado"
           {...register("estado")}
         ></Input>
       </SimpleGrid>
@@ -58,7 +58,7 @@ export function Endereco({ register, errors, isLoading, buscaCep }) {
         <Input
           isLoading={isLoading}
           name="complemento"
-          label="Complemento:"
+          label="Complemento"
           {...register("complemento")}
         ></Input>
       </SimpleGrid>

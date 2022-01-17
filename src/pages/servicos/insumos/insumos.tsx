@@ -168,7 +168,7 @@ export default function Insumos({ produtos, handleLoad }) {
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <VStack align="left" spacing="4">
-            <Text fontWeight="bold">Produto:</Text>
+            <Text fontWeight="bold">Produto</Text>
             <Select
               id="categoria"
               {...register("categoria")}
@@ -188,7 +188,7 @@ export default function Insumos({ produtos, handleLoad }) {
           {stateProduto && (
             <Input
               name="quantidade"
-              label="Quantidade: *"
+              label="Quantidade *"
               error={errors.quantidade}
               {...register("quantidade")}
             ></Input>

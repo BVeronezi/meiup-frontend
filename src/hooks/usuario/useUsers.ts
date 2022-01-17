@@ -38,7 +38,7 @@ export async function getUsuarios(
       perfil: user.role,
       createdAt: new Date(user.dataCriacao).toLocaleDateString("pt-BR", {
         day: "2-digit",
-        month: "long",
+        month: "numeric",
         year: "numeric",
       }),
     };

@@ -35,9 +35,18 @@ export async function getServicos(
     return {
       id: servico.id,
       nome: servico.nome,
-      custo: servico.custo ?? "-",
-      valor: servico.valor ?? "-",
-      margemLucro: servico.margemLucro ?? "-",
+      custo: (servico.custo ? Number(servico.custo) : 0).toLocaleString(
+        "pt-br",
+        { style: "currency", currency: "BRL" }
+      ),
+      valor: (servico.valor ? Number(servico.valor) : 0).toLocaleString(
+        "pt-br",
+        { style: "currency", currency: "BRL" }
+      ),
+      margemLucro: (servico.margemLucro
+        ? Number(servico.margemLucro)
+        : 0
+      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
     };
   });
 

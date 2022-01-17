@@ -214,11 +214,9 @@ export default function ProdutoVenda({
     if (precoUnitario) {
       let total =
         (quantidade ? Number(quantidade) : 0) *
-        (precoUnitario ? parseFloat(precoUnitario.replace(/,/g, ".")) : 0);
-      total += outrasDespesas
-        ? parseFloat(outrasDespesas.replace(/,/g, "."))
-        : 0;
-      total -= desconto ? parseFloat(desconto.replace(/,/g, ".")) : 0;
+        (precoUnitario ? parseFloat(precoUnitario) : 0);
+      total += outrasDespesas ? parseFloat(outrasDespesas) : 0;
+      total -= desconto ? parseFloat(desconto) : 0;
 
       setValue("valorTotal", total);
     }
@@ -229,7 +227,7 @@ export default function ProdutoVenda({
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <VStack align="left" spacing="4">
-            <Text fontWeight="bold">Produto: *</Text>
+            <Text fontWeight="bold">Produto *</Text>
             <Skeleton isLoaded={!isLoading}>
               <Select
                 isDisabled={statusVenda !== 0}
@@ -253,7 +251,7 @@ export default function ProdutoVenda({
             isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="quantidade"
-            label="Quantidade: *"
+            label="Quantidade *"
             error={errors.quantidade}
             {...register("quantidade")}
             onBlur={calculaTotal}
@@ -266,7 +264,7 @@ export default function ProdutoVenda({
             isLoading={isLoading}
             isReadOnly
             name="precoUnitario"
-            label="Preço unitário: *"
+            label="Preço unitário *"
             error={errors.precoUnitario}
             {...register("precoUnitario")}
           ></Input>
@@ -274,7 +272,7 @@ export default function ProdutoVenda({
             isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="outrasDespesas"
-            label="Outras despesas:"
+            label="Outras despesas"
             error={errors.outrasDespesas}
             {...register("outrasDespesas")}
             onBlur={calculaTotal}
@@ -285,7 +283,7 @@ export default function ProdutoVenda({
             isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="desconto"
-            label="Desconto:"
+            label="Desconto"
             error={errors.desconto}
             {...register("desconto")}
             onBlur={calculaTotal}
@@ -294,7 +292,7 @@ export default function ProdutoVenda({
             isLoading={isLoading}
             isReadOnly
             name="total"
-            label="Total: *"
+            label="Total *"
             error={errors.valorTotal}
             {...register("valorTotal")}
           ></Input>

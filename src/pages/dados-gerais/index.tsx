@@ -221,8 +221,8 @@ export default function DadosGerais() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab>Informações da empresa</Tab>
-                  <Tab>Endereço</Tab>
+                  <Tab fontWeight="bold">Informações da empresa</Tab>
+                  <Tab fontWeight="bold">Endereço</Tab>
                 </TabList>
 
                 <TabPanels>
@@ -237,7 +237,7 @@ export default function DadosGerais() {
                           isLoading={isLoading}
                           name="cnpj"
                           autoFocus={true}
-                          label="CNPJ *:"
+                          label="CNPJ *"
                           error={errors.cnpj}
                           {...register("cnpj")}
                           onChange={(c) => consultaCpfCnpj(c.target.value)}
@@ -245,7 +245,7 @@ export default function DadosGerais() {
                         <Input
                           isLoading={isLoading}
                           name="ie"
-                          label="Inscrição Estadual:"
+                          label="Inscrição Estadual"
                           {...register("ie")}
                         ></Input>
                       </SimpleGrid>
@@ -258,7 +258,7 @@ export default function DadosGerais() {
                         <Input
                           isLoading={isLoading}
                           name="razaoSocial"
-                          label="Razão Social *:"
+                          label="Razão Social *"
                           error={errors.razaoSocial}
                           {...register("razaoSocial")}
                         ></Input>
@@ -272,14 +272,14 @@ export default function DadosGerais() {
                         <Input
                           isLoading={isLoading}
                           name="telefone"
-                          label="Telefone:"
+                          label="Telefone"
                           {...register("telefone")}
                         ></Input>
 
                         <Input
                           isLoading={isLoading}
                           name="celular"
-                          label="Celular:"
+                          label="Celular"
                           {...register("celular")}
                         ></Input>
 
@@ -287,7 +287,7 @@ export default function DadosGerais() {
                           isLoading={isLoading}
                           name="email"
                           type="email"
-                          label="E-mail:"
+                          label="E-mail"
                           {...register("email")}
                         ></Input>
                       </SimpleGrid>

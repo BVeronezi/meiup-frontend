@@ -31,7 +31,6 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
-import NumberFormat from "react-number-format";
 import { Sidebar } from "../../components/Sidebar";
 import { LoadPage } from "../../components/Load";
 
@@ -63,16 +62,12 @@ export default function FormProduto(optionsCategoria) {
   const [stateTipoItem, setStateTipoItem] = useState("");
   const [stateUnidade, setStateUnidade] = useState("");
   const [stateCategoria, setStateCategoria] = useState("");
-  const [statePrecoVendaVarejo, setStatePrecoVendaVarejo] = useState(0.0);
-  const [statePrecoVendaAtacado, setStatePrecoVendaAtacado] = useState(0.0);
-  const [statePrecoCompra, setStatePrecoCompra] = useState(0.0);
-  const [stateMargemLucro, setStateMargemLucro] = useState(0.0);
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
   const toast = createStandaloneToast({ theme: customTheme });
 
-  const { register, handleSubmit, formState, setValue } = useForm({
+  const { register, handleSubmit, formState, setValue, getValues } = useForm({
     resolver: yupResolver(produtoFormSchema),
   });
 
@@ -120,22 +115,11 @@ export default function FormProduto(optionsCategoria) {
         setStateUnidade(String(unidade));
 
         if (response.data.produto.precos) {
-          const regex = RegExp(
-            "^[+-]?([0-9]{1,3}(,[0-9]{3})*(.[0-9]+)?|d*.d+|d+)$"
+          Object.entries(response.data.produto.precos).forEach(
+            ([key, value]) => {
+              setValue(key, parseFloat(String(value)));
+            }
           );
-          const {
-            precoVendaVarejo,
-            precoVendaAtacado,
-            precoCompra,
-            margemLucro,
-          } = response.data.produto.precos;
-
-          setStatePrecoVendaVarejo(Number(regex.exec(precoVendaVarejo)?.input));
-          setStatePrecoVendaAtacado(
-            Number(regex.exec(precoVendaAtacado)?.input)
-          );
-          setStatePrecoCompra(Number(regex.exec(precoCompra)?.input));
-          setStateMargemLucro(Number(regex.exec(margemLucro)?.input));
         }
 
         if (response.data.produto.categoria) {
@@ -166,6 +150,20 @@ export default function FormProduto(optionsCategoria) {
     setStateCategoria(categoria.value);
   };
 
+  const calculaMargemLucro = () => {
+    const precoCompra = getValues("precoCompra");
+    const precoVendaVarejo = getValues("precoVendaVarejo");
+    const precoVendaAtacado = getValues("precoVendaAtacado");
+
+    const precoVenda = precoVendaVarejo ? precoVendaVarejo : precoVendaAtacado;
+
+    let margemLucro =
+      (precoVenda ? parseFloat(precoVenda) : 0) -
+      (precoCompra ? parseFloat(precoCompra) : 0);
+
+    setValue("margemLucro", margemLucro);
+  };
+
   const handleProduto: SubmitHandler<FormData> = async (values) => {
     const data = {
       descricao: values.descricao,
@@ -177,10 +175,10 @@ export default function FormProduto(optionsCategoria) {
       estoqueMaximo: Number(values.estoqueMaximo),
       empresa: user.empresa,
       precos: {
-        precoVendaVarejo: Number(statePrecoVendaVarejo),
-        precoVendaAtacado: Number(statePrecoVendaAtacado),
-        precoCompra: Number(statePrecoCompra),
-        margemLucro: Number(stateMargemLucro),
+        precoVendaVarejo: Number(values.precoVendaVarejo),
+        precoVendaAtacado: Number(values.precoVendaAtacado),
+        precoCompra: Number(values.precoCompra),
+        margemLucro: Number(values.margemLucro),
       },
     };
 
@@ -232,9 +230,9 @@ export default function FormProduto(optionsCategoria) {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab>Produto</Tab>
-                  <Tab>Estoque</Tab>
-                  <Tab>Preços</Tab>
+                  <Tab fontWeight="bold">Produto</Tab>
+                  <Tab fontWeight="bold">Estoque</Tab>
+                  <Tab fontWeight="bold">Preços</Tab>
                 </TabList>
 
                 <TabPanels>
@@ -250,13 +248,13 @@ export default function FormProduto(optionsCategoria) {
                             isLoading={isLoading}
                             name="descricao"
                             autoFocus={true}
-                            label="Descrição: *"
+                            label="Descrição *"
                             error={errors.descricao}
                             {...register("descricao")}
                           ></Input>
                         </FormControl>
                         <VStack align="left" spacing="4">
-                          <Text fontWeight="bold">Tipo Item:</Text>
+                          <Text fontWeight="bold">Tipo Item</Text>
                           <Skeleton isLoaded={!isLoading}>
                             <Select
                               {...register("tipoItem")}
@@ -277,7 +275,7 @@ export default function FormProduto(optionsCategoria) {
                         w="100%"
                       >
                         <VStack align="left" spacing="4">
-                          <Text fontWeight="bold">Unidade:</Text>
+                          <Text fontWeight="bold">Unidade</Text>
                           <Skeleton isLoaded={!isLoading}>
                             <Select
                               {...register("unidade")}
@@ -292,7 +290,7 @@ export default function FormProduto(optionsCategoria) {
                           </Skeleton>
                         </VStack>
                         <VStack align="left" spacing="4">
-                          <Text fontWeight="bold">Categoria:</Text>
+                          <Text fontWeight="bold">Categoria</Text>
                           <Skeleton isLoaded={!isLoading}>
                             <Select
                               id="categoria"
@@ -323,7 +321,7 @@ export default function FormProduto(optionsCategoria) {
                             isLoading={isLoading}
                             type="number"
                             name="estoque"
-                            label="Estoque: *"
+                            label="Estoque *"
                             error={errors.estoque}
                             {...register("estoque")}
                           ></Input>
@@ -332,7 +330,7 @@ export default function FormProduto(optionsCategoria) {
                           isLoading={isLoading}
                           type="number"
                           name="estoqueMinimo"
-                          label="Estoque Mínimo:"
+                          label="Estoque Mínimo"
                           error={errors.estoqueMinimo}
                           {...register("estoqueMinimo")}
                         ></Input>
@@ -340,7 +338,7 @@ export default function FormProduto(optionsCategoria) {
                           isLoading={isLoading}
                           type="number"
                           name="estoqueMaximo"
-                          label="Estoque Máximo:"
+                          label="Estoque Máximo"
                           error={errors.estoqueMaximo}
                           {...register("estoqueMaximo")}
                         ></Input>
@@ -354,80 +352,44 @@ export default function FormProduto(optionsCategoria) {
                         spacing={["6", "8"]}
                         w="100%"
                       >
-                        <Stack spacing="4">
-                          <Text fontWeight="bold">Preço de venda varejo:</Text>
-                          <Skeleton isLoaded={!isLoading}>
-                            <NumberFormat
-                              value={statePrecoVendaVarejo}
-                              onValueChange={(val) =>
-                                setStatePrecoVendaVarejo(val.floatValue)
-                              }
-                              customInput={ChakraInput}
-                              variant="flushed"
-                              borderColor="gray.400"
-                              thousandSeparator="."
-                              decimalSeparator=","
-                              prefix={"R$"}
-                            />
-                          </Skeleton>
-                        </Stack>
-                        <Stack spacing="4">
-                          <Text fontWeight="bold">Preço de venda atacado:</Text>
-                          <Skeleton isLoaded={!isLoading}>
-                            <NumberFormat
-                              value={statePrecoVendaAtacado}
-                              onValueChange={(val) =>
-                                setStatePrecoVendaAtacado(val.floatValue)
-                              }
-                              customInput={ChakraInput}
-                              variant="flushed"
-                              borderColor="gray.400"
-                              thousandSeparator="."
-                              decimalSeparator=","
-                              prefix={"R$"}
-                            />
-                          </Skeleton>
-                        </Stack>
+                        <Input
+                          isLoading={isLoading}
+                          name="precoVendaVarejo"
+                          label="Preço de venda varejo"
+                          error={errors.precoVendaVarejo}
+                          {...register("precoVendaVarejo")}
+                          onBlur={calculaMargemLucro}
+                        ></Input>
+
+                        <Input
+                          isLoading={isLoading}
+                          name="precoVendaAtacado"
+                          label="Preço de venda atacado"
+                          error={errors.precoVendaAtacado}
+                          {...register("precoVendaAtacado")}
+                          onBlur={calculaMargemLucro}
+                        ></Input>
                       </SimpleGrid>
                       <SimpleGrid
                         minChildWidth="240px"
                         spacing={["6", "8"]}
                         w="100%"
                       >
-                        <Stack spacing="4">
-                          <Text fontWeight="bold">Preço de compra:</Text>
-                          <Skeleton isLoaded={!isLoading}>
-                            <NumberFormat
-                              value={statePrecoCompra}
-                              onValueChange={(val) =>
-                                setStatePrecoCompra(val.floatValue)
-                              }
-                              customInput={ChakraInput}
-                              variant="flushed"
-                              borderColor="gray.400"
-                              thousandSeparator="."
-                              decimalSeparator=","
-                              prefix={"R$"}
-                            />
-                          </Skeleton>
-                        </Stack>
-                        <Stack spacing="4">
-                          <Text fontWeight="bold">Margem de lucro:</Text>
-                          <Skeleton isLoaded={!isLoading}>
-                            <NumberFormat
-                              value={stateMargemLucro}
-                              onValueChange={(val) =>
-                                setStateMargemLucro(val.floatValue)
-                              }
-                              customInput={ChakraInput}
-                              variant="flushed"
-                              borderColor="gray.400"
-                              thousandSeparator="."
-                              decimalSeparator=","
-                              prefix={"R$"}
-                            />
-                          </Skeleton>
-                        </Stack>
+                        <Input
+                          isLoading={isLoading}
+                          name="precoCompra"
+                          label="Preço de compra"
+                          error={errors.precoCompra}
+                          {...register("precoCompra")}
+                          onBlur={calculaMargemLucro}
+                        ></Input>
+                        <Input
+                          isLoading={isLoading}
+                          name="margemLucro"
+                          label="Margem de lucro"
+                          error={errors.margemLucro}
+                          {...register("margemLucro")}
+                        ></Input>
                       </SimpleGrid>
                     </VStack>
                   </TabPanel>

@@ -32,15 +32,27 @@ export async function getProdutosVenda(
     }
   );
 
-  const produtosVenda = response.data.found.produtosVenda.map((p) => {
+  const produtosVenda = response.data.found.produtosVenda.map((produto) => {
     return {
-      id: p.id,
-      produto: p.produto,
-      quantidade: p.quantidade,
-      precoUnitario: p.precoUnitario,
-      outrasDespesas: p.outrasDespesas,
-      desconto: p.desconto,
-      valorTotal: p.valorTotal,
+      id: produto.id,
+      produto: produto.produto,
+      quantidade: produto.quantidade,
+      precoUnitario: (produto.precoUnitario
+        ? Number(produto.precoUnitario)
+        : 0
+      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
+      outrasDespesas: (produto.outrasDespesas
+        ? Number(produto.outrasDespesas)
+        : 0
+      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
+      desconto: (produto.desconto
+        ? Number(produto.desconto)
+        : 0
+      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
+      valorTotal: (produto.valorTotal
+        ? Number(produto.valorTotal)
+        : 0
+      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
     };
   });
 

@@ -33,8 +33,8 @@ import MButton from "../../components/Button";
 import { AuthContext } from "../../contexts/AuthContext";
 import { withSSRGuest } from "../../utils/withSSRGuest";
 import { useRouter } from "next/router";
-import { Blur } from "../../components/Blur";
 import { Illustration } from "..";
+import { RiArrowLeftSLine } from "react-icons/ri";
 
 type UserFormData = {
   email: string;
@@ -77,6 +77,14 @@ export default function Login() {
   return (
     <>
       <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
+        <IconButton
+          variant="link"
+          colorScheme="black"
+          size="lg"
+          aria-label="voltar"
+          icon={<RiArrowLeftSLine />}
+          onClick={() => router.replace("/")}
+        />
         <Flex p={8} flex={1} align={"center"} justify={"center"}>
           <Stack spacing={4} w={"full"} maxW={"md"}>
             <Stack spacing={4}>
@@ -97,7 +105,7 @@ export default function Login() {
                 <FormControl isInvalid={!!errors.email}>
                   <Input
                     _placeholder={{ color: "gray.700" }}
-                    placeholder="Email"
+                    placeholder="Email *"
                     variant="flushed"
                     {...register("email")}
                   />
@@ -110,7 +118,7 @@ export default function Login() {
                   <InputGroup size="md">
                     <Input
                       _placeholder={{ color: "gray.700" }}
-                      placeholder="Senha"
+                      placeholder="Senha *"
                       variant="flushed"
                       type={show ? "text" : "password"}
                       {...register("senha")}

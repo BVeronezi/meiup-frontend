@@ -204,13 +204,9 @@ export default function ServicoVenda({
     const desconto = getValues("desconto");
 
     if (valorServico) {
-      let total = valorServico
-        ? parseFloat(valorServico.replace(/,/g, "."))
-        : 0;
-      total += outrasDespesas
-        ? parseFloat(outrasDespesas.replace(/,/g, "."))
-        : 0;
-      total -= desconto ? parseFloat(desconto.replace(/,/g, ".")) : 0;
+      let total = valorServico ? parseFloat(valorServico) : 0;
+      total += outrasDespesas ? parseFloat(outrasDespesas) : 0;
+      total -= desconto ? parseFloat(desconto) : 0;
 
       setValue("valorTotal", total);
     }
@@ -221,7 +217,7 @@ export default function ServicoVenda({
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <VStack align="left" spacing="4">
-            <Text fontWeight="bold">Serviço: *</Text>
+            <Text fontWeight="bold">Serviço *</Text>
             <Skeleton isLoaded={!isLoading}>
               <Select
                 isDisabled={statusVenda !== 0}
@@ -245,7 +241,7 @@ export default function ServicoVenda({
             isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="valorServico"
-            label="Valor serviço: *"
+            label="Valor serviço *"
             error={errors.valorServico}
             {...register("valorServico")}
             onBlur={calculaTotal}
@@ -258,7 +254,7 @@ export default function ServicoVenda({
             isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="outrasDespesas"
-            label="Outras despesas:"
+            label="Outras despesas"
             error={errors.outrasDespesas}
             {...register("outrasDespesas")}
             onBlur={calculaTotal}
@@ -267,7 +263,7 @@ export default function ServicoVenda({
             isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="desconto"
-            label="Desconto:"
+            label="Desconto"
             error={errors.desconto}
             {...register("desconto")}
             onBlur={calculaTotal}
@@ -278,7 +274,7 @@ export default function ServicoVenda({
             isLoading={isLoading}
             isDisabled={statusVenda !== 0}
             name="valorTotal"
-            label="Valor total:"
+            label="Total"
             error={errors.valorTotal}
             {...register("valorTotal")}
           ></Input>

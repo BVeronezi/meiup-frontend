@@ -8,7 +8,6 @@ import InputMask from "react-input-mask";
 const { yupResolver } = require("@hookform/resolvers/yup");
 import {
   Box,
-  Container,
   Input,
   Flex,
   FormErrorMessage,
@@ -18,7 +17,6 @@ import {
   Image,
   InputGroup,
   InputRightElement,
-  SimpleGrid,
   Text,
   FormControl,
   AlertDialog,
@@ -39,7 +37,7 @@ import MButton from "../../components/Button";
 import { api } from "../../services/apiClient";
 import { withSSRGuest } from "../../utils/withSSRGuest";
 import { theme as customTheme } from "../../styles/theme";
-import { Blur } from "../../components/Blur";
+import { RiArrowLeftSLine } from "react-icons/ri";
 
 type UserFormData = {
   email: string;
@@ -96,6 +94,14 @@ export default function SignUp() {
   return (
     <>
       <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
+        <IconButton
+          variant="link"
+          colorScheme="black"
+          size="lg"
+          aria-label="voltar"
+          icon={<RiArrowLeftSLine />}
+          onClick={() => router.replace("/")}
+        />
         <Flex p={8} flex={1} align={"center"} justify={"center"}>
           <Stack spacing={4} w={"full"} maxW={"md"}>
             <Stack spacing={4}>
@@ -116,7 +122,7 @@ export default function SignUp() {
                 <FormControl isInvalid={!!errors.email}>
                   <Input
                     _placeholder={{ color: "gray.700" }}
-                    placeholder="Email"
+                    placeholder="Email *"
                     variant="flushed"
                     {...register("email")}
                   />
@@ -140,7 +146,7 @@ export default function SignUp() {
                   <InputGroup size="md">
                     <Input
                       _placeholder={{ color: "gray.700" }}
-                      placeholder="Senha"
+                      placeholder="Senha *"
                       variant="flushed"
                       type={show ? "text" : "password"}
                       {...register("senha")}

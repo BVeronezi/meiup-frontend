@@ -9,7 +9,6 @@ import { AuthContext } from "../../contexts/AuthContext";
 const { yupResolver } = require("@hookform/resolvers/yup");
 import {
   Box,
-  Input as ChakraInput,
   Button,
   createStandaloneToast,
   FormControl,
@@ -23,7 +22,6 @@ import {
   Tabs,
   Text,
   VStack,
-  Skeleton,
 } from "@chakra-ui/react";
 import { Sidebar } from "../../components/Sidebar";
 import { Input } from "../../components/Input";
@@ -33,7 +31,6 @@ import axios from "axios";
 import Insumos from "./insumos/insumos";
 import { RiInformationLine } from "react-icons/ri";
 import { api } from "../../services/apiClient";
-import NumberFormat from "react-number-format";
 import { LoadPage } from "../../components/Load";
 
 type FormData = {
@@ -63,7 +60,7 @@ export default function FormServico(produtos) {
   const [stateValor, setStateValor] = useState(0.0);
   const [stateMargemLucro, setStateMargemLucro] = useState(0.0);
 
-  const { register, handleSubmit, formState, setValue } = useForm({
+  const { register, handleSubmit, formState, setValue, getValues } = useForm({
     resolver: yupResolver(servicoFormSchema),
   });
 
@@ -78,14 +75,10 @@ export default function FormServico(produtos) {
 
         const { nome, custo, valor, margemLucro } = response.data.servico;
 
-        const regex = RegExp(
-          "^[+-]?([0-9]{1,3}(,[0-9]{3})*(.[0-9]+)?|d*.d+|d+)$"
-        );
-
         setValue("nome", nome);
-        setStateCusto(Number(regex.exec(custo)) || custo);
-        setStateValor(Number(regex.exec(valor)) || valor);
-        setStateMargemLucro(Number(regex.exec(margemLucro)) || margemLucro);
+        setStateCusto(parseFloat(custo));
+        setStateValor(parseFloat(valor));
+        setStateMargemLucro(parseFloat(margemLucro));
       }
 
       setIsLoading(false);
@@ -150,6 +143,16 @@ export default function FormServico(produtos) {
     }
   };
 
+  const calculaMargemLucro = () => {
+    const custo = getValues("custo");
+    const valor = getValues("valor");
+
+    let margemLucro =
+      (valor ? parseFloat(valor) : 0) - (custo ? parseFloat(custo) : 0);
+
+    setValue("margemLucro", margemLucro);
+  };
+
   return (
     <>
       <Head>
@@ -167,8 +170,10 @@ export default function FormServico(produtos) {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab>Serviço</Tab>
-                  <Tab isDisabled={stateNovoServico}>Insumos</Tab>
+                  <Tab fontWeight="bold">Serviço</Tab>
+                  <Tab isDisabled={stateNovoServico} fontWeight="bold">
+                    Insumos
+                  </Tab>
                 </TabList>
 
                 <TabPanels>
@@ -193,29 +198,20 @@ export default function FormServico(produtos) {
                             isLoading={isLoading}
                             name="nome"
                             autoFocus={true}
-                            label="Nome: *"
+                            label="Nome *"
                             error={errors.nome}
                             {...register("nome")}
                           ></Input>
                         </FormControl>
                         {!stateNovoServico && (
-                          <Stack spacing="4">
-                            <Text fontWeight="bold">Custo:</Text>
-                            <Skeleton isLoaded={!isLoading}>
-                              <NumberFormat
-                                value={stateCusto}
-                                onValueChange={(val) =>
-                                  setStateCusto(val.floatValue)
-                                }
-                                customInput={ChakraInput}
-                                variant="flushed"
-                                borderColor="gray.400"
-                                thousandSeparator="."
-                                decimalSeparator=","
-                                prefix={"R$"}
-                              />
-                            </Skeleton>
-                          </Stack>
+                          <Input
+                            isLoading={isLoading}
+                            name="valor"
+                            label="Valor"
+                            error={errors.valor}
+                            {...register("valor")}
+                            onBlur={calculaMargemLucro}
+                          ></Input>
                         )}
                       </SimpleGrid>
                       {!stateNovoServico && (
@@ -224,40 +220,21 @@ export default function FormServico(produtos) {
                           spacing={["6", "8"]}
                           w="100%"
                         >
-                          <Stack spacing="4">
-                            <Text fontWeight="bold">Valor:</Text>
-                            <Skeleton isLoaded={!isLoading}>
-                              <NumberFormat
-                                value={stateValor}
-                                onValueChange={(val) =>
-                                  setStateValor(val.floatValue)
-                                }
-                                customInput={ChakraInput}
-                                variant="flushed"
-                                borderColor="gray.400"
-                                thousandSeparator="."
-                                decimalSeparator=","
-                                prefix={"R$"}
-                              />
-                            </Skeleton>
-                          </Stack>
-                          <Stack spacing="4">
-                            <Text fontWeight="bold">Margem lucro:</Text>
-                            <Skeleton isLoaded={!isLoading}>
-                              <NumberFormat
-                                value={stateMargemLucro}
-                                onValueChange={(val) =>
-                                  setStateMargemLucro(val.floatValue)
-                                }
-                                customInput={ChakraInput}
-                                variant="flushed"
-                                borderColor="gray.400"
-                                thousandSeparator="."
-                                decimalSeparator=","
-                                prefix={"R$"}
-                              />
-                            </Skeleton>
-                          </Stack>
+                          <Input
+                            isLoading={isLoading}
+                            name="custo"
+                            label="Custo"
+                            error={errors.custo}
+                            {...register("custo")}
+                            onBlur={calculaMargemLucro}
+                          ></Input>
+                          <Input
+                            isLoading={isLoading}
+                            name="margemLucro"
+                            label="Margem lucro"
+                            error={errors.margemLucro}
+                            {...register("margemLucro")}
+                          ></Input>
                         </SimpleGrid>
                       )}
                     </VStack>

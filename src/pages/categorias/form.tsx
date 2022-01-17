@@ -123,7 +123,7 @@ export default function FormCategoria() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab>Categoria</Tab>
+                  <Tab fontWeight="bold">Categoria</Tab>
                 </TabList>
 
                 <TabPanels>
@@ -139,7 +139,7 @@ export default function FormCategoria() {
                             isLoading={isLoading}
                             name="nome"
                             autoFocus={true}
-                            label="Nome: *"
+                            label="Nome: "
                             error={errors.nome}
                             {...register("nome")}
                           ></Input>
