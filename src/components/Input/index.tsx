@@ -1,4 +1,4 @@
-import { forwardRef, ForwardRefRenderFunction } from "react";
+import { forwardRef, ForwardRefRenderFunction, ReactNode } from "react";
 import { FieldError } from "react-hook-form";
 import {
   Input as ChakraInput,
@@ -13,10 +13,11 @@ interface InputProps extends ChakraInputProps {
   label?: string;
   error?: FieldError;
   isLoading?: boolean;
+  onValueChange?: ReactNode;
 }
 
 const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
-  { name, label, error = null, isLoading = false, ...rest },
+  { name, label, error = null, isLoading = false, onValueChange, ...rest },
   ref
 ) => {
   return (
@@ -30,6 +31,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         <ChakraInput
           name={name}
           id={name}
+          onValueChange={onValueChange}
           focusBorderColor="yellow.500"
           variant="flushed"
           bg="white"

@@ -28,8 +28,12 @@ export async function getVendas(
     params: { page, empresa, limit: 10, cliente: valuePesquisa },
   });
 
+  const formatter = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
   const vendas = response.data.found.vendas.map((venda) => {
-    const regex = new RegExp("^s*(?:[1-9]d{0,2}(?:.d{3})*|0)(?:,d{1,2})?$");
     return {
       id: venda.id,
       cliente: venda.cliente?.nome,
@@ -38,10 +42,9 @@ export async function getVendas(
         month: "numeric",
         year: "numeric",
       }),
-      valorTotal: (venda.valorTotal
-        ? Number(venda.valorTotal)
-        : 0
-      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
+      valorTotal: formatter.format(
+        venda.valorTotal ? Number(venda.valorTotal) : 0
+      ),
       status: venda.status,
     };
   });

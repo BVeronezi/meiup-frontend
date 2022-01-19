@@ -32,27 +32,28 @@ export async function getProdutosVenda(
     }
   );
 
+  const formatter = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
   const produtosVenda = response.data.found.produtosVenda.map((produto) => {
     return {
       id: produto.id,
       produto: produto.produto,
       quantidade: produto.quantidade,
-      precoUnitario: (produto.precoUnitario
-        ? Number(produto.precoUnitario)
-        : 0
-      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
-      outrasDespesas: (produto.outrasDespesas
-        ? Number(produto.outrasDespesas)
-        : 0
-      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
-      desconto: (produto.desconto
-        ? Number(produto.desconto)
-        : 0
-      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
-      valorTotal: (produto.valorTotal
-        ? Number(produto.valorTotal)
-        : 0
-      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
+      precoUnitario: formatter.format(
+        produto.precoUnitario ? Number(produto.precoUnitario) : 0
+      ),
+      outrasDespesas: formatter.format(
+        produto.outrasDespesas ? Number(produto.outrasDespesas) : 0
+      ),
+      desconto: formatter.format(
+        produto.desconto ? Number(produto.desconto) : 0
+      ),
+      valorTotal: formatter.format(
+        produto.valorTotal ? Number(produto.valorTotal) : 0
+      ),
     };
   });
 

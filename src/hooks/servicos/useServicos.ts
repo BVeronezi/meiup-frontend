@@ -31,22 +31,20 @@ export async function getServicos(
     }
   );
 
+  const formatter = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
   const servicos = response.data.found.servicos.map((servico) => {
     return {
       id: servico.id,
       nome: servico.nome,
-      custo: (servico.custo ? Number(servico.custo) : 0).toLocaleString(
-        "pt-br",
-        { style: "currency", currency: "BRL" }
+      custo: formatter.format(servico.custo ? Number(servico.custo) : 0),
+      valor: formatter.format(servico.valor ? Number(servico.valor) : 0),
+      margemLucro: formatter.format(
+        servico.margemLucro ? Number(servico.margemLucro) : 0
       ),
-      valor: (servico.valor ? Number(servico.valor) : 0).toLocaleString(
-        "pt-br",
-        { style: "currency", currency: "BRL" }
-      ),
-      margemLucro: (servico.margemLucro
-        ? Number(servico.margemLucro)
-        : 0
-      ).toLocaleString("pt-br", { style: "currency", currency: "BRL" }),
     };
   });
 
