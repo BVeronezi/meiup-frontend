@@ -32,6 +32,7 @@ import Insumos from "./insumos/insumos";
 import { RiInformationLine } from "react-icons/ri";
 import { api } from "../../services/apiClient";
 import { LoadPage } from "../../components/Load";
+import { InputCurrency } from "../../components/InputCurrency";
 
 type FormData = {
   nome: string;
@@ -53,12 +54,11 @@ export default function FormServico(produtos) {
   const [stateNovoServico, setStateNovoServico] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingFetch, setIsLoadingFetch] = useState(false);
+  const [valor, setValor] = useState(0);
+  const [custo, setCusto] = useState(0);
+  const [margemLucro, setMargemLucro] = useState(0);
   const toast = createStandaloneToast({ theme: customTheme });
   const servicoId: any = Object.keys(router.query)[0];
-
-  const [stateCusto, setStateCusto] = useState(0.0);
-  const [stateValor, setStateValor] = useState(0.0);
-  const [stateMargemLucro, setStateMargemLucro] = useState(0.0);
 
   const { register, handleSubmit, formState, setValue, getValues } = useForm({
     resolver: yupResolver(servicoFormSchema),
@@ -76,9 +76,9 @@ export default function FormServico(produtos) {
         const { nome, custo, valor, margemLucro } = response.data.servico;
 
         setValue("nome", nome);
-        setStateCusto(parseFloat(custo));
-        setStateValor(parseFloat(valor));
-        setStateMargemLucro(parseFloat(margemLucro));
+        setValor(custo * 100);
+        setCusto(valor * 100);
+        setMargemLucro(margemLucro * 100);
       }
 
       setIsLoading(false);
@@ -102,9 +102,9 @@ export default function FormServico(produtos) {
       usuario: user,
       empresa: user.empresa,
       nome: values.nome,
-      custo: stateCusto,
-      valor: stateValor,
-      margemLucro: stateMargemLucro,
+      custo: custo / 100,
+      valor: valor / 100,
+      margemLucro: margemLucro / 100,
     };
 
     try {
@@ -144,13 +144,10 @@ export default function FormServico(produtos) {
   };
 
   const calculaMargemLucro = () => {
-    const custo = getValues("custo");
-    const valor = getValues("valor");
+    let resultMargemLucro =
+      ((valor ? valor / 100 : 0) - (custo ? custo / 100 : 0)) * 100;
 
-    let margemLucro =
-      (valor ? parseFloat(valor) : 0) - (custo ? parseFloat(custo) : 0);
-
-    setValue("margemLucro", margemLucro);
+    setMargemLucro(resultMargemLucro);
   };
 
   return (
@@ -204,14 +201,18 @@ export default function FormServico(produtos) {
                           ></Input>
                         </FormControl>
                         {!stateNovoServico && (
-                          <Input
+                          <InputCurrency
                             isLoading={isLoading}
                             name="valor"
                             label="Valor"
                             error={errors.valor}
                             {...register("valor")}
                             onBlur={calculaMargemLucro}
-                          ></Input>
+                            value={valor}
+                            onValueChange={(v) => {
+                              setValor(v.floatValue);
+                            }}
+                          ></InputCurrency>
                         )}
                       </SimpleGrid>
                       {!stateNovoServico && (
@@ -220,21 +221,30 @@ export default function FormServico(produtos) {
                           spacing={["6", "8"]}
                           w="100%"
                         >
-                          <Input
+                          <InputCurrency
                             isLoading={isLoading}
                             name="custo"
                             label="Custo"
                             error={errors.custo}
                             {...register("custo")}
                             onBlur={calculaMargemLucro}
-                          ></Input>
-                          <Input
+                            value={custo}
+                            onValueChange={(v) => {
+                              setCusto(v.floatValue);
+                            }}
+                          ></InputCurrency>
+                          <InputCurrency
+                            isDisabled={true}
                             isLoading={isLoading}
                             name="margemLucro"
                             label="Margem lucro"
                             error={errors.margemLucro}
                             {...register("margemLucro")}
-                          ></Input>
+                            value={margemLucro}
+                            onValueChange={(v) => {
+                              setMargemLucro(v.floatValue);
+                            }}
+                          ></InputCurrency>
                         </SimpleGrid>
                       )}
                     </VStack>

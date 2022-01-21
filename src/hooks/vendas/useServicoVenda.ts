@@ -34,28 +34,15 @@ export async function getServicosVenda(
   const servicos = response.data.found.servicosVenda ?? [];
   let servicosVenda = [];
 
-  const formatter = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-
   if (servicos.length > 0) {
     servicosVenda = servicos.map((servico) => {
       return {
         id: servico.id,
         servico: servico.servico,
-        valorServico: formatter.format(
-          servico.valorServico ? Number(servico.valorServico) : 0
-        ),
-        outrasDespesas: formatter.format(
-          servico.outrasDespesas ? Number(servico.outrasDespesas) : 0
-        ),
-        desconto: formatter.format(
-          servico.desconto ? Number(servico.desconto) : 0
-        ),
-        valorTotal: formatter.format(
-          servico.valorTotal ? Number(servico.valorTotal) : 0
-        ),
+        valorServico: servico.valorServico,
+        outrasDespesas: servico.outrasDespesas,
+        desconto: servico.desconto,
+        valorTotal: servico.valorTotal,
       };
     });
   }

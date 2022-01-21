@@ -193,8 +193,8 @@ export default function Servicos() {
                       <Thead>
                         <Tr>
                           <Th>Serviço</Th>
+                          <Th>Valor</Th>
                           <Th>Custo</Th>
-                          <Th>Lucro</Th>
                           <Th>Margem Lucro</Th>
                           <Th width="8">Ações</Th>
                         </Tr>
@@ -217,11 +217,11 @@ export default function Servicos() {
                               </Td>
 
                               <Td>
-                                <Text>{servico.custo}</Text>
+                                <Text>{servico.valor}</Text>
                               </Td>
 
                               <Td>
-                                <Text>{servico.valor}</Text>
+                                <Text>{servico.custo}</Text>
                               </Td>
 
                               <Td>

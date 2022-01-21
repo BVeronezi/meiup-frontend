@@ -1,12 +1,6 @@
-import {
-  createRef,
-  forwardRef,
-  ForwardRefRenderFunction,
-  ReactNode,
-} from "react";
+import { forwardRef, ForwardRefRenderFunction } from "react";
 import { FieldError } from "react-hook-form";
 import {
-  Input as ChakraInput,
   FormLabel,
   FormControl,
   FormErrorMessage,
@@ -15,7 +9,6 @@ import {
 } from "@chakra-ui/react";
 import NumberFormat from "react-number-format";
 import { Input } from "../Input";
-
 interface InputProps extends ChakraInputProps {
   name?: string;
   label?: string;
@@ -23,22 +16,19 @@ interface InputProps extends ChakraInputProps {
   error?: FieldError;
   isLoading?: boolean;
   onValueChange?: any;
+  isDisabled?: boolean;
 }
 
-const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
-  {
-    name,
-    label,
-    error = null,
-    value,
-    isLoading = false,
-    onValueChange,
-    onBlur,
-  },
-  ref
-) => {
-  const inputRef = createRef();
-
+const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = ({
+  name,
+  label,
+  error = null,
+  value,
+  isLoading = false,
+  onValueChange,
+  onBlur,
+  isDisabled = false,
+}) => {
   return (
     <FormControl isInvalid={!!error}>
       {!!label && (
@@ -48,12 +38,12 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
       )}
       <Skeleton isLoaded={!isLoading}>
         <NumberFormat
-          getInputRef={inputRef}
           value={value}
           customInput={Input}
           format={currencyFormatter}
           onBlur={onBlur}
           onValueChange={onValueChange}
+          isDisabled={isDisabled}
           isNumericString
         />
 

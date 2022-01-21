@@ -10,6 +10,7 @@ import {
   Divider,
   IconButton,
   Flex,
+  Stack,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { theme as customTheme } from "../../../styles/theme";
@@ -26,6 +27,7 @@ import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dial
 import { api } from "../../../services/apiClient";
 import { Pagination } from "../../../components/Pagination";
 import { Input } from "../../../components/Input";
+import { InputCurrency } from "../../../components/InputCurrency";
 
 type FormData = {
   servico: string;
@@ -37,7 +39,7 @@ type FormData = {
 
 const produtoVendaFormSchema = yup.object().shape({
   servico: yup.string(),
-  valorServico: yup.string().required("Valor do serviço obrigatório"),
+  valorServico: yup.string(),
   outrasDespesas: yup.string(),
   desconto: yup.string(),
   valorTotal: yup.string(),
@@ -54,9 +56,18 @@ export default function ServicoVenda({
   const vendaId: any = Object.keys(router.query)[0];
   const [stateServico, setStateServico] = useState("");
   const [idServicoVenda, setIdServicoVenda] = useState();
+  const [valorServico, setValorServico] = useState(0);
+  const [outrasDespesas, setOutrasDespesas] = useState(0);
+  const [desconto, setDesconto] = useState(0);
+  const [valorTotal, setValorTotal] = useState(0);
   const [addServico, setAddServico] = useState(true);
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
+
+  const formatter = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
   const [selectedServico, setSelectedServico] = useState({
     id: 0,
@@ -102,15 +113,22 @@ export default function ServicoVenda({
 
     if (!stateServico) {
       setAddServico(false);
+      handleLoad(false);
+      return false;
+    }
+
+    if (stateServico && !valorServico) {
+      handleLoad(false);
+      return false;
     }
 
     if (stateServico) {
       const params = {
         servico: stateServico,
-        valorServico: values.valorServico,
-        outrasDespesas: values.outrasDespesas,
-        desconto: values.desconto,
-        valorTotal: values.valorTotal,
+        valorServico: valorServico / 100,
+        outrasDespesas: outrasDespesas / 100,
+        desconto: desconto / 100,
+        valorTotal: valorTotal / 100,
       };
 
       const result = await api.post(`/vendas/servicosVenda/${vendaId}`, params);
@@ -141,18 +159,18 @@ export default function ServicoVenda({
 
   const resetInputs = () => {
     setStateServico("");
-    setValue("valorServico", "");
-    setValue("outrasDespesas", "");
-    setValue("desconto", "");
-    setValue("valorTotal", "");
+    setValorServico(0);
+    setOutrasDespesas(0);
+    setDesconto(0);
+    setValorTotal(0);
   };
 
   const handleEditServico = (servicoVenda) => {
     setStateServico(String(servicoVenda.servico.id));
-    setValue("valorServico", servicoVenda.valorServico);
-    setValue("outrasDespesas", servicoVenda.outrasDespesas);
-    setValue("desconto", servicoVenda.desconto);
-    setValue("valorTotal", servicoVenda.valorTotal);
+    setValorServico(servicoVenda.valorServico * 100);
+    setOutrasDespesas(servicoVenda.outrasDespesas * 100);
+    setDesconto(servicoVenda.desconto * 100);
+    setValorTotal(servicoVenda.valorTotal * 100);
     setIdServicoVenda(servicoVenda.id);
   };
 
@@ -191,24 +209,22 @@ export default function ServicoVenda({
 
   const handleServico = (servico) => {
     setStateServico(servico.value);
-    setValue("valorServico", servico.valor);
-    setValue("outrasDespesas", "");
-    setValue("desconto", "");
+    setValorServico((servico.valor ? servico.valor : 0) * 100);
+    setOutrasDespesas(0);
+    setDesconto(0);
+    setValorTotal(0);
+    setIdServicoVenda(null);
     setAddServico(true);
     calculaTotal();
   };
 
   const calculaTotal = () => {
-    const valorServico = getValues("valorServico");
-    const outrasDespesas = getValues("outrasDespesas");
-    const desconto = getValues("desconto");
-
     if (valorServico) {
-      let total = valorServico ? parseFloat(valorServico) : 0;
-      total += outrasDespesas ? parseFloat(outrasDespesas) : 0;
-      total -= desconto ? parseFloat(desconto) : 0;
+      let total = valorServico ? valorServico / 100 : 0;
+      total += outrasDespesas ? outrasDespesas / 100 : 0;
+      total -= desconto ? desconto / 100 : 0;
 
-      setValue("valorTotal", total);
+      setValorTotal(total * 100);
     }
   };
 
@@ -237,47 +253,67 @@ export default function ServicoVenda({
               </Text>
             )}{" "}
           </VStack>
-          <Input
-            isLoading={isLoading}
-            isDisabled={statusVenda !== 0}
-            name="valorServico"
-            label="Valor serviço *"
-            error={errors.valorServico}
-            {...register("valorServico")}
-            onBlur={calculaTotal}
-          ></Input>
+          <Stack>
+            <InputCurrency
+              isDisabled={statusVenda !== 0}
+              isLoading={isLoading}
+              name="valorServico"
+              label="Valor serviço *"
+              {...register("valorServico")}
+              value={valorServico}
+              onBlur={calculaTotal}
+              onValueChange={(v) => {
+                setValorServico(v.floatValue);
+              }}
+            ></InputCurrency>
+            {stateServico && !valorServico && (
+              <Text color="red" fontSize="14px">
+                Valor serviço obrigatório
+              </Text>
+            )}{" "}
+          </Stack>
         </SimpleGrid>
       </VStack>
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Input
-            isLoading={isLoading}
+          <InputCurrency
             isDisabled={statusVenda !== 0}
+            isLoading={isLoading}
             name="outrasDespesas"
             label="Outras despesas"
-            error={errors.outrasDespesas}
             {...register("outrasDespesas")}
+            value={outrasDespesas}
             onBlur={calculaTotal}
-          ></Input>
-          <Input
-            isLoading={isLoading}
+            onValueChange={(v) => {
+              setOutrasDespesas(v.floatValue);
+            }}
+          ></InputCurrency>
+          <InputCurrency
             isDisabled={statusVenda !== 0}
+            isLoading={isLoading}
             name="desconto"
             label="Desconto"
             error={errors.desconto}
             {...register("desconto")}
+            value={desconto}
             onBlur={calculaTotal}
-          ></Input>
+            onValueChange={(v) => {
+              setDesconto(v.floatValue);
+            }}
+          ></InputCurrency>
         </SimpleGrid>
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Input
-            isLoading={isLoading}
+          <InputCurrency
             isDisabled={statusVenda !== 0}
+            isLoading={isLoading}
             name="valorTotal"
-            label="Total"
-            error={errors.valorTotal}
+            label="Total *"
             {...register("valorTotal")}
-          ></Input>
+            value={valorTotal}
+            onValueChange={(v) => {
+              setValorTotal(v.floatValue);
+            }}
+          ></InputCurrency>
           <Box></Box>
         </SimpleGrid>
         {statusVenda === 0 && (
@@ -326,16 +362,18 @@ export default function ServicoVenda({
                       <Text>{servicoVenda.servico.nome}</Text>
                     </Td>
                     <Td>
-                      <Text>{servicoVenda.valorServico}</Text>
+                      <Text>{formatter.format(servicoVenda.valorServico)}</Text>
                     </Td>
                     <Td>
-                      <Text>{servicoVenda.outrasDespesas}</Text>
+                      <Text>
+                        {formatter.format(servicoVenda.outrasDespesas)}
+                      </Text>
                     </Td>
                     <Td>
-                      <Text>{servicoVenda.desconto}</Text>
+                      <Text>{formatter.format(servicoVenda.desconto)}</Text>
                     </Td>
                     <Td>
-                      <Text>{servicoVenda.valorTotal}</Text>
+                      <Text>{formatter.format(servicoVenda.valorTotal)}</Text>
                     </Td>
                     <Td>
                       <HStack>

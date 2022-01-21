@@ -27,6 +27,7 @@ import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pagination } from "../../../components/Pagination";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
+import { InputCurrency } from "../../../components/InputCurrency";
 
 type FormData = {
   produto: string;
@@ -58,8 +59,17 @@ export default function ProdutoVenda({
   const [stateProduto, setStateProduto] = useState("");
   const [idProdutoVenda, setIdProdutoVenda] = useState();
   const [addProduto, setAddProduto] = useState(true);
+  const [precoUnitario, setPrecoUnitario] = useState(0);
+  const [outrasDespesas, setOutrasDespesas] = useState(0);
+  const [desconto, setDesconto] = useState(0);
+  const [valorTotal, setValorTotal] = useState(0);
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
+
+  const formatter = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
 
   const [selectedProduto, setSelectedProduto] = useState({
     id: 0,
@@ -133,10 +143,14 @@ export default function ProdutoVenda({
   }
 
   const handleProduto = (produto) => {
-    setValue("precoUnitario", produto.precos?.precoVendaVarejo);
     setValue("quantidade", "");
-    setValue("outrasDespesas", "");
-    setValue("desconto", "");
+    setPrecoUnitario(
+      (produto.precos ? produto.precos.precoVendaVarejo : 0) * 100
+    );
+    setOutrasDespesas(0);
+    setDesconto(0);
+    setValorTotal(0);
+    setIdProdutoVenda(null);
     setStateProduto(produto.value);
     setAddProduto(true);
     calculaTotal();
@@ -144,11 +158,11 @@ export default function ProdutoVenda({
 
   const handleEditProduto = (produtoVenda) => {
     setStateProduto(String(produtoVenda.produto.id));
-    setValue("precoUnitario", produtoVenda.precoUnitario);
     setValue("quantidade", produtoVenda.quantidade);
-    setValue("outrasDespesas", produtoVenda.outrasDespesas);
-    setValue("desconto", produtoVenda.desconto);
-    setValue("valorTotal", produtoVenda.valorTotal);
+    setPrecoUnitario(produtoVenda.precoUnitario * 100);
+    setOutrasDespesas(produtoVenda.outrasDespesas * 100);
+    setDesconto(produtoVenda.desconto * 100);
+    setValorTotal(produtoVenda.valorTotal * 100);
     setIdProdutoVenda(produtoVenda.id);
   };
 
@@ -157,16 +171,18 @@ export default function ProdutoVenda({
 
     if (!stateProduto) {
       setAddProduto(false);
+      handleLoad(false);
+      return false;
     }
 
     if (stateProduto) {
       const params = {
         produto: stateProduto,
         quantidade: values.quantidade,
-        precoUnitario: values.precoUnitario,
-        outrasDespesas: values.outrasDespesas,
-        desconto: values.desconto,
-        valorTotal: values.valorTotal,
+        precoUnitario: precoUnitario / 100,
+        outrasDespesas: outrasDespesas / 100,
+        desconto: desconto / 100,
+        valorTotal: valorTotal / 100,
       };
 
       const result = await api.post(`/vendas/produtoVenda/${vendaId}`, params);
@@ -199,26 +215,23 @@ export default function ProdutoVenda({
   const resetInputs = () => {
     setStateProduto("");
     setValue("quantidade", "");
-    setValue("precoUnitario", "");
-    setValue("outrasDespesas", "");
-    setValue("desconto", "");
-    setValue("valorTotal", "");
+    setPrecoUnitario(0);
+    setOutrasDespesas(0);
+    setDesconto(0);
+    setValorTotal(0);
   };
 
   const calculaTotal = () => {
     const quantidade = getValues("quantidade");
-    const precoUnitario = getValues("precoUnitario");
-    const outrasDespesas = getValues("outrasDespesas");
-    const desconto = getValues("desconto");
 
     if (precoUnitario) {
       let total =
         (quantidade ? Number(quantidade) : 0) *
-        (precoUnitario ? parseFloat(precoUnitario) : 0);
-      total += outrasDespesas ? parseFloat(outrasDespesas) : 0;
-      total -= desconto ? parseFloat(desconto) : 0;
+        (precoUnitario ? precoUnitario / 100 : 0);
+      total += outrasDespesas ? outrasDespesas / 100 : 0;
+      total -= desconto ? desconto / 100 : 0;
 
-      setValue("valorTotal", total);
+      setValorTotal(total * 100);
     }
   };
 
@@ -260,42 +273,60 @@ export default function ProdutoVenda({
       </VStack>
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Input
+          <InputCurrency
+            isDisabled={true}
             isLoading={isLoading}
-            isReadOnly
             name="precoUnitario"
             label="Preço unitário *"
             error={errors.precoUnitario}
             {...register("precoUnitario")}
-          ></Input>
-          <Input
-            isLoading={isLoading}
+            value={precoUnitario}
+            onValueChange={(v) => {
+              setPrecoUnitario(v.floatValue);
+            }}
+          ></InputCurrency>
+
+          <InputCurrency
             isDisabled={statusVenda !== 0}
+            isLoading={isLoading}
             name="outrasDespesas"
             label="Outras despesas"
             error={errors.outrasDespesas}
             {...register("outrasDespesas")}
+            value={outrasDespesas}
             onBlur={calculaTotal}
-          ></Input>
+            onValueChange={(v) => {
+              setOutrasDespesas(v.floatValue);
+            }}
+          ></InputCurrency>
         </SimpleGrid>
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <Input
-            isLoading={isLoading}
+          <InputCurrency
             isDisabled={statusVenda !== 0}
+            isLoading={isLoading}
             name="desconto"
             label="Desconto"
             error={errors.desconto}
             {...register("desconto")}
+            value={desconto}
             onBlur={calculaTotal}
-          ></Input>
-          <Input
+            onValueChange={(v) => {
+              setDesconto(v.floatValue);
+            }}
+          ></InputCurrency>
+
+          <InputCurrency
+            isDisabled={true}
             isLoading={isLoading}
-            isReadOnly
-            name="total"
+            name="valorTotal"
             label="Total *"
             error={errors.valorTotal}
             {...register("valorTotal")}
-          ></Input>
+            value={valorTotal}
+            onValueChange={(v) => {
+              setValorTotal(v.floatValue);
+            }}
+          ></InputCurrency>
         </SimpleGrid>
         {statusVenda === 0 && (
           <Box alignSelf="flex-end">
@@ -344,7 +375,7 @@ export default function ProdutoVenda({
                       <Text>{produtoVenda.quantidade}</Text>
                     </Td>
                     <Td>
-                      <Text>{produtoVenda.valorTotal}</Text>
+                      <Text>{formatter.format(produtoVenda.valorTotal)}</Text>
                     </Td>
                     <Td>
                       <HStack>

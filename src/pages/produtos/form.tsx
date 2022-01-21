@@ -1,7 +1,6 @@
 import Head from "next/head";
 import {
   Box,
-  Input as ChakraInput,
   Button,
   createStandaloneToast,
   FormControl,
@@ -33,6 +32,7 @@ import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { Sidebar } from "../../components/Sidebar";
 import { LoadPage } from "../../components/Load";
+import { InputCurrency } from "../../components/InputCurrency";
 
 type FormData = {
   descricao: string;
@@ -62,6 +62,10 @@ export default function FormProduto(optionsCategoria) {
   const [stateTipoItem, setStateTipoItem] = useState("");
   const [stateUnidade, setStateUnidade] = useState("");
   const [stateCategoria, setStateCategoria] = useState("");
+  const [precoVarejo, setPrecoVarejo] = useState(0);
+  const [precoAtacado, setPrecoAtacado] = useState(0);
+  const [precoCompra, setPrecoCompra] = useState(0);
+  const [margemLucro, setMargemLucro] = useState(0);
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -115,11 +119,16 @@ export default function FormProduto(optionsCategoria) {
         setStateUnidade(String(unidade));
 
         if (response.data.produto.precos) {
-          Object.entries(response.data.produto.precos).forEach(
-            ([key, value]) => {
-              setValue(key, parseFloat(String(value)));
-            }
-          );
+          const {
+            precoVendaVarejo,
+            precoVendaAtacado,
+            precoCompra,
+            margemLucro,
+          } = response.data.produto.precos;
+          setPrecoVarejo(precoVendaVarejo * 100);
+          setPrecoAtacado(precoVendaAtacado * 100);
+          setPrecoCompra(precoCompra * 100);
+          setMargemLucro(margemLucro * 100);
         }
 
         if (response.data.produto.categoria) {
@@ -151,17 +160,13 @@ export default function FormProduto(optionsCategoria) {
   };
 
   const calculaMargemLucro = () => {
-    const precoCompra = getValues("precoCompra");
-    const precoVendaVarejo = getValues("precoVendaVarejo");
-    const precoVendaAtacado = getValues("precoVendaAtacado");
+    const precoVenda = precoVarejo ? precoVarejo / 100 : precoAtacado / 100;
 
-    const precoVenda = precoVendaVarejo ? precoVendaVarejo : precoVendaAtacado;
+    let resultMargemLucro =
+      ((precoVenda ? precoVenda : 0) - (precoCompra ? precoCompra / 100 : 0)) *
+      100;
 
-    let margemLucro =
-      (precoVenda ? parseFloat(precoVenda) : 0) -
-      (precoCompra ? parseFloat(precoCompra) : 0);
-
-    setValue("margemLucro", margemLucro);
+    setMargemLucro(resultMargemLucro);
   };
 
   const handleProduto: SubmitHandler<FormData> = async (values) => {
@@ -175,10 +180,10 @@ export default function FormProduto(optionsCategoria) {
       estoqueMaximo: Number(values.estoqueMaximo),
       empresa: user.empresa,
       precos: {
-        precoVendaVarejo: Number(values.precoVendaVarejo),
-        precoVendaAtacado: Number(values.precoVendaAtacado),
-        precoCompra: Number(values.precoCompra),
-        margemLucro: Number(values.margemLucro),
+        precoVendaVarejo: precoVarejo / 100,
+        precoVendaAtacado: precoAtacado / 100,
+        precoCompra: precoCompra / 100,
+        margemLucro: margemLucro / 100,
       },
     };
 
@@ -352,44 +357,54 @@ export default function FormProduto(optionsCategoria) {
                         spacing={["6", "8"]}
                         w="100%"
                       >
-                        <Input
+                        <InputCurrency
                           isLoading={isLoading}
                           name="precoVendaVarejo"
                           label="Preço de venda varejo"
                           error={errors.precoVendaVarejo}
                           {...register("precoVendaVarejo")}
                           onBlur={calculaMargemLucro}
-                        ></Input>
+                          value={precoVarejo}
+                          onValueChange={(v) => {
+                            setPrecoVarejo(v.floatValue);
+                          }}
+                        ></InputCurrency>
 
-                        <Input
+                        <InputCurrency
                           isLoading={isLoading}
                           name="precoVendaAtacado"
                           label="Preço de venda atacado"
                           error={errors.precoVendaAtacado}
                           {...register("precoVendaAtacado")}
                           onBlur={calculaMargemLucro}
-                        ></Input>
+                          value={precoAtacado}
+                          onValueChange={(v) => setPrecoAtacado(v.floatValue)}
+                        ></InputCurrency>
                       </SimpleGrid>
                       <SimpleGrid
                         minChildWidth="240px"
                         spacing={["6", "8"]}
                         w="100%"
                       >
-                        <Input
+                        <InputCurrency
                           isLoading={isLoading}
                           name="precoCompra"
                           label="Preço de compra"
                           error={errors.precoCompra}
                           {...register("precoCompra")}
                           onBlur={calculaMargemLucro}
-                        ></Input>
-                        <Input
+                          value={precoCompra}
+                          onValueChange={(v) => setPrecoCompra(v.floatValue)}
+                        ></InputCurrency>
+                        <InputCurrency
+                          isDisabled={true}
                           isLoading={isLoading}
                           name="margemLucro"
                           label="Margem de lucro"
                           error={errors.margemLucro}
                           {...register("margemLucro")}
-                        ></Input>
+                          value={margemLucro}
+                        ></InputCurrency>
                       </SimpleGrid>
                     </VStack>
                   </TabPanel>
