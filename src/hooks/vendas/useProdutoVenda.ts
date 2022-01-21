@@ -25,7 +25,7 @@ export async function getProdutosVenda(
   const { ["meiup.token"]: token } = parseCookies(ctx);
 
   const response: any = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/produtosVenda`,
+    `${process.env.API_URL}/produtosVenda`,
     {
       headers: { Authorization: `Bearer ${token}` },
       params: { vendaId, page, limit: 10 },

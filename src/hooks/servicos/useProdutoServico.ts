@@ -22,7 +22,7 @@ export async function getProdutoServico(
   const { ["meiup.token"]: token } = parseCookies(ctx);
 
   const response: any = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/produtosServico`,
+    `${process.env.API_URL}/produtosServico`,
     {
       headers: { Authorization: `Bearer ${token}` },
       params: { servicoId, page, limit: 10 },

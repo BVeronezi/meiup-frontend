@@ -159,13 +159,10 @@ export default function FormProduto() {
   async function callApi(value) {
     const { ["meiup.token"]: token } = parseCookies();
 
-    const response: any = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/categorias`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 10, nome: value },
-      }
-    );
+    const response: any = await axios.get(`${process.env.API_URL}/categorias`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { limit: 10, nome: value },
+    });
 
     const data = response.data.found.categorias.map((e) => {
       return { value: String(e.id), label: e.nome };

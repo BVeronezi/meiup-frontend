@@ -130,7 +130,7 @@ export default function FormVendas() {
     const { ["meiup.token"]: token } = parseCookies();
 
     const responseClientes: any = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/clientes`,
+      `${process.env.API_URL}/clientes`,
       {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit: 10, nome: value },

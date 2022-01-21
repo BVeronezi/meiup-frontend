@@ -22,13 +22,10 @@ export async function getClientes(
   const { ["meiup.token"]: token } = parseCookies(ctx);
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
-  const response: any = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/clientes`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { page, empresa, nome: valuePesquisa },
-    }
-  );
+  const response: any = await axios.get(`${process.env.API_URL}/clientes`, {
+    headers: { Authorization: `Bearer ${token}` },
+    params: { page, empresa, nome: valuePesquisa },
+  });
 
   const clientes = response.data.found.clientes.map((cliente) => {
     return {

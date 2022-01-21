@@ -23,13 +23,10 @@ export async function getVendas(
   const { ["meiup.token"]: token } = parseCookies(ctx);
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
-  const response: any = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/vendas`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { page, empresa, limit: 10, cliente: valuePesquisa },
-    }
-  );
+  const response: any = await axios.get(`${process.env.API_URL}/vendas`, {
+    headers: { Authorization: `Bearer ${token}` },
+    params: { page, empresa, limit: 10, cliente: valuePesquisa },
+  });
 
   const formatter = new Intl.NumberFormat("pt-BR", {
     style: "currency",

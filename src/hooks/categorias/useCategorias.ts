@@ -20,13 +20,10 @@ export async function getCategorias(
   const { ["meiup.token"]: token } = parseCookies(ctx);
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
-  const response: any = await axios.get(
-    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/categorias`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { page, empresa, nome: valuePesquisa },
-    }
-  );
+  const response: any = await axios.get(`${process.env.API_URL}/categorias`, {
+    headers: { Authorization: `Bearer ${token}` },
+    params: { page, empresa, nome: valuePesquisa },
+  });
 
   const categorias = response.data.found.categorias.map((categoria) => {
     return {
