@@ -1,7 +1,10 @@
 module.exports = {
-  reactStrictMode: true,
-  env: {
-    NEXT_PUBLIC_API_ENDPOINT: process.env.NEXT_PUBLIC_API_ENDPOINT,
-    NEXT_PUBLIC_KEY_CEP: process.env.NEXT_PUBLIC_KEY_CEP,
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${process.env.API_URL || "http://localhost:3000"}/:path*`,
+      },
+    ];
   },
 };
