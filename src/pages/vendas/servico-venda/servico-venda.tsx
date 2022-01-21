@@ -15,7 +15,7 @@ import {
 import { useRouter } from "next/router";
 import { theme as customTheme } from "../../../styles/theme";
 import { useEffect, useRef, useState } from "react";
-import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import { SubmitHandler, useForm } from "react-hook-form";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
@@ -26,8 +26,9 @@ import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { api } from "../../../services/apiClient";
 import { Pagination } from "../../../components/Pagination";
-import { Input } from "../../../components/Input";
 import { InputCurrency } from "../../../components/InputCurrency";
+import { parseCookies } from "nookies";
+import axios from "axios";
 
 type FormData = {
   servico: string;
@@ -46,7 +47,6 @@ const produtoVendaFormSchema = yup.object().shape({
 });
 
 export default function ServicoVenda({
-  servicos,
   statusVenda,
   handleValorVenda,
   isLoading,
@@ -63,6 +63,13 @@ export default function ServicoVenda({
   const [addServico, setAddServico] = useState(true);
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
+
+  const INITIAL_DATA = {
+    value: 0,
+    label: "Selecione o serviço",
+  };
+
+  const [selectData, setselectData] = useState(INITIAL_DATA);
 
   const formatter = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -108,49 +115,70 @@ export default function ServicoVenda({
     fetchData();
   }, [refreshKey]);
 
+  async function callApi(value) {
+    const { ["meiup.token"]: token } = parseCookies();
+
+    const responseServicos: any = await axios.get(
+      `http://localhost:8000/api/v1/servicos`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit: 10, nome: value },
+      }
+    );
+
+    const data = responseServicos.data.found.servicos.map((e) => {
+      return {
+        value: String(e.id),
+        label: e.nome,
+        valor: e.valor,
+      };
+    });
+
+    return data;
+  }
+
   const adicionarServico: SubmitHandler<FormData> = async (values) => {
+    debugger;
     handleLoad(true);
 
-    if (!stateServico) {
+    if (!selectData.value) {
       setAddServico(false);
       handleLoad(false);
       return false;
     }
 
-    if (stateServico && !valorServico) {
+    if (selectData.value && !valorServico) {
       handleLoad(false);
       return false;
     }
 
-    if (stateServico) {
-      const params = {
-        servico: stateServico,
-        valorServico: valorServico / 100,
-        outrasDespesas: outrasDespesas / 100,
-        desconto: desconto / 100,
-        valorTotal: valorTotal / 100,
-      };
+    const params = {
+      servico: selectData.value,
+      valorServico: valorServico / 100,
+      outrasDespesas: outrasDespesas / 100,
+      desconto: desconto / 100,
+      valorTotal: valorTotal / 100,
+    };
 
-      const result = await api.post(`/vendas/servicosVenda/${vendaId}`, params);
+    const result = await api.post(`/vendas/servicosVenda/${vendaId}`, params);
 
-      if (!result.data?.servicoVenda) {
-        toast({
-          title: "Serviço atualizado com sucesso!",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: "Serviço adicionado com sucesso!",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-      }
-
-      handleValorVenda(result.data?.valorVenda);
+    if (!result.data?.servicoVenda) {
+      toast({
+        title: "Serviço atualizado com sucesso!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: "Serviço adicionado com sucesso!",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
     }
+
+    handleValorVenda(result.data?.valorVenda);
 
     resetInputs();
     setRefreshKey((oldKey) => oldKey + 1);
@@ -158,7 +186,7 @@ export default function ServicoVenda({
   };
 
   const resetInputs = () => {
-    setStateServico("");
+    setselectData(null);
     setValorServico(0);
     setOutrasDespesas(0);
     setDesconto(0);
@@ -166,7 +194,10 @@ export default function ServicoVenda({
   };
 
   const handleEditServico = (servicoVenda) => {
-    setStateServico(String(servicoVenda.servico.id));
+    const servico: any = [servicoVenda.servico].map((p) => {
+      return { value: String(p.id), label: p.nome };
+    })[0];
+    setselectData(servico);
     setValorServico(servicoVenda.valorServico * 100);
     setOutrasDespesas(servicoVenda.outrasDespesas * 100);
     setDesconto(servicoVenda.desconto * 100);
@@ -208,7 +239,7 @@ export default function ServicoVenda({
   }
 
   const handleServico = (servico) => {
-    setStateServico(servico.value);
+    setselectData(servico);
     setValorServico((servico.valor ? servico.valor : 0) * 100);
     setOutrasDespesas(0);
     setDesconto(0);
@@ -235,16 +266,17 @@ export default function ServicoVenda({
           <VStack align="left" spacing="4">
             <Text fontWeight="bold">Serviço *</Text>
             <Skeleton isLoaded={!isLoading}>
-              <Select
+              <AsyncSelect
                 isDisabled={statusVenda !== 0}
                 id="servico"
                 {...register("servico")}
-                value={servicos.filter(function (option) {
-                  return option.value === stateServico;
-                })}
-                options={servicos}
+                cacheOptions
+                loadOptions={callApi}
                 onChange={handleServico}
-                placeholder="Selecione o serviço *"
+                value={selectData}
+                defaultOptions
+                loadingMessage={() => "Carregando..."}
+                noOptionsMessage={() => "Nenhum serviço encontrado"}
               />
             </Skeleton>
             {!addServico && (

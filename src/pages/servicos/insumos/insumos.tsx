@@ -16,7 +16,7 @@ import * as yup from "yup";
 const { yupResolver } = require("@hookform/resolvers/yup");
 import { theme as customTheme } from "../../../styles/theme";
 import { SubmitHandler, useForm } from "react-hook-form";
-import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { getProdutoServico } from "../../../hooks/servicos/useProdutoServico";
@@ -25,6 +25,8 @@ import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
 import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pagination } from "../../../components/Pagination";
+import axios from "axios";
+import { parseCookies } from "nookies";
 
 type FormData = {
   produto: string;
@@ -36,11 +38,10 @@ const insumoFormSchema = yup.object().shape({
   quantidade: yup.string().required("Quantidade obrigatória"),
 });
 
-export default function Insumos({ produtos, handleLoad }) {
+export default function Insumos({ handleLoad }) {
   const router = useRouter();
   const servicoId: any = Object.keys(router.query)[0];
   const [page, setPage] = useState(1);
-  const [stateProduto, setStateProduto] = useState("");
   const [addProduto, setAddProduto] = useState(true);
   const toast = createStandaloneToast({ theme: customTheme });
 
@@ -53,6 +54,13 @@ export default function Insumos({ produtos, handleLoad }) {
   });
 
   const { errors } = formState;
+
+  const INITIAL_DATA = {
+    value: 0,
+    label: "Selecione o produto",
+  };
+
+  const [selectData, setselectData] = useState(INITIAL_DATA);
 
   const [selectedProduto, setSelectedProduto] = useState({
     id: 0,
@@ -81,24 +89,48 @@ export default function Insumos({ produtos, handleLoad }) {
     fetchData();
   }, [refreshKey]);
 
+  async function callApi(value) {
+    const { ["meiup.token"]: token } = parseCookies();
+
+    const responseProdutos: any = await axios.get(
+      `http://localhost:8000/api/v1/produtos`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit: 10, descricao: value },
+      }
+    );
+
+    const data = responseProdutos.data.found.produtos.map((e) => {
+      return {
+        value: String(e.id),
+        label: e.descricao,
+      };
+    });
+
+    return data;
+  }
+
   const handleEditProdutoServico = (produtoServico) => {
-    setStateProduto(String(produtoServico.produto.id));
+    const produto: any = [produtoServico.produto].map((p) => {
+      return { value: String(p.id), label: p.descricao };
+    })[0];
+    setselectData(produto);
     setValue("quantidade", produtoServico.quantidade);
   };
 
   const handleProduto = (produto) => {
-    setStateProduto(produto.value);
+    setselectData(produto);
   };
 
   const adicionarInsumo: SubmitHandler<FormData> = async (values) => {
     handleLoad(true);
-    if (!stateProduto) {
+    if (!selectData.value) {
       setAddProduto(false);
     }
 
-    if (stateProduto) {
+    if (selectData.value) {
       const params = {
-        produto: stateProduto,
+        produto: selectData.value,
         quantidade: getValues("quantidade"),
       };
 
@@ -130,7 +162,7 @@ export default function Insumos({ produtos, handleLoad }) {
   };
 
   const resetInputs = () => {
-    setStateProduto("");
+    setselectData(null);
     setValue("quantidade", null);
   };
 
@@ -169,15 +201,16 @@ export default function Insumos({ produtos, handleLoad }) {
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <VStack align="left" spacing="4">
             <Text fontWeight="bold">Produto</Text>
-            <Select
-              id="categoria"
-              {...register("categoria")}
-              value={produtos.result.filter(function (option) {
-                return option.value === stateProduto;
-              })}
-              options={produtos.result}
+            <AsyncSelect
+              id="produto"
+              {...register("produto")}
+              cacheOptions
+              loadOptions={callApi}
               onChange={handleProduto}
-              placeholder="Selecione o produto"
+              value={selectData}
+              defaultOptions
+              loadingMessage={() => "Carregando..."}
+              noOptionsMessage={() => "Nenhum produto encontrado"}
             />
             {!addProduto && (
               <Text color="red" fontSize="14px">
@@ -185,7 +218,7 @@ export default function Insumos({ produtos, handleLoad }) {
               </Text>
             )}{" "}
           </VStack>
-          {stateProduto && (
+          {selectData.value && (
             <Input
               name="quantidade"
               label="Quantidade *"

@@ -24,15 +24,16 @@ import { Input } from "../../components/Input";
 import { theme as customTheme } from "../../styles/theme";
 import * as yup from "yup";
 import Select from "react-select";
+import AsyncSelect from "react-select/async";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
-import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { Sidebar } from "../../components/Sidebar";
 import { LoadPage } from "../../components/Load";
 import { InputCurrency } from "../../components/InputCurrency";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 type FormData = {
   descricao: string;
@@ -58,10 +59,9 @@ const produtoFormSchema = yup.object().shape({
   estoqueMaximo: yup.string(),
 });
 
-export default function FormProduto(optionsCategoria) {
+export default function FormProduto() {
   const [stateTipoItem, setStateTipoItem] = useState("");
   const [stateUnidade, setStateUnidade] = useState("");
-  const [stateCategoria, setStateCategoria] = useState("");
   const [precoVarejo, setPrecoVarejo] = useState(0);
   const [precoAtacado, setPrecoAtacado] = useState(0);
   const [precoCompra, setPrecoCompra] = useState(0);
@@ -89,6 +89,13 @@ export default function FormProduto(optionsCategoria) {
     { value: "2", label: "Caixa" },
     { value: "3", label: "Fardo" },
   ];
+
+  const INITIAL_DATA = {
+    value: 0,
+    label: "Selecione a categoria",
+  };
+
+  const [selectData, setselectData] = useState(INITIAL_DATA);
 
   useEffect(() => {
     async function findProduto() {
@@ -132,8 +139,10 @@ export default function FormProduto(optionsCategoria) {
         }
 
         if (response.data.produto.categoria) {
-          const { id } = response.data.produto.categoria;
-          setStateCategoria(String(id));
+          const categoria: any = [response.data.produto.categoria].map((p) => {
+            return { value: String(p.id), label: p.nome };
+          })[0];
+          setselectData(categoria);
         }
       }
 
@@ -147,6 +156,24 @@ export default function FormProduto(optionsCategoria) {
     focus();
   }, []);
 
+  async function callApi(value) {
+    const { ["meiup.token"]: token } = parseCookies();
+
+    const response: any = await axios.get(
+      `http://localhost:8000/api/v1/categorias`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit: 10, nome: value },
+      }
+    );
+
+    const data = response.data.found.categorias.map((e) => {
+      return { value: String(e.id), label: e.nome };
+    });
+
+    return data;
+  }
+
   const handleTipoItem = (tipoItem) => {
     setStateTipoItem(tipoItem.value);
   };
@@ -156,7 +183,7 @@ export default function FormProduto(optionsCategoria) {
   };
 
   const handleCategoria = (categoria) => {
-    setStateCategoria(categoria.value);
+    setselectData(categoria);
   };
 
   const calculaMargemLucro = () => {
@@ -174,7 +201,7 @@ export default function FormProduto(optionsCategoria) {
       descricao: values.descricao,
       tipoItem: Number(stateTipoItem),
       unidade: Number(stateUnidade),
-      categoria: Number(stateCategoria),
+      categoria: selectData.value,
       estoque: Number(values.estoque),
       estoqueMinimo: Number(values.estoqueMinimo),
       estoqueMaximo: Number(values.estoqueMaximo),
@@ -297,17 +324,18 @@ export default function FormProduto(optionsCategoria) {
                         <VStack align="left" spacing="4">
                           <Text fontWeight="bold">Categoria</Text>
                           <Skeleton isLoaded={!isLoading}>
-                            <Select
+                            <AsyncSelect
                               id="categoria"
                               {...register("categoria")}
-                              value={optionsCategoria.result.filter(function (
-                                option
-                              ) {
-                                return option.value === stateCategoria;
-                              })}
-                              options={optionsCategoria.result}
+                              cacheOptions
+                              loadOptions={callApi}
                               onChange={handleCategoria}
-                              placeholder="Selecione a categoria"
+                              value={selectData}
+                              defaultOptions
+                              loadingMessage={() => "Carregando..."}
+                              noOptionsMessage={() =>
+                                "Nenhuma categoria encontrada"
+                              }
                             />
                           </Skeleton>
                         </VStack>
@@ -446,21 +474,8 @@ export default function FormProduto(optionsCategoria) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["meiup.token"]: token } = parseCookies(ctx);
-
-  const response: any = await axios.get(
-    `http://localhost:8000/api/v1/categorias`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  const result = response.data.found.categorias.map((e) => {
-    return { value: String(e.id), label: e.nome };
-  });
-
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   return {
-    props: {
-      result,
-    },
+    props: {},
   };
-};
+});

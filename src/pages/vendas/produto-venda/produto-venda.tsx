@@ -12,7 +12,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import * as yup from "yup";
 import { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -28,6 +28,8 @@ import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dial
 import { Pagination } from "../../../components/Pagination";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
 import { InputCurrency } from "../../../components/InputCurrency";
+import axios from "axios";
+import { parseCookies } from "nookies";
 
 type FormData = {
   produto: string;
@@ -48,7 +50,6 @@ const produtoVendaFormSchema = yup.object().shape({
 });
 
 export default function ProdutoVenda({
-  produtos,
   statusVenda,
   handleValorVenda,
   isLoading,
@@ -56,7 +57,6 @@ export default function ProdutoVenda({
 }) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
-  const [stateProduto, setStateProduto] = useState("");
   const [idProdutoVenda, setIdProdutoVenda] = useState();
   const [addProduto, setAddProduto] = useState(true);
   const [precoUnitario, setPrecoUnitario] = useState(0);
@@ -65,6 +65,13 @@ export default function ProdutoVenda({
   const [valorTotal, setValorTotal] = useState(0);
   const toast = createStandaloneToast({ theme: customTheme });
   const [page, setPage] = useState(1);
+
+  const INITIAL_DATA = {
+    value: 0,
+    label: "Selecione o produto",
+  };
+
+  const [selectData, setselectData] = useState(INITIAL_DATA);
 
   const formatter = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -109,6 +116,28 @@ export default function ProdutoVenda({
     fetchData();
   }, [refreshKey]);
 
+  async function callApi(value) {
+    const { ["meiup.token"]: token } = parseCookies();
+
+    const responseProdutos: any = await axios.get(
+      `http://localhost:8000/api/v1/produtos`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit: 10, descricao: value },
+      }
+    );
+
+    const data = responseProdutos.data.found.produtos.map((e) => {
+      return {
+        value: String(e.id),
+        label: e.descricao,
+        precos: e.precos,
+      };
+    });
+
+    return data;
+  }
+
   async function excluirProduto(produtoVenda) {
     handleLoad(true);
 
@@ -151,13 +180,16 @@ export default function ProdutoVenda({
     setDesconto(0);
     setValorTotal(0);
     setIdProdutoVenda(null);
-    setStateProduto(produto.value);
+    setselectData(produto);
     setAddProduto(true);
     calculaTotal();
   };
 
   const handleEditProduto = (produtoVenda) => {
-    setStateProduto(String(produtoVenda.produto.id));
+    const produto: any = [produtoVenda.produto].map((p) => {
+      return { value: String(p.id), label: p.descricao };
+    })[0];
+    setselectData(produto);
     setValue("quantidade", produtoVenda.quantidade);
     setPrecoUnitario(produtoVenda.precoUnitario * 100);
     setOutrasDespesas(produtoVenda.outrasDespesas * 100);
@@ -169,15 +201,15 @@ export default function ProdutoVenda({
   const adicionarProduto: SubmitHandler<FormData> = async (values) => {
     handleLoad(true);
 
-    if (!stateProduto) {
+    if (!selectData.value) {
       setAddProduto(false);
       handleLoad(false);
       return false;
     }
 
-    if (stateProduto) {
+    if (selectData.value) {
       const params = {
-        produto: stateProduto,
+        produto: selectData.value,
         quantidade: values.quantidade,
         precoUnitario: precoUnitario / 100,
         outrasDespesas: outrasDespesas / 100,
@@ -213,7 +245,7 @@ export default function ProdutoVenda({
   };
 
   const resetInputs = () => {
-    setStateProduto("");
+    setselectData(null);
     setValue("quantidade", "");
     setPrecoUnitario(0);
     setOutrasDespesas(0);
@@ -242,16 +274,17 @@ export default function ProdutoVenda({
           <VStack align="left" spacing="4">
             <Text fontWeight="bold">Produto *</Text>
             <Skeleton isLoaded={!isLoading}>
-              <Select
+              <AsyncSelect
                 isDisabled={statusVenda !== 0}
                 id="produto"
                 {...register("produto")}
-                value={produtos.filter(function (option) {
-                  return option.value === stateProduto;
-                })}
-                options={produtos}
+                cacheOptions
+                loadOptions={callApi}
                 onChange={handleProduto}
-                placeholder="Selecione o produto *"
+                value={selectData}
+                defaultOptions
+                loadingMessage={() => "Carregando..."}
+                noOptionsMessage={() => "Nenhum produto encontrado"}
               />
             </Skeleton>
             {!addProduto && (

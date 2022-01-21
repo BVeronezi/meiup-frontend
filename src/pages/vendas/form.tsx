@@ -19,7 +19,7 @@ import {
 import * as yup from "yup";
 import { Input } from "../../components/Input";
 import { SubmitHandler, useForm } from "react-hook-form";
-import Select from "react-select";
+import AsyncSelect from "react-select/async";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { yupResolver } = require("@hookform/resolvers/yup");
 import { GetServerSideProps } from "next";
@@ -40,6 +40,7 @@ import ProdutoVenda from "./produto-venda/produto-venda";
 import { Sidebar } from "../../components/Sidebar";
 import ServicoVenda from "./servico-venda/servico-venda";
 import { LoadPage } from "../../components/Load";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 registerLocale("pt", pt);
 
 type FormData = {
@@ -65,9 +66,8 @@ const vendaFormSchema = yup.object().shape({
   valorTotal: yup.string(),
 });
 
-export default function FormVendas({ clientes, produtos, servicos }) {
+export default function FormVendas() {
   const [venda, setVenda] = useState({ status: 0 });
-  const [stateCliente, setStateCliente] = useState("");
   const [stateContinuarVenda, setStateContinuarVenda] = useState(true);
   const [stateNovaVenda, setStateNovaVenda] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
@@ -85,6 +85,13 @@ export default function FormVendas({ clientes, produtos, servicos }) {
 
   const { errors } = formState;
 
+  const INITIAL_DATA = {
+    value: 0,
+    label: "Selecione o cliente",
+  };
+
+  const [selectData, setselectData] = useState(INITIAL_DATA);
+
   useEffect(() => {
     async function findVenda() {
       setIsLoading(true);
@@ -95,7 +102,10 @@ export default function FormVendas({ clientes, produtos, servicos }) {
         const { dataVenda, cliente, valorTotal, pagamento, troco } =
           response.data.venda;
         setDate(moment(dataVenda).toDate());
-        setStateCliente(String(cliente.id));
+        const clienteOption: any = [response.data.venda.cliente].map((p) => {
+          return { value: String(p.id), label: p.nome };
+        })[0];
+        setselectData(clienteOption);
         setValue("email", cliente.email);
         setValue("celular", cliente.celular);
         setValue("telefone", cliente.telefone);
@@ -116,12 +126,30 @@ export default function FormVendas({ clientes, produtos, servicos }) {
     focus();
   }, []);
 
+  async function callApi(value) {
+    const { ["meiup.token"]: token } = parseCookies();
+
+    const responseClientes: any = await axios.get(
+      `http://localhost:8000/api/v1/clientes`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit: 10, nome: value },
+      }
+    );
+
+    const data = responseClientes.data.found.clientes.map((e) => {
+      return { value: String(e.id), label: e.nome, email: e.email };
+    });
+
+    return data;
+  }
+
   const handleLoad = (value) => {
     setIsLoadingFetch(value);
   };
 
   const handleVenda: SubmitHandler<FormData> = async (values) => {
-    if (!stateCliente) {
+    if (!selectData.value) {
       setStateContinuarVenda(false);
       return;
     }
@@ -130,7 +158,7 @@ export default function FormVendas({ clientes, produtos, servicos }) {
       usuario: user,
       empresa: user.empresa,
       dataVenda: date,
-      cliente: stateCliente,
+      cliente: selectData.value,
       email: values.email,
       celular: values.celular,
       telefone: values.telefone,
@@ -216,7 +244,7 @@ export default function FormVendas({ clientes, produtos, servicos }) {
     setValue("celular", cliente.celular);
     setValue("telefone", cliente.telefone);
     setStateContinuarVenda(true);
-    setStateCliente(cliente.value);
+    setselectData(cliente);
   };
 
   const handleTabsChange = (index) => {
@@ -318,16 +346,18 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                         <VStack align="left" spacing="4">
                           <Text fontWeight="bold">Cliente *</Text>
                           <Skeleton isLoaded={!isLoading}>
-                            <Select
-                              isDisabled={venda.status !== 0}
+                            <AsyncSelect
                               id="cliente"
                               {...register("cliente")}
-                              value={clientes.filter(function (option) {
-                                return option.value === stateCliente;
-                              })}
-                              options={clientes}
+                              cacheOptions
+                              loadOptions={callApi}
                               onChange={handleCliente}
-                              placeholder="Selecione o cliente *"
+                              value={selectData}
+                              defaultOptions
+                              loadingMessage={() => "Carregando..."}
+                              noOptionsMessage={() =>
+                                "Nenhum cliente encontrado"
+                              }
                             />
                           </Skeleton>
                           {!stateContinuarVenda && (
@@ -377,7 +407,6 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                   </TabPanel>
                   <TabPanel>
                     <ProdutoVenda
-                      produtos={produtos}
                       statusVenda={venda.status}
                       handleValorVenda={handleValorVenda}
                       isLoading={isLoading}
@@ -386,7 +415,6 @@ export default function FormVendas({ clientes, produtos, servicos }) {
                   </TabPanel>
                   <TabPanel>
                     <ServicoVenda
-                      servicos={servicos}
                       statusVenda={venda.status}
                       handleValorVenda={handleValorVenda}
                       isLoading={isLoading}
@@ -492,49 +520,8 @@ export default function FormVendas({ clientes, produtos, servicos }) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["meiup.token"]: token } = parseCookies(ctx);
-
-  const responseClientes: any = await axios.get(
-    `http://localhost:8000/api/v1/clientes`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  const clientes = responseClientes.data.found.clientes.map((e) => {
-    return { value: String(e.id), label: e.nome, email: e.email };
-  });
-
-  const responseServicos: any = await axios.get(
-    `http://localhost:8000/api/v1/servicos`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  const servicos = responseServicos.data.found.servicos.map((e) => {
-    return {
-      value: String(e.id),
-      label: e.nome,
-      valor: e.valor,
-    };
-  });
-
-  const responseProdutos: any = await axios.get(
-    `http://localhost:8000/api/v1/produtos`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  const produtos = responseProdutos.data.found.produtos.map((e) => {
-    return {
-      value: String(e.id),
-      label: e.descricao,
-      precos: e.precos,
-    };
-  });
-
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   return {
-    props: {
-      clientes,
-      produtos,
-      servicos,
-    },
+    props: {},
   };
-};
+});

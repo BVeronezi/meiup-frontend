@@ -36,6 +36,7 @@ import { GetServerSideProps } from "next";
 import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 import { LoadPage } from "../../components/Load";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 export const StatusVenda = [
   { codigo: 0, label: "ABERTA" },
@@ -54,7 +55,7 @@ export default function Vendas({ vendas }) {
   const [page, setPage] = useState(1);
 
   let { data, isLoading, error } = useVendas(page, {
-    initialData: vendas,
+    initialData: null,
   });
 
   const [selectedVenda, setSelectedVenda] = useState("");
@@ -68,7 +69,10 @@ export default function Vendas({ vendas }) {
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
   useEffect(() => {
-    setValue(data);
+    async function fetchData() {
+      setValue(data);
+    }
+    fetchData();
   }, [data]);
 
   async function cancelaVenda(vendaId: string) {
@@ -392,12 +396,8 @@ export default function Vendas({ vendas }) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { vendas } = await getVendas(1, ctx);
-
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   return {
-    props: {
-      vendas,
-    },
+    props: {},
   };
-};
+});

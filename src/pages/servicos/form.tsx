@@ -33,6 +33,7 @@ import { RiInformationLine } from "react-icons/ri";
 import { api } from "../../services/apiClient";
 import { LoadPage } from "../../components/Load";
 import { InputCurrency } from "../../components/InputCurrency";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 type FormData = {
   nome: string;
@@ -48,7 +49,7 @@ const servicoFormSchema = yup.object().shape({
   margemLucro: yup.string(),
 });
 
-export default function FormServico(produtos) {
+export default function FormServico() {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const [stateNovoServico, setStateNovoServico] = useState(false);
@@ -250,7 +251,7 @@ export default function FormServico(produtos) {
                     </VStack>
                   </TabPanel>
                   <TabPanel>
-                    <Insumos produtos={produtos} handleLoad={handleLoad} />
+                    <Insumos handleLoad={handleLoad} />
                   </TabPanel>
                 </TabPanels>
               </Tabs>
@@ -291,24 +292,8 @@ export default function FormServico(produtos) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { ["meiup.token"]: token } = parseCookies(ctx);
-
-  const responseProdutos: any = await axios.get(
-    `http://localhost:8000/api/v1/produtos`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  const result = responseProdutos.data.found.produtos.map((e) => {
-    return {
-      value: String(e.id),
-      label: e.descricao,
-    };
-  });
-
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   return {
-    props: {
-      result,
-    },
+    props: {},
   };
-};
+});
