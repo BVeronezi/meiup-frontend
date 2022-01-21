@@ -1,4 +1,4 @@
-import { Box, SimpleGrid, VStack } from "@chakra-ui/layout";
+import { SimpleGrid, VStack } from "@chakra-ui/layout";
 import { Input } from "../../components/Input";
 
 export function Endereco({ register, errors, isLoading, buscaCep }) {

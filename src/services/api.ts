@@ -15,7 +15,7 @@ export function setupAPIClient(ctx = undefined) {
   let cookies = parseCookies(ctx);
 
   const api = axios.create({
-    baseURL: `http://localhost:8000/api/v1`,
+    baseURL: process.env.NEXT_PUBLIC_API_ENDPOINT,
     headers: {
       Authorization: `Bearer ${cookies["meiup.token"]}`,
     },

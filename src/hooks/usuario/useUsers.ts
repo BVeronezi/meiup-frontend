@@ -23,7 +23,7 @@ export async function getUsuarios(
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
   const response: any = await axios.get(
-    `http://localhost:8000/api/v1/usuario`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/usuario`,
     {
       headers: { Authorization: `Bearer ${token}` },
       params: { page, empresa, nome: valuePesquisa },

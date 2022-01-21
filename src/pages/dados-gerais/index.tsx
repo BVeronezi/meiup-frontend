@@ -134,8 +134,7 @@ export default function DadosGerais() {
           `https://api.cnpja.com.br/zip/${cep}`,
           {
             headers: {
-              Authorization:
-                "d7756953-d64d-46a3-8a7f-ffb409dd20a0-38e52cca-6626-41e9-950b-f69496b95a0a",
+              Authorization: process.env.NEXT_PUBLIC_KEY_CEP,
             },
           }
         );

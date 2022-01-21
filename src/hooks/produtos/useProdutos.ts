@@ -23,7 +23,7 @@ export async function getProdutos(
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
   const response: any = await axios.get(
-    `http://localhost:8000/api/v1/produtos`,
+    `${process.env.NEXT_PUBLIC_API_ENDPOINT}/produtos`,
     {
       headers: { Authorization: `Bearer ${token}` },
       params: { page, empresa, descricao: valuePesquisa },

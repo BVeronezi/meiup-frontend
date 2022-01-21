@@ -23,7 +23,7 @@ interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
 export const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
-  const { user } = useContext(AuthContext);
+  const { user, signOut } = useContext(AuthContext);
 
   return (
     <Flex
@@ -105,7 +105,7 @@ export const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               <MenuItem>Perfil</MenuItem>
               <MenuItem>Configurações</MenuItem>
               <MenuDivider />
-              <MenuItem>Sair</MenuItem>
+              <MenuItem onClick={signOut}>Sair</MenuItem>
             </MenuList>
           </Menu>
         </Flex>

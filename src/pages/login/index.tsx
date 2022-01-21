@@ -7,7 +7,6 @@ import * as yup from "yup";
 import {
   Box,
   Checkbox,
-  Container,
   Input,
   Flex,
   FormErrorMessage,
@@ -22,8 +21,6 @@ import {
   FormControl,
   createStandaloneToast,
   Stack,
-  useBreakpointValue,
-  Icon,
 } from "@chakra-ui/react";
 import { ViewIcon } from "@chakra-ui/icons";
 import { theme as customTheme } from "../../styles/theme";
@@ -33,7 +30,6 @@ import MButton from "../../components/Button";
 import { AuthContext } from "../../contexts/AuthContext";
 import { withSSRGuest } from "../../utils/withSSRGuest";
 import { useRouter } from "next/router";
-import { Illustration } from "..";
 import { RiArrowLeftSLine } from "react-icons/ri";
 
 type UserFormData = {

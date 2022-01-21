@@ -119,7 +119,7 @@ export default function ServicoVenda({
     const { ["meiup.token"]: token } = parseCookies();
 
     const responseServicos: any = await axios.get(
-      `http://localhost:8000/api/v1/servicos`,
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/servicos`,
       {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit: 10, nome: value },
