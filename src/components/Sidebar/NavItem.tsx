@@ -2,7 +2,6 @@ import { Flex, FlexProps, Icon, Link } from "@chakra-ui/react";
 import { ReactText } from "react";
 import { IconType } from "react-icons/lib";
 import { ActiveLink } from "../ActiveLink";
-
 interface NavItemProps extends FlexProps {
   icon: IconType;
   children: ReactText;

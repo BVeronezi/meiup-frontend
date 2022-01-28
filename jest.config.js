@@ -1,6 +1,6 @@
 module.exports = {
-  testPathIgnorePatterns: ["/.next/", "/node_modules/"],
-  setupFilesAfterEnv: ["<rootDir>/src/utils/setupTests.ts"],
+  testPathIgnorePatterns: ["/.next/", "/node_modules/", "<rootDir>/cypress"],
+  setupFilesAfterEnv: ["<rootDir>/src/tests/setupTests.ts"],
   transform: {
     "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
   },

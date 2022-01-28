@@ -14,7 +14,6 @@ let failedRequestsQueue = <FailedRequestQueue[]>[];
 export function setupAPIClient(ctx = undefined) {
   let cookies = parseCookies(ctx);
 
-  console.log(cookies);
   const api = axios.create({
     baseURL: "http://localhost:8000/api/v1",
     headers: {
