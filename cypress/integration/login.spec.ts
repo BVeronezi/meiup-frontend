@@ -43,17 +43,3 @@ describe("Página de login", () => {
       });
   });
 });
-
-describe("Requisições página de login", () => {
-  it("(POST) - Deve retornar o token no login", () => {
-    cy.request({
-      method: "POST",
-      url: "http://localhost:8000/api/v1/auth/login",
-      body: { email: "teste@gmail.com", senha: "123456" },
-    }).then((res) => {
-      cy.setCookie("meiup.token", res.body.token);
-    });
-
-    cy.getCookie("meiup.token").should("exist");
-  });
-});

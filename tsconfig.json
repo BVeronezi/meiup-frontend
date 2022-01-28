@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": [
+      "es5",
       "dom",
       "dom.iterable",
       "esnext"
@@ -29,5 +30,5 @@
     "node_modules",
     "**/*.spec.ts"
   ],
-  "types": ["cypress", "@percy/cypress"]
+  "types": ["cypress", "@percy/cypress", "./support"]
 }
