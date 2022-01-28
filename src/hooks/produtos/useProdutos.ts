@@ -22,10 +22,13 @@ export async function getProdutos(
   const { ["meiup.token"]: token } = parseCookies(ctx);
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
-  const response: any = await axios.get(`${process.env.API_URL}/produtos`, {
-    headers: { Authorization: `Bearer ${token}` },
-    params: { page, empresa, descricao: valuePesquisa },
-  });
+  const response: any = await axios.get(
+    `http://localhost:8000/api/v1/produtos`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page, empresa, descricao: valuePesquisa },
+    }
+  );
 
   const formatter = new Intl.NumberFormat("pt-BR", {
     style: "currency",

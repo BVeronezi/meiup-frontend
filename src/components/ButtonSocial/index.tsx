@@ -5,7 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 import NextLink from "next/link";
 
 export function ButtonSocial() {
-  const url_google = `${process.env.API_URL}/auth/google`;
+  const url_google = `http://localhost:8000/api/v1/auth/google`;
 
   return (
     <>
@@ -31,6 +31,7 @@ export function ButtonSocial() {
 
       <NextLink href={url_google}>
         <Button
+          id="google"
           variant={"outline"}
           leftIcon={<FcGoogle />}
           fontWeight="medium"

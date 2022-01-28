@@ -14,8 +14,9 @@ let failedRequestsQueue = <FailedRequestQueue[]>[];
 export function setupAPIClient(ctx = undefined) {
   let cookies = parseCookies(ctx);
 
+  console.log(cookies);
   const api = axios.create({
-    baseURL: "https://meiup-api.herokuapp.com/api/v1",
+    baseURL: "http://localhost:8000/api/v1",
     headers: {
       Authorization: `Bearer ${cookies["meiup.token"]}`,
     },

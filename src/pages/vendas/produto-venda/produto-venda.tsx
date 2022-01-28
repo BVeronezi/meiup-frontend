@@ -120,7 +120,7 @@ export default function ProdutoVenda({
     const { ["meiup.token"]: token } = parseCookies();
 
     const responseProdutos: any = await axios.get(
-      `${process.env.API_URL}/produtos`,
+      `http://localhost:8000/api/v1/produtos`,
       {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit: 10, descricao: value },

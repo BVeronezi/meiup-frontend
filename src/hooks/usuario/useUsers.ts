@@ -22,10 +22,13 @@ export async function getUsuarios(
   const { ["meiup.token"]: token } = parseCookies(ctx);
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
-  const response: any = await axios.get(`${process.env.API_URL}/usuario`, {
-    headers: { Authorization: `Bearer ${token}` },
-    params: { page, empresa, nome: valuePesquisa },
-  });
+  const response: any = await axios.get(
+    `http://localhost:8000/api/v1/usuario`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page, empresa, nome: valuePesquisa },
+    }
+  );
 
   const users = response.data.found.users.map((user) => {
     return {

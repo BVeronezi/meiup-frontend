@@ -90,7 +90,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function signIn({ email, senha }: SignCredentials) {
     try {
-      const response: any = await api.post("/auth/signin", { email, senha });
+      const response: any = await api.post("/auth/login", { email, senha });
 
       const { token, nome, empresa, refreshToken, role } = response.data;
 

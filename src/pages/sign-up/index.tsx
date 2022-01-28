@@ -72,7 +72,7 @@ export default function SignUp() {
 
   const handleSignUp: SubmitHandler<UserFormData> = async (user) => {
     try {
-      await api.post("/auth/signup", {
+      await api.post("/auth/cadastra", {
         ...user,
         created_at: new Date(),
       });

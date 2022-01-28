@@ -7,10 +7,15 @@
     "build": "export NODE_OPTIONS=--openssl-legacy-provider; next build",
     "start": "next start",
     "lint": "next lint",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "percy:cypress": "percy exec -- cypress run",
     "storybook": "start-storybook -p -s ./public 6006",
     "build-storybook": "build-storybook",
     "test": "jest --watch",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "start:server": "serve -l 3000 .",
+    "test:percy": "start-server-and-test start http://localhost:3000 percy:cypress"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.17",
@@ -39,11 +44,16 @@
     "react-query": "^3.31.0",
     "react-select": "^5.2.1",
     "react-spinners": "^0.11.0",
+    "start-server-and-test": "^1.14.0",
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@percy/cli": "^1.0.0-beta.74",
+    "@percy/cypress": "^3.1.1",
     "@types/node": "16.11.6",
     "@types/react": "^17.0.34",
+    "cypress": "^9.3.1",
+    "cypress-webpack-preprocessor-v5": "^5.0.0-alpha.1",
     "eslint": "7.32.0",
     "eslint-config-next": "12.0.2",
     "typescript": "4.4.4"

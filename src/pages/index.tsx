@@ -10,7 +10,6 @@ import {
   Image,
   Stack,
   Text,
-  useBreakpointValue,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { withSSRGuest } from "../utils/withSSRGuest";

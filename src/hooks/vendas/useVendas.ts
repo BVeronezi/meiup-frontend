@@ -23,7 +23,7 @@ export async function getVendas(
   const { ["meiup.token"]: token } = parseCookies(ctx);
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
-  const response: any = await axios.get(`${process.env.API_URL}/vendas`, {
+  const response: any = await axios.get(`http://localhost:8000/api/v1/vendas`, {
     headers: { Authorization: `Bearer ${token}` },
     params: { page, empresa, limit: 10, cliente: valuePesquisa },
   });
