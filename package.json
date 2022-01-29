@@ -12,8 +12,6 @@
     "percy:cypress": "percy exec -- cypress run",
     "storybook": "start-storybook -p -s ./public 6006",
     "build-storybook": "build-storybook",
-    "test": "jest --watch --silent",
-    "coverage": "jest --coverage --silent",
     "start:server": "serve -l 3000 .",
     "test:percy": "start-server-and-test start http://localhost:3000 percy:cypress"
   },
@@ -49,23 +47,31 @@
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.7",
+    "@cypress/code-coverage": "^3.9.12",
+    "@cypress/instrument-cra": "^1.4.0",
+    "@cypress/react": "^5.12.1",
+    "@cypress/webpack-dev-server": "^1.8.0",
     "@percy/cli": "^1.0.0-beta.74",
     "@percy/cypress": "^3.1.1",
-    "@testing-library/dom": "^8.11.3",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^12.1.2",
+    "@testing-library/cypress": "^8.0.2",
     "@types/node": "16.11.6",
     "@types/react": "^17.0.34",
     "axios-mock-adapter": "^1.20.0",
     "babel-jest": "^27.4.6",
+    "babel-plugin-istanbul": "^6.1.1",
+    "check-code-coverage": "^1.10.0",
     "cypress": "^9.3.1",
     "cypress-webpack-preprocessor-v5": "^5.0.0-alpha.1",
     "eslint": "7.32.0",
     "eslint-config-next": "12.0.2",
-    "jest": "^27.4.7",
-    "jest-dom": "^4.0.0",
-    "react-test-renderer": "^17.0.2",
-    "ts-jest": "^27.1.3",
-    "typescript": "^4.4.4"
+    "html-webpack-plugin": "^5.5.0",
+    "typescript": "^4.4.4",
+    "webpack": "^5.67.0",
+    "webpack-dev-server": "^4.7.3"
+  },
+  "nyc": {
+    "exclude": [
+      "pages/api/__coverage__.js"
+    ]
   }
 }
