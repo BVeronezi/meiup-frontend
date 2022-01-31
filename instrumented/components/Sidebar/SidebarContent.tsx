@@ -21,12 +21,6 @@ interface LinkItemProps {
   icon: IconType;
 }
 
-const LinkItems: Array<LinkItemProps> = [
-  { name: "INÍCIO", icon: RiDashboardLine },
-  { name: "Dados gerais", icon: RiBuilding4Line },
-  { name: "Usuários", icon: RiContactsLine },
-];
-
 interface SidebarProps extends BoxProps {
   onClose: () => void;
 }

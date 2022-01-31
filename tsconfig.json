@@ -24,11 +24,14 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "./jest-setup.ts"
+    "cypress/*/*.ts",
+    "node_modules/cypress",
+    "./cypress/**/*.js"
   ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
   ],
-  "types": ["cypress", "@percy/cypress", "./support"]
+  "moduleResolution": "node",
+  "types": ["cypress", "@percy/cypress", "./support", "@testing-library/cypress",]
 }

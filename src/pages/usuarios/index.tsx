@@ -201,7 +201,7 @@ export default function Usuarios() {
                       <Tbody>
                         {value?.users.map((user) => {
                           return (
-                            <Tr key={user.id}>
+                            <Tr data-cy="usuario" key={user.id}>
                               <Td>
                                 <Box>
                                   <Link
@@ -210,10 +210,17 @@ export default function Usuarios() {
                                       handlePrefetchUser(user.id)
                                     }
                                   >
-                                    <Text fontWeight="bold">{user.nome}</Text>
+                                    <Text
+                                      data-cy="nome-usuario"
+                                      fontWeight="bold"
+                                    >
+                                      {user.nome}
+                                    </Text>
                                   </Link>
 
-                                  <Text fontSize="sm">{user.email}</Text>
+                                  <Text data-cy="email-usuario" fontSize="sm">
+                                    {user.email}
+                                  </Text>
                                 </Box>
                               </Td>
 

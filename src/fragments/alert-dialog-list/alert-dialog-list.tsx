@@ -36,10 +36,15 @@ export function AlertDialogList({
           </AlertDialogBody>
 
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose}>
+            <Button data-test-id="cancelar" ref={cancelRef} onClick={onClose}>
               {textButton1}
             </Button>
-            <Button colorScheme="red" onClick={onClick} ml={3}>
+            <Button
+              data-test-id="remover"
+              colorScheme="red"
+              onClick={onClick}
+              ml={3}
+            >
               {textButton2}
             </Button>
           </AlertDialogFooter>

@@ -148,6 +148,13 @@ export default function FormUsuario() {
           setValue("complemento", "");
         }
       } catch (error) {
+        setValue("endereco", "");
+        setValue("numero", "");
+        setValue("bairro", "");
+        setValue("cidade", "");
+        setValue("estado", "");
+        setValue("complemento", "");
+
         toast({
           title: "CEP não encontrado",
           status: "info",
@@ -229,8 +236,12 @@ export default function FormUsuario() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab fontWeight="bold">Dados básicos</Tab>
-                  <Tab fontWeight="bold">Endereço</Tab>
+                  <Tab data-cy="dados-basicos" fontWeight="bold">
+                    Dados básicos
+                  </Tab>
+                  <Tab data-cy="endereco" fontWeight="bold">
+                    Endereço
+                  </Tab>
                 </TabList>
                 <TabPanels>
                   <TabPanel>
@@ -283,6 +294,7 @@ export default function FormUsuario() {
                           </FormLabel>
                           <Skeleton isLoaded={!isLoading}>
                             <Select
+                              data-cy="perfil"
                               {...register("role")}
                               variant="flushed"
                               error={errors.role}
@@ -316,6 +328,7 @@ export default function FormUsuario() {
                               />
                               <InputRightElement width="2.5rem">
                                 <IconButton
+                                  data-cy="exibirSenha"
                                   aria-label="Input Password"
                                   icon={<ViewIcon />}
                                   size="sm"
@@ -323,12 +336,6 @@ export default function FormUsuario() {
                                 />
                               </InputRightElement>
                             </InputGroup>
-
-                            {!!errors.senha && (
-                              <FormErrorMessage>
-                                {errors.senha.message}
-                              </FormErrorMessage>
-                            )}
                           </FormControl>
                         )}
                       </SimpleGrid>
@@ -349,6 +356,7 @@ export default function FormUsuario() {
               <Flex mt="8" justify="flex-end">
                 <HStack spacing="24px">
                   <Button
+                    data-cy="voltar"
                     width={["150px", "200px"]}
                     fontSize={["14px", "16px"]}
                     type="submit"
@@ -362,6 +370,7 @@ export default function FormUsuario() {
                     VOLTAR
                   </Button>
                   <Button
+                    data-cy="salvar"
                     width={["150px", "200px"]}
                     fontSize={["14px", "16px"]}
                     type="submit"

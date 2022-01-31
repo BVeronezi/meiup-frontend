@@ -1,11 +1,21 @@
 {
   "baseUrl": "http://localhost:3000",
   "env": {
+    "urlFront": "http://localhost:3000",
     "apiUrl": "http://localhost:8000/api/v1",
     "codeCoverage" : {
       "url" : " http://localhost:3000/__coverage__ "
-   }
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI3YTllMGYwLWNiYjQtNDY2Mi05ZDIxLWQ2NDhlZTk3YWMzMSIsImlhdCI6MTY0MzYzODgwMywiZXhwIjoxNjQzNjU2ODAzfQ.BAlh8MRNQtT2STkdHvbXLdmduzlZjAX5QP-NzL8iYbg"
   },
   "video": false,
-  "projectId": "y9wabi"
+  "projectId": "y9wabi",
+  "testFiles": [
+    "unauthenticated/paginaInicial.spec.ts",
+    "unauthenticated/sign-up.spec.ts",
+    "unauthenticated/login.spec.ts",
+    "authenticated/dashboard.spec.ts",
+    "authenticated/dados-gerais.spec.ts",
+    "authenticated/usuarios.spec.ts"
+  ]
 }

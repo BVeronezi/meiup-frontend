@@ -10,4 +10,12 @@ describe("Dashboard", () => {
     // Take a snapshot for visual diffing
     cy.percySnapshot();
   });
+
+  it("Realizar a navegação nos menus do sistema", () => {
+    cy.get('a[href*="dados-gerais"]').click();
+    cy.url().should("include", "/dados-gerais");
+
+    cy.get('a[href*="usuarios"]').click();
+    cy.url().should("include", "/usuarios");
+  });
 });
