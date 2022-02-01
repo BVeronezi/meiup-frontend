@@ -17,6 +17,7 @@
     "authenticated/dashboard.spec.ts",
     "authenticated/dados-gerais.spec.ts",
     "authenticated/usuarios.spec.ts",
-    "authenticated/produtos.spec.ts"
+    "authenticated/produtos.spec.ts",
+    "authenticated/servicos.spec.ts"
   ]
 }

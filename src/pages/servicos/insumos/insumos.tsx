@@ -93,7 +93,7 @@ export default function Insumos({ handleLoad }) {
     const { ["meiup.token"]: token } = parseCookies();
 
     const responseProdutos: any = await axios.get(
-      `http://localhost:8000/api/v1//produtos`,
+      `http://localhost:8000/api/v1/produtos`,
       {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit: 10, descricao: value },
@@ -218,18 +218,19 @@ export default function Insumos({ handleLoad }) {
               </Text>
             )}{" "}
           </VStack>
-          {selectData.value && (
+          {selectData?.value ? (
             <Input
               name="quantidade"
               label="Quantidade *"
               error={errors.quantidade}
               {...register("quantidade")}
             ></Input>
-          )}
+          ) : ('')}
         </SimpleGrid>
         <Box alignSelf="flex-end">
           <HStack>
             <Button
+              data-cy="adicionar"
               width="120px"
               fontSize="14px"
               type="submit"
@@ -246,7 +247,7 @@ export default function Insumos({ handleLoad }) {
       <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
         Insumos adicionados no serviço
       </Text>
-      <Table variant="striped" colorScheme="blackAlpha" size="md">
+      <Table id="table-insumos" variant="striped" colorScheme="blackAlpha" size="md">
         <Thead>
           <Tr>
             <Th>Produto</Th>

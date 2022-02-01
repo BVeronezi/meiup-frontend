@@ -25,9 +25,6 @@ import {
 } from "@chakra-ui/react";
 import { Sidebar } from "../../components/Sidebar";
 import { Input } from "../../components/Input";
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import axios from "axios";
 import Insumos from "./insumos/insumos";
 import { RiInformationLine } from "react-icons/ri";
 import { api } from "../../services/apiClient";
@@ -77,8 +74,8 @@ export default function FormServico() {
         const { nome, custo, valor, margemLucro } = response.data.servico;
 
         setValue("nome", nome);
-        setValor(custo * 100);
-        setCusto(valor * 100);
+        setValor(valor * 100);
+        setCusto(custo * 100);
         setMargemLucro(margemLucro * 100);
       }
 
@@ -168,8 +165,14 @@ export default function FormServico() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab fontWeight="bold">Serviço</Tab>
-                  <Tab isDisabled={stateNovoServico} fontWeight="bold">
+                  <Tab data-cy="servico" fontWeight="bold">
+                    Serviço
+                  </Tab>
+                  <Tab
+                    data-cy="insumos"
+                    isDisabled={stateNovoServico}
+                    fontWeight="bold"
+                  >
                     Insumos
                   </Tab>
                 </TabList>
@@ -203,6 +206,7 @@ export default function FormServico() {
                         </FormControl>
                         {!stateNovoServico && (
                           <InputCurrency
+                            id="valor"
                             isLoading={isLoading}
                             name="valor"
                             label="Valor"
@@ -223,6 +227,7 @@ export default function FormServico() {
                           w="100%"
                         >
                           <InputCurrency
+                            id="custo"
                             isLoading={isLoading}
                             name="custo"
                             label="Custo"
@@ -235,6 +240,7 @@ export default function FormServico() {
                             }}
                           ></InputCurrency>
                           <InputCurrency
+                            id="margemLucro"
                             isDisabled={true}
                             isLoading={isLoading}
                             name="margemLucro"
@@ -260,6 +266,7 @@ export default function FormServico() {
             <Box>
               <HStack spacing="24px" mt="10px" justify="flex-end">
                 <Button
+                  data-cy="voltar"
                   width={["150px", "200px"]}
                   type="submit"
                   color="white"
@@ -274,6 +281,7 @@ export default function FormServico() {
                 </Button>
 
                 <Button
+                  data-cy="salvar"
                   width={["150px", "200px"]}
                   fontSize={["14px", "16px"]}
                   type="submit"
