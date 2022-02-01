@@ -123,7 +123,7 @@ export default function FormCategoria() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab fontWeight="bold">Categoria</Tab>
+                  <Tab data-cy="categoria" fontWeight="bold">Categoria</Tab>
                 </TabList>
 
                 <TabPanels>
@@ -154,6 +154,7 @@ export default function FormCategoria() {
             <Box>
               <HStack spacing="24px" mt="10px" justify="flex-end">
                 <Button
+                  data-cy="voltar"
                   width={["150px", "200px"]}
                   type="submit"
                   color="white"
@@ -168,6 +169,7 @@ export default function FormCategoria() {
                 </Button>
 
                 <Button
+                  data-cy="salvar"
                   width={["150px", "200px"]}
                   fontSize={["14px", "16px"]}
                   type="submit"
