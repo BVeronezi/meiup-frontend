@@ -48,7 +48,7 @@ describe("Usuários", () => {
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
   });
 
-  it("Realiza cadadstro de usuário com o mesmo e-mail, deve apresentar mensagem de erro", () => {
+  it("Realiza cadastro de usuário com o mesmo e-mail, deve apresentar mensagem de erro", () => {
     cy.visit("/usuarios/form");
     cy.get(`[data-cy="dados-basicos"]`).should("be.visible");
 

@@ -16,6 +16,7 @@
     "unauthenticated/login.spec.ts",
     "authenticated/dashboard.spec.ts",
     "authenticated/dados-gerais.spec.ts",
-    "authenticated/usuarios.spec.ts"
+    "authenticated/usuarios.spec.ts",
+    "authenticated/produtos.spec.ts"
   ]
 }

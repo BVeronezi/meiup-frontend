@@ -10,6 +10,7 @@ export function Pesquisa({ handleChange }) {
         children={<SearchIcon color="gray.300" />}
       />
       <Input
+        id="pesquisa"
         size="sm"
         type="tel"
         placeholder="Pesquisar"

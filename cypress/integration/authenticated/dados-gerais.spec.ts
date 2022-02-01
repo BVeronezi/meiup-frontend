@@ -12,6 +12,8 @@ describe("Dados gerais", () => {
   });
 
   it("Deve carregar os dados da empresa ao informar CNPJ válido", () => {
+    // esperar API carregar os dados
+    cy.wait(3000);
     cy.get(`#cnpj`).clear();
     cy.get(`#cnpj`).type("00154193000135");
 

@@ -10,6 +10,7 @@ import {
 import NumberFormat from "react-number-format";
 import { Input } from "../Input";
 interface InputProps extends ChakraInputProps {
+  id?: string;
   name?: string;
   label?: string;
   value?: any;
@@ -20,6 +21,7 @@ interface InputProps extends ChakraInputProps {
 }
 
 const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = ({
+  id,
   name,
   label,
   error = null,
@@ -38,6 +40,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = ({
       )}
       <Skeleton isLoaded={!isLoading}>
         <NumberFormat
+          id={id}
           value={value}
           customInput={Input}
           format={currencyFormatter}

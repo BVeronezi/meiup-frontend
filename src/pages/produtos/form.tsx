@@ -262,9 +262,15 @@ export default function FormProduto() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab fontWeight="bold">Produto</Tab>
-                  <Tab fontWeight="bold">Estoque</Tab>
-                  <Tab fontWeight="bold">Preços</Tab>
+                  <Tab data-cy="produto" fontWeight="bold">
+                    Produto
+                  </Tab>
+                  <Tab data-cy="estoque" fontWeight="bold">
+                    Estoque
+                  </Tab>
+                  <Tab data-cy="precos" fontWeight="bold">
+                    Preços
+                  </Tab>
                 </TabList>
 
                 <TabPanels>
@@ -386,6 +392,7 @@ export default function FormProduto() {
                         w="100%"
                       >
                         <InputCurrency
+                          id="precoVendaVarejo"
                           isLoading={isLoading}
                           name="precoVendaVarejo"
                           label="Preço de venda varejo"
@@ -399,6 +406,7 @@ export default function FormProduto() {
                         ></InputCurrency>
 
                         <InputCurrency
+                          id="precoVendaAtacado"
                           isLoading={isLoading}
                           name="precoVendaAtacado"
                           label="Preço de venda atacado"
@@ -415,6 +423,7 @@ export default function FormProduto() {
                         w="100%"
                       >
                         <InputCurrency
+                          id="precoCompra"
                           isLoading={isLoading}
                           name="precoCompra"
                           label="Preço de compra"
@@ -425,6 +434,7 @@ export default function FormProduto() {
                           onValueChange={(v) => setPrecoCompra(v.floatValue)}
                         ></InputCurrency>
                         <InputCurrency
+                          id="margemLucro"
                           isDisabled={true}
                           isLoading={isLoading}
                           name="margemLucro"
@@ -442,6 +452,7 @@ export default function FormProduto() {
             <Box>
               <HStack spacing="24px" mt="10px" justify="flex-end">
                 <Button
+                  data-cy="voltar"
                   width={["150px", "200px"]}
                   type="submit"
                   color="white"
@@ -456,6 +467,7 @@ export default function FormProduto() {
                 </Button>
 
                 <Button
+                  data-cy="salvar"
                   width={["150px", "200px"]}
                   fontSize={["14px", "16px"]}
                   type="submit"
