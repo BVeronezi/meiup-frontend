@@ -19,6 +19,8 @@
     "authenticated/usuarios.spec.ts",
     "authenticated/produtos.spec.ts",
     "authenticated/servicos.spec.ts",
-    "authenticated/categorias.spec.ts"
+    "authenticated/categorias.spec.ts",
+    "authenticated/clientes.spec.ts",
+    "authenticated/vendas.spec.ts"
   ]
 }

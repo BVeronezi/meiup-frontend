@@ -36,14 +36,7 @@ describe("Usuários", () => {
     cy.get('[data-cy="exibirSenha"]').should("be.visible").click();
     cy.get('[data-cy="exibirSenha"]').should("be.visible").click();
 
-    cy.get(`[data-cy="endereco"]`).should("be.visible").click();
-    cy.get(`#cep`).should("be.visible").type("31330670");
-    cy.get(`#endereco`).should("be.visible");
-    cy.get(`#numero`).should("be.visible").type("12345");
-    cy.get(`#bairro`).should("be.visible");
-    cy.get(`#cidade`).should("be.visible");
-    cy.get(`#estado`).should("be.visible");
-    cy.get(`#complemento`).should("be.visible").type("Apto 123");
+    cy.endereco();
 
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
   });
@@ -76,11 +69,12 @@ describe("Usuários", () => {
   it("Realiza a edição o usuário", () => {
     cy.visit("/usuarios");
 
-    cy.get('[data-cy="nome-usuario"]')
+    cy.get(`#pesquisa`).should("be.visible").type("Teste cypress");
+    cy.get("table")
       .should("be.visible")
-      .contains("Teste cypress")
-      .get(`[aria-label="Editar usuário"]`)
-      .click();
+      .contains("td", "Teste cypress");
+    cy.wait(3000);
+    cy.get(`[aria-label="Editar usuário"]`).should("be.visible").click();
 
     cy.get(`#nome`).should("have.value", "Teste cypress");
     cy.get(`#email`)
@@ -104,18 +98,12 @@ describe("Usuários", () => {
   it("Realiza a exclusão do usuário", () => {
     cy.visit("/usuarios");
 
-    cy.get('[data-cy="nome-usuario"]')
+    cy.get(`#pesquisa`).should("be.visible").type("Teste cypress");
+    cy.get("table")
       .should("be.visible")
-      .contains("Teste cypress 2")
-      .get(`[aria-label="Excluir usuário"]`)
-      .click();
-    cy.get('[data-test-id="cancelar"]').should("be.visible").click();
-
-    cy.get('[data-cy="nome-usuario"]')
-      .should("be.visible")
-      .contains("Teste cypress 2")
-      .get(`[aria-label="Excluir usuário"]`)
-      .click();
+      .contains("td", "Teste cypress");
+    cy.wait(3000);
+    cy.get(`[aria-label="Excluir usuário"]`).should("be.visible").click();
     cy.get('[data-test-id="remover"]').should("be.visible").click();
 
     cy.get(".chakra-toast > .chakra-toast__inner")

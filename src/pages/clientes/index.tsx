@@ -203,7 +203,7 @@ export default function Clientes() {
                                         handlePrefetcCliente(cliente.id)
                                       }
                                     >
-                                      <Text fontWeight="bold">
+                                      <Text data-cy="nome-cliente" fontWeight="bold">
                                         {cliente.nome}
                                       </Text>
                                     </Link>
