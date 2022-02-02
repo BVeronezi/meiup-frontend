@@ -138,7 +138,6 @@ export default function ServicoVenda({
   }
 
   const adicionarServico: SubmitHandler<FormData> = async (values) => {
-    debugger;
     handleLoad(true);
 
     if (!selectData.value) {

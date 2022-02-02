@@ -85,7 +85,10 @@ describe("Produtos", () => {
       .should("be.visible")
       .contains("td", "Teste produto cypress");
     cy.wait(3000);
-    cy.get(`[aria-label="Editar produto"]`).should("be.visible").click();
+    cy.get(`[aria-label="Editar produto"]`)
+      .should("be.visible")
+      .first()
+      .click();
 
     cy.get(`[data-cy="precos"]`).should("be.visible").click();
 
@@ -116,8 +119,11 @@ describe("Produtos", () => {
       .should("be.visible")
       .contains("td", "Teste produto cypress");
     cy.wait(3000);
-    cy.get(`[aria-label="Excluir produto"]`).should("be.visible").click();
-    cy.get('[data-test-id="remover"]').should("be.visible").click();
+    cy.get(`[aria-label="Excluir produto"]`)
+      .should("be.visible")
+      .first()
+      .click();
+    cy.get('[data-test-id="remover"]').should("be.visible").first().click();
 
     cy.get(".chakra-toast > .chakra-toast__inner")
       .should("be.visible")

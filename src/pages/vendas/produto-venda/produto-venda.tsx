@@ -57,7 +57,6 @@ export default function ProdutoVenda({
 }) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
-  const [idProdutoVenda, setIdProdutoVenda] = useState();
   const [addProduto, setAddProduto] = useState(true);
   const [precoUnitario, setPrecoUnitario] = useState(0);
   const [outrasDespesas, setOutrasDespesas] = useState(0);
@@ -179,7 +178,6 @@ export default function ProdutoVenda({
     setOutrasDespesas(0);
     setDesconto(0);
     setValorTotal(0);
-    setIdProdutoVenda(null);
     setselectData(produto);
     setAddProduto(true);
     calculaTotal();
@@ -195,7 +193,6 @@ export default function ProdutoVenda({
     setOutrasDespesas(produtoVenda.outrasDespesas * 100);
     setDesconto(produtoVenda.desconto * 100);
     setValorTotal(produtoVenda.valorTotal * 100);
-    setIdProdutoVenda(produtoVenda.id);
   };
 
   const adicionarProduto: SubmitHandler<FormData> = async (values) => {
@@ -205,6 +202,17 @@ export default function ProdutoVenda({
       setAddProduto(false);
       handleLoad(false);
       return false;
+    }
+
+    if (!valorTotal) {
+      toast({
+        title: "Informar valor do produto!",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+      handleLoad(false);
+      return;
     }
 
     if (selectData.value) {
@@ -307,6 +315,7 @@ export default function ProdutoVenda({
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <InputCurrency
+            id="precoUnitario"
             isDisabled={true}
             isLoading={isLoading}
             name="precoUnitario"
@@ -320,6 +329,7 @@ export default function ProdutoVenda({
           ></InputCurrency>
 
           <InputCurrency
+            id="outrasDespesas"
             isDisabled={statusVenda !== 0}
             isLoading={isLoading}
             name="outrasDespesas"
@@ -335,6 +345,7 @@ export default function ProdutoVenda({
         </SimpleGrid>
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <InputCurrency
+            id="desconto"
             isDisabled={statusVenda !== 0}
             isLoading={isLoading}
             name="desconto"
@@ -349,6 +360,7 @@ export default function ProdutoVenda({
           ></InputCurrency>
 
           <InputCurrency
+            id="valorTotal"
             isDisabled={true}
             isLoading={isLoading}
             name="valorTotal"
@@ -365,6 +377,7 @@ export default function ProdutoVenda({
           <Box alignSelf="flex-end">
             <HStack>
               <Button
+                data-cy="adicionar-produto"
                 width="120px"
                 fontSize="14px"
                 type="submit"
@@ -372,7 +385,7 @@ export default function ProdutoVenda({
                 backgroundColor="yellow.500"
                 onClick={handleSubmit(adicionarProduto)}
               >
-                {idProdutoVenda ? "ATUALIZAR" : "ADICIONAR"}
+                ADICIONAR
               </Button>
             </HStack>
           </Box>
@@ -388,7 +401,12 @@ export default function ProdutoVenda({
         </Flex>
       ) : (
         <Box>
-          <Table variant="striped" colorScheme="blackAlpha" size="md">
+          <Table
+            id="table-produtos"
+            variant="striped"
+            colorScheme="blackAlpha"
+            size="md"
+          >
             <Thead>
               <Tr>
                 <Th>Descrição</Th>

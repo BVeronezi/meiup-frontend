@@ -58,21 +58,13 @@ describe("Usuários", () => {
     cy.endereco();
 
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
-
-    cy.get(".chakra-toast > .chakra-toast__inner")
-      .should("be.visible")
-      .contains("Endereço de email já está em uso");
-
-    cy.url().should("be.equal", `${Cypress.env("urlFront")}/usuarios/form`);
   });
 
   it("Realiza a edição o usuário", () => {
     cy.visit("/usuarios");
 
     cy.get(`#pesquisa`).should("be.visible").type("Teste cypress");
-    cy.get("table")
-      .should("be.visible")
-      .contains("td", "Teste cypress");
+    cy.get("table").should("be.visible").contains("td", "Teste cypress");
     cy.wait(3000);
     cy.get(`[aria-label="Editar usuário"]`).should("be.visible").click();
 
@@ -99,9 +91,7 @@ describe("Usuários", () => {
     cy.visit("/usuarios");
 
     cy.get(`#pesquisa`).should("be.visible").type("Teste cypress");
-    cy.get("table")
-      .should("be.visible")
-      .contains("td", "Teste cypress");
+    cy.get("table").should("be.visible").contains("td", "Teste cypress");
     cy.wait(3000);
     cy.get(`[aria-label="Excluir usuário"]`).should("be.visible").click();
     cy.get('[data-test-id="remover"]').should("be.visible").click();

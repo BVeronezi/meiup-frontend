@@ -41,6 +41,7 @@ import { Sidebar } from "../../components/Sidebar";
 import ServicoVenda from "./servico-venda/servico-venda";
 import { LoadPage } from "../../components/Load";
 import { withSSRAuth } from "../../utils/withSSRAuth";
+import { InputCurrency } from "../../components/InputCurrency";
 registerLocale("pt", pt);
 
 type FormData = {
@@ -79,6 +80,10 @@ export default function FormVendas() {
   const { user } = useContext(AuthContext);
   const vendaId: any = Object.keys(router.query)[0];
 
+  const [pagamento, setPagamento] = useState(0);
+  const [troco, setTroco] = useState(0);
+  const [valorTotal, setValorTotal] = useState(0);
+
   const { register, handleSubmit, formState, setValue, getValues } = useForm({
     resolver: yupResolver(vendaFormSchema),
   });
@@ -109,9 +114,10 @@ export default function FormVendas() {
         setValue("email", cliente.email);
         setValue("celular", cliente.celular);
         setValue("telefone", cliente.telefone);
-        setValue("pagamento", pagamento ? parseFloat(pagamento) : 0);
-        setValue("troco", troco ? parseFloat(troco) : 0);
-        setValue("valorTotal", valorTotal ? parseFloat(valorTotal) : 0);
+
+        setPagamento(pagamento * 100);
+        setTroco(troco * 100);
+        setValorTotal(valorTotal * 100);
       }
 
       setIsLoading(false);
@@ -162,9 +168,9 @@ export default function FormVendas() {
       email: values.email,
       celular: values.celular,
       telefone: values.telefone,
-      pagamento: values.pagamento,
-      troco: values.troco,
-      valorTotal: values.valorTotal,
+      pagamento: pagamento / 100,
+      troco: troco / 100,
+      valorTotal: valorTotal / 100,
     };
 
     try {
@@ -204,12 +210,31 @@ export default function FormVendas() {
   };
 
   async function finalizaVenda() {
-    const pagamento = parseFloat(getValues("pagamento"));
-    const valorTotal = parseFloat(getValues("valorTotal"));
-
     if (pagamento < valorTotal) {
       toast({
         title: "Valor do pagamento menor que o valor da venda!",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
+    if (!pagamento) {
+      toast({
+        title: "Necessário informar pagamento para finalizar a venda!",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
+    if (!valorTotal) {
+      toast({
+        title: "Venda sem valor!",
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -252,18 +277,14 @@ export default function FormVendas() {
   };
 
   const calculaTroco = () => {
-    const pagamento = getValues("pagamento");
-    const valorTotal = getValues("valorTotal");
-
     let troco =
-      (valorTotal ? parseFloat(valorTotal) : 0) -
-      (pagamento ? parseFloat(pagamento) : 0);
+      (valorTotal ? valorTotal / 100 : 0) - (pagamento ? pagamento / 100 : 0);
 
-    setValue("troco", troco);
+    setTroco(troco * 100);
   };
 
   const handleValorVenda = (value) => {
-    setValue("valorTotal", value);
+    setValorTotal(value * 100);
   };
 
   return (
@@ -288,14 +309,28 @@ export default function FormVendas() {
                 onChange={handleTabsChange}
               >
                 <TabList overflowX="auto">
-                  <Tab fontWeight="bold">Dados básicos</Tab>
-                  <Tab fontWeight="bold" isDisabled={stateNovaVenda}>
+                  <Tab data-cy="dados-basicos" fontWeight="bold">
+                    Dados básicos
+                  </Tab>
+                  <Tab
+                    data-cy="produtos"
+                    fontWeight="bold"
+                    isDisabled={stateNovaVenda}
+                  >
                     Produtos
                   </Tab>
-                  <Tab fontWeight="bold" isDisabled={stateNovaVenda}>
+                  <Tab
+                    data-cy="servicos"
+                    fontWeight="bold"
+                    isDisabled={stateNovaVenda}
+                  >
                     Serviços
                   </Tab>
-                  <Tab fontWeight="bold" isDisabled={stateNovaVenda}>
+                  <Tab
+                    data-cy="pagamento"
+                    fontWeight="bold"
+                    isDisabled={stateNovaVenda}
+                  >
                     Pagamento
                   </Tab>
                 </TabList>
@@ -319,7 +354,7 @@ export default function FormVendas() {
                       >
                         <HStack alignSelf="normal">
                           <Text fontWeight="bold">Vendedor(a):</Text>
-                          <Text>{user?.nome}</Text>
+                          <Text data-cy="nome-vendedor">{user?.nome}</Text>
                         </HStack>
                         <Box>
                           <VStack align="left" spacing="4">
@@ -428,7 +463,8 @@ export default function FormVendas() {
                         spacing={["6", "8"]}
                         w="100%"
                       >
-                        <Input
+                        <InputCurrency
+                          id="pagamento"
                           isDisabled={venda.status !== 0}
                           isLoading={isLoading}
                           name="pagamento"
@@ -436,30 +472,44 @@ export default function FormVendas() {
                           error={errors.pagamento}
                           {...register("pagamento")}
                           onBlur={calculaTroco}
-                        ></Input>
+                          value={pagamento}
+                          onValueChange={(v) => {
+                            setPagamento(v.floatValue);
+                          }}
+                        ></InputCurrency>
 
-                        <Input
+                        <InputCurrency
+                          id="troco"
                           isReadOnly
                           isLoading={isLoading}
                           name="troco"
                           label="Troco"
                           error={errors.troco}
                           {...register("troco")}
-                        ></Input>
+                          value={troco}
+                          onValueChange={(v) => {
+                            setTroco(v.floatValue);
+                          }}
+                        ></InputCurrency>
                       </SimpleGrid>
                       <SimpleGrid
                         minChildWidth="240px"
                         spacing={["6", "8"]}
                         w="100%"
                       >
-                        <Input
+                        <InputCurrency
+                          id="valorTotalVenda"
                           isReadOnly
                           isLoading={isLoading}
                           name="valorTotal"
                           label="Valor total"
                           error={errors.valorTotal}
                           {...register("valorTotal")}
-                        ></Input>
+                          value={valorTotal}
+                          onValueChange={(v) => {
+                            setValorTotal(v.floatValue);
+                          }}
+                        ></InputCurrency>
                         <Box></Box>
                       </SimpleGrid>
                     </VStack>
@@ -470,6 +520,7 @@ export default function FormVendas() {
             <Box>
               <HStack spacing="24px" mt="10px" justify="flex-end">
                 <Button
+                  data-cy="voltar"
                   width={["150px", "200px"]}
                   type="submit"
                   color="white"
@@ -485,6 +536,7 @@ export default function FormVendas() {
 
                 {venda.status === 0 && (
                   <Button
+                    data-cy="salvar"
                     width={["150px", "200px"]}
                     fontSize={["14px", "16px"]}
                     type="submit"
@@ -498,6 +550,7 @@ export default function FormVendas() {
 
                 {!stateNovaVenda && venda.status === 0 && (
                   <Button
+                    data-cy="finalizar"
                     width={["150px", "200px"]}
                     fontSize={["14px", "16px"]}
                     type="submit"

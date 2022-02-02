@@ -1,6 +1,6 @@
 declare namespace Cypress {
   interface Chainable {
-    login(): Chainable<Element>;
-    endereco(): Chainable<Element>;
+    login(): () => void;
+    endereco(): () => void;
   }
 }

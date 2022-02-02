@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { theme as customTheme } from "../../../styles/theme";
-import { useEffect, useRef, useState } from "react";
+import { MutableRefObject, useEffect, useRef, useState } from "react";
 import AsyncSelect from "react-select/async";
 import { SubmitHandler, useForm } from "react-hook-form";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -55,7 +55,6 @@ export default function ServicoVenda({
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
   const [stateServico, setStateServico] = useState("");
-  const [idServicoVenda, setIdServicoVenda] = useState();
   const [valorServico, setValorServico] = useState(0);
   const [outrasDespesas, setOutrasDespesas] = useState(0);
   const [desconto, setDesconto] = useState(0);
@@ -138,7 +137,6 @@ export default function ServicoVenda({
   }
 
   const adicionarServico: SubmitHandler<FormData> = async (values) => {
-    debugger;
     handleLoad(true);
 
     if (!selectData.value) {
@@ -152,36 +150,50 @@ export default function ServicoVenda({
       return false;
     }
 
-    const params = {
-      servico: selectData.value,
-      valorServico: valorServico / 100,
-      outrasDespesas: outrasDespesas / 100,
-      desconto: desconto / 100,
-      valorTotal: valorTotal / 100,
-    };
-
-    const result = await api.post(`/vendas/servicosVenda/${vendaId}`, params);
-
-    if (!result.data?.servicoVenda) {
+    if (!valorTotal) {
       toast({
-        title: "Serviço atualizado com sucesso!",
-        status: "success",
+        title: "Informar valor do serviço!",
+        status: "error",
         duration: 2000,
         isClosable: true,
       });
-    } else {
-      toast({
-        title: "Serviço adicionado com sucesso!",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-      });
+      handleLoad(false);
+      return;
     }
 
-    handleValorVenda(result.data?.valorVenda);
+    if (selectData.value) {
+      const params = {
+        servico: selectData.value,
+        valorServico: valorServico / 100,
+        outrasDespesas: outrasDespesas / 100,
+        desconto: desconto / 100,
+        valorTotal: valorTotal / 100,
+      };
 
-    resetInputs();
-    setRefreshKey((oldKey) => oldKey + 1);
+      const result = await api.post(`/vendas/servicosVenda/${vendaId}`, params);
+
+      if (!result.data?.servicoVenda) {
+        toast({
+          title: "Serviço atualizado com sucesso!",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: "Serviço adicionado com sucesso!",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+
+      handleValorVenda(result.data?.valorVenda);
+
+      resetInputs();
+      setRefreshKey((oldKey) => oldKey + 1);
+    }
+
     handleLoad(false);
   };
 
@@ -202,7 +214,6 @@ export default function ServicoVenda({
     setOutrasDespesas(servicoVenda.outrasDespesas * 100);
     setDesconto(servicoVenda.desconto * 100);
     setValorTotal(servicoVenda.valorTotal * 100);
-    setIdServicoVenda(servicoVenda.id);
   };
 
   async function excluirServico(servicoVenda) {
@@ -244,7 +255,6 @@ export default function ServicoVenda({
     setOutrasDespesas(0);
     setDesconto(0);
     setValorTotal(0);
-    setIdServicoVenda(null);
     setAddServico(true);
     calculaTotal();
   };
@@ -256,6 +266,8 @@ export default function ServicoVenda({
       total -= desconto ? desconto / 100 : 0;
 
       setValorTotal(total * 100);
+
+      return;
     }
   };
 
@@ -287,6 +299,7 @@ export default function ServicoVenda({
           </VStack>
           <Stack>
             <InputCurrency
+              id="valorServico"
               isDisabled={statusVenda !== 0}
               isLoading={isLoading}
               name="valorServico"
@@ -309,6 +322,7 @@ export default function ServicoVenda({
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <InputCurrency
+            id="outrasDespesasServicos"
             isDisabled={statusVenda !== 0}
             isLoading={isLoading}
             name="outrasDespesas"
@@ -321,6 +335,7 @@ export default function ServicoVenda({
             }}
           ></InputCurrency>
           <InputCurrency
+            id="descontoServicos"
             isDisabled={statusVenda !== 0}
             isLoading={isLoading}
             name="desconto"
@@ -336,6 +351,7 @@ export default function ServicoVenda({
         </SimpleGrid>
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
           <InputCurrency
+            id="valorTotalServicos"
             isDisabled={statusVenda !== 0}
             isLoading={isLoading}
             name="valorTotal"
@@ -352,6 +368,7 @@ export default function ServicoVenda({
           <Box alignSelf="flex-end">
             <HStack>
               <Button
+                data-cy="adicionar-servico"
                 width="120px"
                 fontSize="14px"
                 type="submit"
@@ -359,7 +376,7 @@ export default function ServicoVenda({
                 backgroundColor="yellow.500"
                 onClick={handleSubmit(adicionarServico)}
               >
-                {idServicoVenda ? "ATUALIZAR" : "ADICIONAR"}
+                ADICIONAR
               </Button>
             </HStack>
           </Box>
@@ -375,7 +392,12 @@ export default function ServicoVenda({
         </Flex>
       ) : (
         <Box>
-          <Table variant="striped" colorScheme="blackAlpha" size="md">
+          <Table
+            id="table-servicos"
+            variant="striped"
+            colorScheme="blackAlpha"
+            size="md"
+          >
             <Thead>
               <Tr>
                 <Th>Nome</Th>
