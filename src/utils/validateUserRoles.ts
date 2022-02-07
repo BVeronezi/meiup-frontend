@@ -1,25 +1,22 @@
-
 type User = {
-    roles: string[];
-}
+  tipo: string[];
+};
 
 type validateUserRolesParams = {
-    user: User;
-    roles?: string[];
-}
+  user: User;
+  tipo?: string[];
+};
 
-export function validateUserRoles({ user, roles}: validateUserRolesParams) {
+export function validateUserRoles({ user, tipo }: validateUserRolesParams) {
+  if (tipo?.length) {
+    const hasAllRoles = roles.some((tipo) => {
+      return user.roles.includes(tipo);
+    });
 
-    if (roles?.length) {
-        const hasAllRoles = roles.some(role => {
-            return user.roles.includes(role);
-        });
-
-        if (!hasAllRoles) {
-            return false;
-        }
+    if (!hasAllRoles) {
+      return false;
     }
+  }
 
-    return true;
-
+  return true;
 }

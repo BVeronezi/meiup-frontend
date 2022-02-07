@@ -90,7 +90,7 @@ export const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                     {user?.nome || user?.email}
                   </Text>
                   <Text fontSize="xs" color="white">
-                    {user?.role}
+                    {user?.tipo}
                   </Text>
                 </VStack>
                 <Box display={{ base: "none", md: "flex" }}>

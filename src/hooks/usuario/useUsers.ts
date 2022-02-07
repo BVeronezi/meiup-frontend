@@ -20,13 +20,12 @@ export async function getUsuarios(
   valuePesquisa?
 ): Promise<GetUserResponse> {
   const { ["meiup.token"]: token } = parseCookies(ctx);
-  const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
   const response: any = await axios.get(
     `http://localhost:8000/api/v1/usuario`,
     {
       headers: { Authorization: `Bearer ${token}` },
-      params: { page, empresa, nome: valuePesquisa },
+      params: { page, nome: valuePesquisa },
     }
   );
 
@@ -35,7 +34,7 @@ export async function getUsuarios(
       id: user.id,
       nome: user.nome,
       email: user.email,
-      perfil: user.role,
+      perfil: user.tipo,
       createdAt: new Date(user.dataCriacao).toLocaleDateString("pt-BR", {
         day: "2-digit",
         month: "numeric",

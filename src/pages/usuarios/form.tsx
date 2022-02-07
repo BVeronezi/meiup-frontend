@@ -44,7 +44,7 @@ import { LoadPage } from "../../components/Load";
 type FormData = {
   nome: string;
   email: string;
-  role: string;
+  tipo: string;
   senha: string;
   telefone: number;
   celular: number;
@@ -61,7 +61,7 @@ const usuarioFormSchema = yup.object().shape({
   nome: yup.string().required("Nome obrigatório"),
   email: yup.string().required("E-mail obrigatório").email("E-mail inválido"),
   senha: yup.string(),
-  role: yup.string().required("Perfil obrigatório"),
+  tipo: yup.string().required("Perfil obrigatório"),
   cep: yup.number(),
   endereco: yup.string(),
   estado: yup.string(),
@@ -169,7 +169,7 @@ export default function FormUsuario() {
   const handleUsuario: SubmitHandler<FormData> = async (values) => {
     const data = {
       nome: values.nome,
-      role: values.role,
+      tipo: values.tipo,
       email: values.email,
       senha: values.senha,
       telefone: values.telefone,
@@ -294,9 +294,9 @@ export default function FormUsuario() {
                           <Skeleton isLoaded={!isLoading}>
                             <Select
                               data-cy="perfil"
-                              {...register("role")}
+                              {...register("tipo")}
                               variant="flushed"
-                              error={errors.role}
+                              error={errors.tipo}
                               borderBottomColor="gray.400"
                               focusBorderColor="yellow.500"
                               size="lg"
