@@ -52,7 +52,7 @@ type FormData = {
   celular: string;
   telefone: string;
   pagamento: string;
-  troco: string;
+  valorTroco: string;
   valorTotal: string;
 };
 
@@ -63,7 +63,7 @@ const vendaFormSchema = yup.object().shape({
   celular: yup.string(),
   telefone: yup.string(),
   pagamento: yup.string(),
-  troco: yup.string(),
+  valorTroco: yup.string(),
   valorTotal: yup.string(),
 });
 
@@ -104,7 +104,7 @@ export default function FormVendas() {
       if (vendaId) {
         const response: any = await api.get(`/vendas/${vendaId}`);
         setVenda((venda) => ({ ...venda, ...response.data.venda }));
-        const { dataVenda, cliente, valorTotal, pagamento, troco } =
+        const { dataVenda, cliente, valorTotal, pagamento, valorTroco } =
           response.data.venda;
         setDate(moment(dataVenda).toDate());
         const clienteOption: any = [response.data.venda.cliente].map((p) => {
@@ -116,7 +116,7 @@ export default function FormVendas() {
         setValue("telefone", cliente.telefone);
 
         setPagamento(pagamento * 100);
-        setTroco(troco * 100);
+        setTroco(valorTroco * 100);
         setValorTotal(valorTotal * 100);
       }
 
@@ -169,7 +169,7 @@ export default function FormVendas() {
       celular: values.celular,
       telefone: values.telefone,
       pagamento: pagamento / 100,
-      troco: troco / 100,
+      valorTroco: troco / 100,
       valorTotal: valorTotal / 100,
     };
 
