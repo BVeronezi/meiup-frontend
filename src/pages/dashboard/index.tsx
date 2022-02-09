@@ -11,6 +11,7 @@ import { ChartBarDashboard } from "../../components/ChartBar";
 import { ChartLineDashboard } from "../../components/ChartLine";
 import { Sidebar } from "../../components/Sidebar";
 import { withSSRAuth } from "../../utils/withSSRAuth";
+import { PageNotFound } from "../../fragments/404/404";
 
 export default function Dashboard() {
   return (
@@ -20,6 +21,10 @@ export default function Dashboard() {
       </Head>
 
       <Sidebar>
+        <PageNotFound />
+      </Sidebar>
+
+      {/* <Sidebar>
         <SimpleGrid columns={2} spacing={10} flex="1">
           <Box
             p={["6", "8"]}
@@ -93,7 +98,7 @@ export default function Dashboard() {
             <ChartLineDashboard />
           </Box>
         </SimpleGrid>
-      </Sidebar>
+      </Sidebar> */}
     </>
   );
 }
