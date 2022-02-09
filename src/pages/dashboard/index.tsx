@@ -29,7 +29,7 @@ export default function Dashboard() {
             color="white"
             pb="4"
           >
-            <Heading as="h2" size="md">
+            <Heading as="h2" title="estoque" size="md">
               Estoque
             </Heading>
 
@@ -58,7 +58,7 @@ export default function Dashboard() {
             color="white"
             pb="4"
           >
-            <Heading as="h2" size="md">
+            <Heading as="h2" title="vendas" size="md">
               Vendas
             </Heading>
 

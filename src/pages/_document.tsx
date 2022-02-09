@@ -5,7 +5,7 @@ import { theme as customTheme } from "../styles/theme";
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html>
+      <Html lang="pt">
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
@@ -14,6 +14,11 @@ export default class MyDocument extends Document {
           />
 
           <link rel="shortcut icon" href="/favicon.png" type="image/png" />
+
+          <meta
+            name="MEIUP"
+            content="Sistema de gestão para Microempreendedores Individuais"
+          />
         </Head>
         <body>
           <ColorModeScript
