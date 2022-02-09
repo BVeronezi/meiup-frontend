@@ -29,7 +29,7 @@ export function SidebarNav() {
         href="/dashboard"
       />
 
-      {user?.tipo !== "USER" && (
+      {user?.tipo === "MEI" && (
         <>
           <Flex align="center" fontWeight="bold" p="4" mx="4">
             <Text color="gray.500">EMPRESA</Text>
