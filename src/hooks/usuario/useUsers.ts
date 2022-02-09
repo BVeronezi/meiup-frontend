@@ -22,7 +22,7 @@ export async function getUsuarios(
   const { ["meiup.token"]: token } = parseCookies(ctx);
 
   const response: any = await axios.get(
-    `http://localhost:8000/api/v1/usuario`,
+    `https://meiup-api.herokuapp.com/api/v1/usuario`,
     {
       headers: { Authorization: `Bearer ${token}` },
       params: { page, nome: valuePesquisa },

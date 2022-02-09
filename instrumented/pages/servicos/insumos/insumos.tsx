@@ -93,7 +93,7 @@ export default function Insumos({ handleLoad }) {
     const { ["meiup.token"]: token } = parseCookies();
 
     const responseProdutos: any = await axios.get(
-      `http://localhost:8000/api/v1//produtos`,
+      `https://meiup-api.herokuapp.com/api/v1//produtos`,
       {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit: 10, descricao: value },

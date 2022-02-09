@@ -22,7 +22,7 @@ export async function getProdutoServico(
   const { ["meiup.token"]: token } = parseCookies(ctx);
 
   const response: any = await axios.get(
-    `http://localhost:8000/api/v1/produtosServico`,
+    `https://meiup-api.herokuapp.com/api/v1/produtosServico`,
     {
       headers: { Authorization: `Bearer ${token}` },
       params: { servicoId, page, limit: 10 },

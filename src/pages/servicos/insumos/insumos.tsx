@@ -93,7 +93,7 @@ export default function Insumos({ handleLoad }) {
     const { ["meiup.token"]: token } = parseCookies();
 
     const responseProdutos: any = await axios.get(
-      `http://localhost:8000/api/v1/produtos`,
+      `https://meiup-api.herokuapp.com/api/v1/produtos`,
       {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit: 10, descricao: value },
@@ -225,7 +225,9 @@ export default function Insumos({ handleLoad }) {
               error={errors.quantidade}
               {...register("quantidade")}
             ></Input>
-          ) : ('')}
+          ) : (
+            ""
+          )}
         </SimpleGrid>
         <Box alignSelf="flex-end">
           <HStack>
@@ -247,7 +249,12 @@ export default function Insumos({ handleLoad }) {
       <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
         Insumos adicionados no serviço
       </Text>
-      <Table id="table-insumos" variant="striped" colorScheme="blackAlpha" size="md">
+      <Table
+        id="table-insumos"
+        variant="striped"
+        colorScheme="blackAlpha"
+        size="md"
+      >
         <Thead>
           <Tr>
             <Th>Produto</Th>

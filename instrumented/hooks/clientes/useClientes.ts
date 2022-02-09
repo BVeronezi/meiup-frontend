@@ -23,7 +23,7 @@ export async function getClientes(
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
   const response: any = await axios.get(
-    `http://localhost:8000/api/v1/clientes`,
+    `https://meiup-api.herokuapp.com/api/v1/clientes`,
     {
       headers: { Authorization: `Bearer ${token}` },
       params: { page, empresa, nome: valuePesquisa },

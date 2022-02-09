@@ -21,7 +21,7 @@ export async function getCategorias(
   const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
 
   const response: any = await axios.get(
-    `http://localhost:8000/api/v1/categorias`,
+    `https://meiup-api.herokuapp.com/api/v1/categorias`,
     {
       headers: { Authorization: `Bearer ${token}` },
       params: { page, empresa, nome: valuePesquisa },
