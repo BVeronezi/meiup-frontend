@@ -9,8 +9,8 @@ type validateUserRolesParams = {
 
 export function validateUserRoles({ user, tipo }: validateUserRolesParams) {
   if (tipo?.length) {
-    const hasAllRoles = roles.some((tipo) => {
-      return user.roles.includes(tipo);
+    const hasAllRoles = tipo.some((tipo) => {
+      return user.tipo.includes(tipo);
     });
 
     if (!hasAllRoles) {
