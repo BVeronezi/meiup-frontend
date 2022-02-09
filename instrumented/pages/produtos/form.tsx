@@ -88,6 +88,7 @@ export default function FormProduto() {
     { value: "1", label: "Quilograma" },
     { value: "2", label: "Caixa" },
     { value: "3", label: "Fardo" },
+    { value: "4", label: "Bandeja" },
   ];
 
   const INITIAL_DATA = {

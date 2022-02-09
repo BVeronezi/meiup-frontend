@@ -35,8 +35,8 @@ describe("Página de login", () => {
 
   it("Deve conter o botão de entrar e permitir logar no sistema", () => {
     cy.get('input[name="email"]')
-      .type("teste@gmail.com")
-      .should("have.value", "teste@gmail.com");
+      .type("mei@gmail.com")
+      .should("have.value", "mei@gmail.com");
     cy.get('input[name="senha"]').type("123456").should("have.value", "123456");
     cy.contains("Entrar")
       .click()

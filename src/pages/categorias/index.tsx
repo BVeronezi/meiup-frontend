@@ -200,7 +200,6 @@ export default function Categorias() {
                       <Table variant="striped" colorScheme="blackAlpha">
                         <Thead>
                           <Tr>
-                            <Th>Código</Th>
                             <Th>Categoria</Th>
                             <Th width="8">Ações</Th>
                           </Tr>
@@ -219,13 +218,9 @@ export default function Categorias() {
                                         )
                                       }
                                     >
-                                      <Text>{categoria.id}</Text>
+                                      <Text>{categoria.nome}</Text>
                                     </Link>
                                   </Box>
-                                </Td>
-
-                                <Td>
-                                  <Text>{categoria.nome}</Text>
                                 </Td>
 
                                 <Td>

@@ -20,8 +20,8 @@
     "authenticated/servicos.spec.ts",
     "authenticated/categorias.spec.ts",
     "authenticated/clientes.spec.ts",
-    "authenticated/vendas.spec.ts",
     "authenticated/vendas-produto.spec.ts",
-    "authenticated/vendas-servico.spec.ts"
+    "authenticated/vendas-servico.spec.ts",
+    "authenticated/vendas.spec.ts"
   ]
 }

@@ -16,7 +16,7 @@ describe("Serviços", () => {
       .click()
       .then(() => {
         cy.location("pathname").should("eq", "/servicos/form");
-    });
+      });
 
     cy.get(`[data-cy="servico"]`).should("be.visible");
 
@@ -30,40 +30,34 @@ describe("Serviços", () => {
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
 
     cy.get(`[data-cy="insumos"]`).should("not.be.disabled");
-    cy.get(`#valor`)
-          .should("be.visible")
-          .type("4.99")
-          .focus()
-          .blur();
-    cy.get(`#custo`)
-          .should("be.visible")
-          .type("2.00")
-          .focus()
-          .blur();
+    cy.get(`#valor`).should("be.visible").type("4.99").focus().blur();
+    cy.get(`#custo`).should("be.visible").type("2.00").focus().blur();
     cy.get(`#margemLucro`).should("be.visible");
 
     cy.get(`[data-cy="insumos"]`).should("be.visible").click();
 
     cy.get(`#produto`)
       .should("be.visible")
-      .type("Remy Red")
+      .type("Couve")
       .then(() => {
-        cy.contains("Remy Red");
-        cy.wait(2000)
-        cy.get(`#produto`).type("Remy Red{enter}");
-    });
+        cy.contains("Couve");
+        cy.wait(2000);
+        cy.get(`#produto`).type("Couve{enter}");
+      });
 
     cy.get(`#quantidade`).should("be.visible").type("10");
     cy.get(`[data-cy="adicionar"]`).should("be.visible").click();
 
-    cy.get("#table-insumos").should("be.visible").should("be.visible")
-      .contains("td", "Remy Red");
+    cy.get("#table-insumos")
+      .should("be.visible")
+      .should("be.visible")
+      .contains("td", "Couve");
 
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
-    cy.wait(3000)
+    cy.wait(3000);
   });
 
-  it('Realizando edição de insumos do serviço', () => {
+  it("Realizando edição de insumos do serviço", () => {
     cy.get(`#pesquisa`).should("be.visible").type("serviço cypress");
     cy.get("table")
       .should("be.visible")
@@ -73,12 +67,14 @@ describe("Serviços", () => {
 
     cy.get(`[data-cy="insumos"]`).should("be.visible").click();
 
-    cy.get("#table-insumos").should("be.visible").should("be.visible")
-      .contains("td", "Remy Red");
+    cy.get("#table-insumos")
+      .should("be.visible")
+      .should("be.visible")
+      .contains("td", "Couve");
 
     cy.get(`[aria-label="Editar produto"]`).should("be.visible").click();
 
-    cy.get(`#quantidade`).should("be.visible").clear(); 
+    cy.get(`#quantidade`).should("be.visible").clear();
     cy.get(`#quantidade`).should("be.visible").type("15");
     cy.get(`[data-cy="adicionar"]`).should("be.visible").click();
 
@@ -87,7 +83,7 @@ describe("Serviços", () => {
       .contains("Insumo atualizado com sucesso!");
 
     cy.get(`[data-cy="voltar"]`).should("be.visible").click();
-  })
+  });
 
   it("Realiza a edição do serviço", () => {
     cy.visit("/servicos");
@@ -98,14 +94,10 @@ describe("Serviços", () => {
     cy.wait(3000);
     cy.get(`[aria-label="Editar serviço"]`).should("be.visible").click();
 
-    cy.wait(3000);  
+    cy.wait(3000);
     cy.get(`#valor`).clear();
 
-    cy.get(`#valor`)
-      .should("be.visible")
-      .type("4.80")
-      .focus()
-      .blur();
+    cy.get(`#valor`).should("be.visible").type("4.80").focus().blur();
 
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
     cy.get(`#pesquisa`).clear();

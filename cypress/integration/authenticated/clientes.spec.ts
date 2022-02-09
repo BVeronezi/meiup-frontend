@@ -64,7 +64,7 @@ describe("Clientes", () => {
   it("Realiza a exclusão do cliente", () => {
     cy.visit("/clientes");
 
-   cy.get(`#pesquisa`).should("be.visible").type("este cliente cypress 2");
+    cy.get(`#pesquisa`).should("be.visible").type("este cliente cypress 2");
     cy.get("table")
       .should("be.visible")
       .contains("td", "este cliente cypress 2");
@@ -76,5 +76,4 @@ describe("Clientes", () => {
       .should("be.visible")
       .contains("Cliente removido com sucesso");
   });
-
 });

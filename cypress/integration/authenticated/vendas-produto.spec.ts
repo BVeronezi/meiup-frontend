@@ -25,18 +25,18 @@ describe("Vendas Produto", () => {
     cy.get(`[data-cy="nome-vendedor"]`).should("be.visible");
     cy.get(`#cliente`)
       .should("be.visible")
-      .type("Ailsun Pond")
+      .type("Dione")
       .then(() => {
-        cy.contains("Ailsun Pond");
+        cy.contains("Dione");
         cy.wait(2000);
-        cy.get(`#cliente`).type("Ailsun Pond{enter}");
+        cy.get(`#cliente`).type("Dione{enter}");
       });
 
     cy.get(`#email`)
       .should("be.visible")
-      .should("have.value", "apond8@hatena.ne.jp");
-    cy.get(`#celular`).should("be.visible").type("31994411234");
-    cy.get(`#telefone`).should("be.visible").type("3130161234");
+      .should("have.value", "dsoggee0@kickstarter.com");
+    cy.get(`#celular`).should("be.visible");
+    cy.get(`#telefone`).should("be.visible");
 
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
 
@@ -52,11 +52,11 @@ describe("Vendas Produto", () => {
 
     cy.get(`#produto`)
       .should("be.visible")
-      .type("Remy Red")
+      .type("Abacate")
       .then(() => {
-        cy.contains("Remy Red");
+        cy.contains("Abacate");
         cy.wait(2000);
-        cy.get(`#produto`).type("Remy Red{enter}");
+        cy.get(`#produto`).type("Abacate{enter}");
       });
     cy.get(`#precoUnitario`).should("be.visible");
 
@@ -73,7 +73,7 @@ describe("Vendas Produto", () => {
     cy.get(`#desconto`).should("have.value", "");
     cy.get(`#valorTotal`).should("have.value", "");
 
-    cy.get("#table-produtos").should("be.visible").contains("td", "Remy Red");
+    cy.get("#table-produtos").should("be.visible").contains("td", "Abacate");
     cy.wait(3000);
 
     cy.get(`[aria-label="Editar produto"]`).should("be.visible").click();
@@ -85,11 +85,11 @@ describe("Vendas Produto", () => {
 
     cy.get(`#produto`)
       .should("be.visible")
-      .type("Instant Coffee")
+      .type("Couve")
       .then(() => {
-        cy.contains("Instant Coffee");
+        cy.contains("Couve");
         cy.wait(2000);
-        cy.get(`#produto`).type("Instant Coffee{enter}");
+        cy.get(`#produto`).type("Couve{enter}");
       });
     cy.get(`#precoUnitario`).should("be.visible");
 
@@ -104,7 +104,7 @@ describe("Vendas Produto", () => {
 
     cy.get("#table-produtos")
       .should("be.visible")
-      .contains("td", "Instant Coffee")
+      .contains("td", "Couve")
       .then(() => {
         cy.get(`[aria-label="Remover produto"]`)
           .eq(1)

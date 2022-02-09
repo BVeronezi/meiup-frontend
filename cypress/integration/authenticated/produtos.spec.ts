@@ -41,10 +41,10 @@ describe("Produtos", () => {
     cy.get(`#unidade`).should("be.visible").type("Caixa{enter}");
     cy.get(`#categoria`)
       .should("be.visible")
-      .type("Tools")
+      .type("Frutas")
       .then(() => {
-        cy.contains("Tools");
-        cy.get(`#categoria`).type("Tools{enter}");
+        cy.contains("Frutas");
+        cy.get(`#categoria`).type("Frutas{enter}");
       });
 
     cy.get(`[data-cy="estoque"]`).should("be.visible").click();

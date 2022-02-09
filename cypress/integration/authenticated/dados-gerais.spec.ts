@@ -15,12 +15,12 @@ describe("Dados gerais", () => {
     // esperar API carregar os dados
     cy.wait(3000);
     cy.get(`#cnpj`).clear();
-    cy.get(`#cnpj`).type("00154193000135");
+    cy.get(`#cnpj`).type("01067075000152");
 
-    cy.get(`#cnpj`).should("have.value", "00154193000135");
+    cy.get(`#cnpj`).should("have.value", "01067075000152");
     cy.get(`#razaoSocial`).should(
       "have.value",
-      "TAS COMERCIO DE TERRAPLANAGEM LTDA"
+      "ORGANIZACOES HORTI FRUTI BH LTDA"
     );
   });
 
@@ -31,7 +31,7 @@ describe("Dados gerais", () => {
   it("Realizr atualização dos dados da empresa", () => {
     cy.get(`[data-cy="info-empresa"]`).should("be.visible").click();
     cy.get(`#email`).should("be.visible").clear();
-    cy.get(`#email`).should("be.visible").type("tas2@hotmail.com");
+    cy.get(`#email`).should("be.visible").type("hortifrutiteste@hotmail.com");
 
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
 

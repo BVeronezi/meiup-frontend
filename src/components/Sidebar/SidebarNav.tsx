@@ -17,7 +17,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { NavItem } from "./NavItem";
 
 export function SidebarNav() {
-  const { signOut } = useContext(AuthContext);
+  const { user, signOut } = useContext(AuthContext);
 
   return (
     <>
@@ -29,16 +29,20 @@ export function SidebarNav() {
         href="/dashboard"
       />
 
-      <Flex align="center" fontWeight="bold" p="4" mx="4">
-        <Text color="gray.500">EMPRESA</Text>
-      </Flex>
+      {user?.tipo !== "USER" && (
+        <>
+          <Flex align="center" fontWeight="bold" p="4" mx="4">
+            <Text color="gray.500">EMPRESA</Text>
+          </Flex>
 
-      <NavItem
-        icon={RiBuilding4Line}
-        children="Dados gerais"
-        href="/dados-gerais"
-      />
-      <NavItem icon={RiContactsLine} children="Usuários" href="/usuarios" />
+          <NavItem
+            icon={RiBuilding4Line}
+            children="Dados gerais"
+            href="/dados-gerais"
+          />
+          <NavItem icon={RiContactsLine} children="Usuários" href="/usuarios" />
+        </>
+      )}
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500"> CATÁLOGO</Text>

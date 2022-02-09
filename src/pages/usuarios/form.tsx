@@ -48,7 +48,7 @@ type FormData = {
   senha: string;
   telefone: number;
   celular: number;
-  cep: number;
+  cep: string;
   endereco: string;
   estado: string;
   numero: string;
@@ -62,7 +62,7 @@ const usuarioFormSchema = yup.object().shape({
   email: yup.string().required("E-mail obrigatório").email("E-mail inválido"),
   senha: yup.string(),
   tipo: yup.string().required("Perfil obrigatório"),
-  cep: yup.number(),
+  cep: yup.string(),
   endereco: yup.string(),
   estado: yup.string(),
   numero: yup.string(),
