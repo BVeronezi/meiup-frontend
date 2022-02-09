@@ -114,7 +114,8 @@ export default function FormUsuario() {
           `https://api.cnpja.com.br/zip/${cep}`,
           {
             headers: {
-              Authorization: process.env.NEXT_PUBLIC_KEY_CEP,
+              Authorization:
+                "d7756953-d64d-46a3-8a7f-ffb409dd20a0-38e52cca-6626-41e9-950b-f69496b95a0a",
             },
           }
         );
@@ -206,8 +207,12 @@ export default function FormUsuario() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab data-cy="dados-basicos" fontWeight="bold">Dados básicos</Tab>
-                  <Tab data-cy="endereco" fontWeight="bold">Endereço</Tab>
+                  <Tab data-cy="dados-basicos" fontWeight="bold">
+                    Dados básicos
+                  </Tab>
+                  <Tab data-cy="endereco" fontWeight="bold">
+                    Endereço
+                  </Tab>
                 </TabList>
                 <TabPanels>
                   <TabPanel>
