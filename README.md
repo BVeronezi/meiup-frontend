@@ -41,5 +41,3 @@ npm run cypress:run
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) no navegador para ver o resultado
-
-Você pode editar o arquivo pages/index.tsx para desenvolver. A página se atualiza automáticamente conforme você edita.
