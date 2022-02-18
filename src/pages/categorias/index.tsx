@@ -121,11 +121,7 @@ export default function Categorias() {
   async function handlePesquisaCategoria(event) {
     if (event.target.value.length > 3) {
       setIsFetching(true);
-      const categoriasPesquisadas = await getCategorias(
-        1,
-        undefined,
-        event.target.value
-      );
+      const categoriasPesquisadas = await getCategorias(1, event.target.value);
       setValue(categoriasPesquisadas);
       setIsFetching(false);
     } else {
@@ -258,7 +254,7 @@ export default function Categorias() {
 
                       {!isLoadingPage && (
                         <Pagination
-                          totalCountOfRegisters={data.totalCount}
+                          totalCountOfRegisters={data?.totalCount}
                           currentPage={page}
                           onPageChange={setPage}
                         />

@@ -1,6 +1,5 @@
-import axios from "axios";
-import { parseCookies } from "nookies";
 import { useQuery, UseQueryOptions, UseQueryResult } from "react-query";
+import { api } from "../../services/apiClient";
 
 type Servico = {
   id: string;
@@ -17,19 +16,11 @@ type GetServicoResponse = {
 
 export async function getServicos(
   page: number,
-  ctx,
   valuePesquisa?
 ): Promise<GetServicoResponse> {
-  const { ["meiup.token"]: token } = parseCookies(ctx);
-  const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
-
-  const response: any = await axios.get(
-    `https://meiup-api.herokuapp.com/api/v1/servicos`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { page, empresa, nome: valuePesquisa },
-    }
-  );
+  const response: any = await api.get(`/servicos`, {
+    params: { page, nome: valuePesquisa },
+  });
 
   const formatter = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -54,12 +45,8 @@ export async function getServicos(
   };
 }
 
-export function useServicos(
-  page: number,
-  ctx = undefined,
-  options?: UseQueryOptions
-) {
-  return useQuery([["servicos", page]], () => getServicos(page, ctx), {
+export function useServicos(page: number, options?: UseQueryOptions) {
+  return useQuery([["servicos", page]], () => getServicos(page), {
     staleTime: 0,
     ...options,
   }) as UseQueryResult<GetServicoResponse, unknown>;

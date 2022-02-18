@@ -1,6 +1,5 @@
-import axios from "axios";
-import { parseCookies } from "nookies";
 import { useQuery, UseQueryOptions, UseQueryResult } from "react-query";
+import { api } from "../../services/apiClient";
 
 type Categoria = {
   id: string;
@@ -14,19 +13,11 @@ type GetCategoriaResponse = {
 
 export async function getCategorias(
   page: number,
-  ctx,
   valuePesquisa?
 ): Promise<GetCategoriaResponse> {
-  const { ["meiup.token"]: token } = parseCookies(ctx);
-  const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
-
-  const response: any = await axios.get(
-    `https://meiup-api.herokuapp.com/api/v1/categorias`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { page, empresa, nome: valuePesquisa },
-    }
-  );
+  const response: any = await api.get(`/categorias`, {
+    params: { page, nome: valuePesquisa },
+  });
 
   const categorias = response.data.found.categorias.map((categoria) => {
     return {
@@ -41,12 +32,8 @@ export async function getCategorias(
   };
 }
 
-export function useCategorias(
-  page: number,
-  ctx = undefined,
-  options?: UseQueryOptions
-) {
-  return useQuery([["categorias", page]], () => getCategorias(page, ctx), {
+export function useCategorias(page: number, options?: UseQueryOptions) {
+  return useQuery([["categorias", page]], () => getCategorias(page), {
     staleTime: 0,
     ...options,
   }) as UseQueryResult<GetCategoriaResponse, unknown>;

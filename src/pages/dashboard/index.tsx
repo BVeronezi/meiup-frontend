@@ -87,11 +87,11 @@ export default function Dashboard() {
                 </Stack>
                 <Stack>
                   <Text>Mês atual</Text>
-                  <Text>{data?.vendasMesAtual[0].cnt ?? 0}</Text>
+                  <Text>{data?.vendasMesAtual[0].count ?? 0}</Text>
                 </Stack>
                 <Stack>
                   <Text>Mês anterior</Text>
-                  <Text>{data?.vendasMesAnterior[0].cnt ?? 0}</Text>
+                  <Text>{data?.vendasMesAnterior[0].count ?? 0}</Text>
                 </Stack>
               </SimpleGrid>
             </Box>
@@ -105,12 +105,14 @@ export default function Dashboard() {
               </Box>
             )}
 
-            <Box p={["6", "8"]} borderRadius={8} pb="4">
-              <Text fontSize="lg" mb="4">
-                Evolução das vendas no mês atual
-              </Text>
-              <ChartLineDashboard vendas={data?.evolucaoVendaMes} />
-            </Box>
+            {data?.evolucaoVendaMes && (
+              <Box p={["6", "8"]} borderRadius={8} pb="4">
+                <Text fontSize="lg" mb="4">
+                  Evolução das vendas no mês atual
+                </Text>
+                <ChartLineDashboard vendas={data?.evolucaoVendaMes} />
+              </Box>
+            )}
           </SimpleGrid>
         </LoadPage>
       </Sidebar>

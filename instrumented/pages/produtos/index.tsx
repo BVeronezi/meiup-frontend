@@ -123,11 +123,7 @@ export default function Produtos() {
   async function handlePesquisaProduto(event) {
     if (event.target.value.length > 3) {
       setIsFetching(true);
-      const produtosPesquisados = await getProdutos(
-        1,
-        undefined,
-        event.target.value
-      );
+      const produtosPesquisados = await getProdutos(1, event.target.value);
       setValue(produtosPesquisados);
       setIsFetching(false);
     } else {
@@ -267,7 +263,7 @@ export default function Produtos() {
 
                     {!isLoadingPage && (
                       <Pagination
-                        totalCountOfRegisters={data.totalCount}
+                        totalCountOfRegisters={data?.totalCount}
                         currentPage={page}
                         onPageChange={setPage}
                       />

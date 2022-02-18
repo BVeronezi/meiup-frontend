@@ -114,11 +114,7 @@ export default function Servicos() {
   async function handlePesquisaServico(event) {
     if (event.target.value.length > 3) {
       setIsFetching(true);
-      const servicosPesquisados = await getServicos(
-        1,
-        undefined,
-        event.target.value
-      );
+      const servicosPesquisados = await getServicos(1, event.target.value);
       setValue(servicosPesquisados);
       setIsFetching(false);
     } else {
@@ -262,7 +258,7 @@ export default function Servicos() {
                     </Table>
 
                     <Pagination
-                      totalCountOfRegisters={data.totalCount}
+                      totalCountOfRegisters={data?.totalCount}
                       currentPage={page}
                       onPageChange={setPage}
                     />

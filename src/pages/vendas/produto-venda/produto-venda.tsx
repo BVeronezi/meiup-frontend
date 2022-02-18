@@ -28,8 +28,6 @@ import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dial
 import { Pagination } from "../../../components/Pagination";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
 import { InputCurrency } from "../../../components/InputCurrency";
-import axios from "axios";
-import { parseCookies } from "nookies";
 
 type FormData = {
   produto: string;
@@ -109,22 +107,16 @@ export default function ProdutoVenda({
 
   useEffect(() => {
     async function fetchData() {
-      const result: any = await getProdutosVenda(page, null, vendaId);
+      const result: any = await getProdutosVenda(page, vendaId);
       setData(result);
     }
     fetchData();
   }, [refreshKey]);
 
   async function callApi(value) {
-    const { ["meiup.token"]: token } = parseCookies();
-
-    const responseProdutos: any = await axios.get(
-      `https://meiup-api.herokuapp.com/api/v1/produtos`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 10, descricao: value },
-      }
-    );
+    const responseProdutos: any = await api.get(`/produtos`, {
+      params: { limit: 10, descricao: value },
+    });
 
     const data = responseProdutos.data.found.produtos.map((e) => {
       return {

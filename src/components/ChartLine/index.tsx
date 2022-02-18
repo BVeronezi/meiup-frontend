@@ -1,12 +1,23 @@
 import { theme } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import moment from "moment";
+import { useEffect, useState } from "react";
 
 const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
 export function ChartLineDashboard({ vendas }) {
+  const [categories, setCategories] = useState([]);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    setCategories(
+      vendas.map((d) => moment(d["dataVenda"]).format("YYYY-MM-DD"))
+    );
+    setData(vendas.map((c) => c["count"]));
+  }, []);
+
   const options: ApexCharts.ApexOptions = {
     chart: {
       toolbar: {
@@ -34,9 +45,7 @@ export function ChartLineDashboard({ vendas }) {
       axisTicks: {
         color: theme.colors.gray[600],
       },
-      categories: vendas.map((d) =>
-        moment(d["dataVenda"]).format("YYYY-MM-DD")
-      ),
+      categories: categories,
     },
     fill: {
       opacity: 0.3,
@@ -52,7 +61,7 @@ export function ChartLineDashboard({ vendas }) {
   const series = [
     {
       name: "vendas",
-      data: vendas.map((c) => c["count"]),
+      data: data,
     },
   ];
 

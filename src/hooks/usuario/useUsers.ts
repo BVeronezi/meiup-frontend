@@ -1,6 +1,5 @@
-import axios from "axios";
-import { parseCookies } from "nookies";
 import { useQuery, UseQueryOptions, UseQueryResult } from "react-query";
+import { api } from "../../services/apiClient";
 type User = {
   id: string;
   nome: string;
@@ -16,18 +15,11 @@ type GetUserResponse = {
 
 export async function getUsuarios(
   page: number,
-  ctx,
   valuePesquisa?
 ): Promise<GetUserResponse> {
-  const { ["meiup.token"]: token } = parseCookies(ctx);
-
-  const response: any = await axios.get(
-    `https://meiup-api.herokuapp.com/api/v1/usuario`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { page, nome: valuePesquisa },
-    }
-  );
+  const response: any = await api.get(`/usuario`, {
+    params: { page, nome: valuePesquisa },
+  });
 
   const users = response.data.found.users.map((user) => {
     return {
@@ -49,12 +41,8 @@ export async function getUsuarios(
   };
 }
 
-export function useUsuarios(
-  page: number,
-  ctx = undefined,
-  options?: UseQueryOptions
-) {
-  return useQuery([["usuarios", page]], () => getUsuarios(page, ctx), {
+export function useUsuarios(page: number, options?: UseQueryOptions) {
+  return useQuery([["usuarios", page]], () => getUsuarios(page), {
     staleTime: 0,
     ...options,
   }) as UseQueryResult<GetUserResponse, unknown>;

@@ -108,22 +108,16 @@ export default function ServicoVenda({
 
   useEffect(() => {
     async function fetchData() {
-      const result: any = await getServicosVenda(page, null, vendaId);
+      const result: any = await getServicosVenda(page, vendaId);
       setData(result);
     }
     fetchData();
   }, [refreshKey]);
 
   async function callApi(value) {
-    const { ["meiup.token"]: token } = parseCookies();
-
-    const responseServicos: any = await axios.get(
-      `https://meiup-api.herokuapp.com/api/v1/servicos`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 10, nome: value },
-      }
-    );
+    const responseServicos: any = await axios.get(`/servicos`, {
+      params: { limit: 10, nome: value },
+    });
 
     const data = responseServicos.data.found.servicos.map((e) => {
       return {

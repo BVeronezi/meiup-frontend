@@ -100,11 +100,7 @@ export default function Usuarios() {
   async function handlePesquisa(event) {
     if (event.target.value.length > 3) {
       setIsFetching(true);
-      const usuariosPesquisados = await getUsuarios(
-        1,
-        undefined,
-        event.target.value
-      );
+      const usuariosPesquisados = await getUsuarios(1, event.target.value);
 
       setValue(usuariosPesquisados);
       setIsFetching(false);
@@ -201,7 +197,7 @@ export default function Usuarios() {
                       <Tbody>
                         {value?.users.map((user) => {
                           return (
-                            <Tr key={user.id}>
+                            <Tr data-cy="usuario" key={user.id}>
                               <Td>
                                 <Box>
                                   <Link
@@ -210,10 +206,17 @@ export default function Usuarios() {
                                       handlePrefetchUser(user.id)
                                     }
                                   >
-                                    <Text fontWeight="bold">{user.nome}</Text>
+                                    <Text
+                                      data-cy="nome-usuario"
+                                      fontWeight="bold"
+                                    >
+                                      {user.nome}
+                                    </Text>
                                   </Link>
 
-                                  <Text fontSize="sm">{user.email}</Text>
+                                  <Text data-cy="email-usuario" fontSize="sm">
+                                    {user.email}
+                                  </Text>
                                 </Box>
                               </Td>
 

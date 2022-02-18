@@ -207,8 +207,12 @@ export default function FormUsuario() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab fontWeight="bold">Dados básicos</Tab>
-                  <Tab fontWeight="bold">Endereço</Tab>
+                  <Tab data-cy="dados-basicos" fontWeight="bold">
+                    Dados básicos
+                  </Tab>
+                  <Tab data-cy="endereco" fontWeight="bold">
+                    Endereço
+                  </Tab>
                 </TabList>
                 <TabPanels>
                   <TabPanel>
@@ -290,6 +294,7 @@ export default function FormUsuario() {
               <Flex mt="8" justify="flex-end">
                 <HStack spacing="24px">
                   <Button
+                    data-cy="voltar"
                     width={["150px", "200px"]}
                     fontSize={["14px", "16px"]}
                     type="submit"
@@ -303,6 +308,7 @@ export default function FormUsuario() {
                     VOLTAR
                   </Button>
                   <Button
+                    data-cy="salvar"
                     width={["150px", "200px"]}
                     fontSize={["14px", "16px"]}
                     type="submit"

@@ -1,6 +1,5 @@
-import axios from "axios";
-import { parseCookies } from "nookies";
 import { useQuery, UseQueryOptions, UseQueryResult } from "react-query";
+import { api } from "../../services/apiClient";
 
 type Cliente = {
   id: string;
@@ -16,19 +15,11 @@ type GetClienteResponse = {
 
 export async function getClientes(
   page: number,
-  ctx,
   valuePesquisa?
 ): Promise<GetClienteResponse> {
-  const { ["meiup.token"]: token } = parseCookies(ctx);
-  const { ["meiup.empresa"]: empresa } = parseCookies(ctx);
-
-  const response: any = await axios.get(
-    `https://meiup-api.herokuapp.com/api/v1/clientes`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { page, empresa, nome: valuePesquisa },
-    }
-  );
+  const response: any = await api.get(`/clientes`, {
+    params: { page, nome: valuePesquisa },
+  });
 
   const clientes = response.data.found.clientes.map((cliente) => {
     return {
@@ -45,12 +36,8 @@ export async function getClientes(
   };
 }
 
-export function useClientes(
-  page: number,
-  ctx = undefined,
-  options?: UseQueryOptions
-) {
-  return useQuery([["clientes", page]], () => getClientes(page, ctx), {
+export function useClientes(page: number, options?: UseQueryOptions) {
+  return useQuery([["clientes", page]], () => getClientes(page), {
     staleTime: 0,
     ...options,
   }) as UseQueryResult<GetClienteResponse, unknown>;

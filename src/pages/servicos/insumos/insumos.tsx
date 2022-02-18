@@ -83,22 +83,16 @@ export default function Insumos({ handleLoad }) {
 
   useEffect(() => {
     async function fetchData() {
-      const result: any = await getProdutoServico(page, null, servicoId);
+      const result: any = await getProdutoServico(page, servicoId);
       setData(result);
     }
     fetchData();
   }, [refreshKey]);
 
   async function callApi(value) {
-    const { ["meiup.token"]: token } = parseCookies();
-
-    const responseProdutos: any = await axios.get(
-      `https://meiup-api.herokuapp.com/api/v1/produtos`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 10, descricao: value },
-      }
-    );
+    const responseProdutos: any = await api.get(`/produtos`, {
+      params: { limit: 10, descricao: value },
+    });
 
     const data = responseProdutos.data.found.produtos.map((e) => {
       return {

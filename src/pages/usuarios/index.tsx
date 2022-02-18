@@ -100,11 +100,7 @@ export default function Usuarios() {
   async function handlePesquisa(event) {
     if (event.target.value.length > 3) {
       setIsFetching(true);
-      const usuariosPesquisados = await getUsuarios(
-        1,
-        undefined,
-        event.target.value
-      );
+      const usuariosPesquisados = await getUsuarios(1, event.target.value);
 
       setValue(usuariosPesquisados);
       setIsFetching(false);

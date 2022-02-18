@@ -1,6 +1,5 @@
-import axios from "axios";
-import { parseCookies } from "nookies";
 import { useQuery, UseQueryOptions, UseQueryResult } from "react-query";
+import { api } from "../../services/apiClient";
 
 type ProdutoVenda = {
   id: string;
@@ -19,18 +18,11 @@ type GetProdutoVendaResponse = {
 
 export async function getProdutosVenda(
   page: number,
-  ctx,
   vendaId?
 ): Promise<GetProdutoVendaResponse> {
-  const { ["meiup.token"]: token } = parseCookies(ctx);
-
-  const response: any = await axios.get(
-    `https://meiup-api.herokuapp.com/api/v1/produtosVenda`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { vendaId, page, limit: 10 },
-    }
-  );
+  const response: any = await api.get(`/produtosVenda`, {
+    params: { vendaId, page, limit: 10 },
+  });
 
   const produtosVenda = response.data.found.produtosVenda.map((produto) => {
     return {
@@ -52,13 +44,12 @@ export async function getProdutosVenda(
 
 export function useProdutosVenda(
   page: number,
-  ctx = undefined,
   vendaId: string,
   options?: UseQueryOptions
 ) {
   return useQuery(
     [["produtos_venda", page]],
-    () => getProdutosVenda(page, ctx, vendaId),
+    () => getProdutosVenda(page, vendaId),
     {
       staleTime: 0,
       ...options,

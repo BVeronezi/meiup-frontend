@@ -121,11 +121,7 @@ export default function Categorias() {
   async function handlePesquisaCategoria(event) {
     if (event.target.value.length > 3) {
       setIsFetching(true);
-      const categoriasPesquisadas = await getCategorias(
-        1,
-        undefined,
-        event.target.value
-      );
+      const categoriasPesquisadas = await getCategorias(1, event.target.value);
       setValue(categoriasPesquisadas);
       setIsFetching(false);
     } else {
@@ -200,7 +196,6 @@ export default function Categorias() {
                       <Table variant="striped" colorScheme="blackAlpha">
                         <Thead>
                           <Tr>
-                            <Th>Código</Th>
                             <Th>Categoria</Th>
                             <Th width="8">Ações</Th>
                           </Tr>
@@ -219,13 +214,9 @@ export default function Categorias() {
                                         )
                                       }
                                     >
-                                      <Text>{categoria.id}</Text>
+                                      <Text>{categoria.nome}</Text>
                                     </Link>
                                   </Box>
-                                </Td>
-
-                                <Td>
-                                  <Text>{categoria.nome}</Text>
                                 </Td>
 
                                 <Td>
@@ -263,7 +254,7 @@ export default function Categorias() {
 
                       {!isLoadingPage && (
                         <Pagination
-                          totalCountOfRegisters={data.totalCount}
+                          totalCountOfRegisters={data?.totalCount}
                           currentPage={page}
                           onPageChange={setPage}
                         />

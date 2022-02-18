@@ -9,7 +9,7 @@ type User = {
   email: string;
   nome: string;
   empresa: Empresa;
-  tipo: string;
+  tipo: string[];
 };
 
 type Empresa = {

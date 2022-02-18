@@ -83,22 +83,16 @@ export default function Insumos({ handleLoad }) {
 
   useEffect(() => {
     async function fetchData() {
-      const result: any = await getProdutoServico(page, null, servicoId);
+      const result: any = await getProdutoServico(page, servicoId);
       setData(result);
     }
     fetchData();
   }, [refreshKey]);
 
   async function callApi(value) {
-    const { ["meiup.token"]: token } = parseCookies();
-
-    const responseProdutos: any = await axios.get(
-      `https://meiup-api.herokuapp.com/api/v1//produtos`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 10, descricao: value },
-      }
-    );
+    const responseProdutos: any = await api.get(`/produtos`, {
+      params: { limit: 10, descricao: value },
+    });
 
     const data = responseProdutos.data.found.produtos.map((e) => {
       return {
@@ -218,18 +212,21 @@ export default function Insumos({ handleLoad }) {
               </Text>
             )}{" "}
           </VStack>
-          {selectData.value && (
+          {selectData?.value ? (
             <Input
               name="quantidade"
               label="Quantidade *"
               error={errors.quantidade}
               {...register("quantidade")}
             ></Input>
+          ) : (
+            ""
           )}
         </SimpleGrid>
         <Box alignSelf="flex-end">
           <HStack>
             <Button
+              data-cy="adicionar"
               width="120px"
               fontSize="14px"
               type="submit"
@@ -246,7 +243,12 @@ export default function Insumos({ handleLoad }) {
       <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
         Insumos adicionados no serviço
       </Text>
-      <Table variant="striped" colorScheme="blackAlpha" size="md">
+      <Table
+        id="table-insumos"
+        variant="striped"
+        colorScheme="blackAlpha"
+        size="md"
+      >
         <Thead>
           <Tr>
             <Th>Produto</Th>

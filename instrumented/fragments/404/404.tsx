@@ -9,6 +9,7 @@ export function PageNotFound() {
       <Heading
         display="inline-block"
         as="h2"
+        title="404"
         size="2xl"
         bgGradient="linear(to-r, gray.400, gray.600)"
         backgroundClip="text"

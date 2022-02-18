@@ -1,6 +1,5 @@
-import axios from "axios";
-import { parseCookies } from "nookies";
 import { useQuery, UseQueryOptions, UseQueryResult } from "react-query";
+import { api } from "../../services/apiClient";
 
 type ServicoVenda = {
   id: string;
@@ -18,18 +17,11 @@ type GetServicoVendaResponse = {
 
 export async function getServicosVenda(
   page: number,
-  ctx,
   vendaId?
 ): Promise<GetServicoVendaResponse> {
-  const { ["meiup.token"]: token } = parseCookies(ctx);
-
-  const response: any = await axios.get(
-    `https://meiup-api.herokuapp.com/api/v1/servicosVenda`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: { vendaId, page, limit: 10 },
-    }
-  );
+  const response: any = await api.get(`/servicosVenda`, {
+    params: { vendaId, page, limit: 10 },
+  });
 
   const servicos = response.data.found.servicosVenda ?? [];
   let servicosVenda = [];
@@ -55,13 +47,12 @@ export async function getServicosVenda(
 
 export function useServicosVenda(
   page: number,
-  ctx = undefined,
   vendaId: string,
   options?: UseQueryOptions
 ) {
   return useQuery(
     [["servicos_venda", page]],
-    () => getServicosVenda(page, ctx, vendaId),
+    () => getServicosVenda(page, vendaId),
     {
       staleTime: 0,
       ...options,

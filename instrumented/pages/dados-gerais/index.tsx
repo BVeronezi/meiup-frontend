@@ -152,6 +152,13 @@ export default function DadosGerais() {
           setValue("complemento", "");
         }
       } catch (error) {
+        setValue("endereco", "");
+        setValue("numero", "");
+        setValue("bairro", "");
+        setValue("cidade", "");
+        setValue("estado", "");
+        setValue("complemento", "");
+
         toast({
           title: "CEP não encontrado",
           status: "info",
@@ -221,8 +228,12 @@ export default function DadosGerais() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab fontWeight="bold">Informações da empresa</Tab>
-                  <Tab fontWeight="bold">Endereço</Tab>
+                  <Tab data-cy="info-empresa" fontWeight="bold">
+                    Informações da empresa
+                  </Tab>
+                  <Tab data-cy="endereco" fontWeight="bold">
+                    Endereço
+                  </Tab>
                 </TabList>
 
                 <TabPanels>
@@ -306,6 +317,7 @@ export default function DadosGerais() {
             </Box>
             <Flex justify="flex-end">
               <Button
+                data-cy="salvar"
                 width={["150px", "200px"]}
                 fontSize={["14px", "16px"]}
                 mt="8"

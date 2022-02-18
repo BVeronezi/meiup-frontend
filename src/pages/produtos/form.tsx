@@ -16,7 +16,6 @@ import {
   TabPanel,
   Skeleton,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -29,7 +28,6 @@ import AsyncSelect from "react-select/async";
 const { yupResolver } = require("@hookform/resolvers/yup");
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
-import { parseCookies } from "nookies";
 import { Sidebar } from "../../components/Sidebar";
 import { LoadPage } from "../../components/Load";
 import { InputCurrency } from "../../components/InputCurrency";
@@ -159,15 +157,9 @@ export default function FormProduto() {
   }, []);
 
   async function callApi(value) {
-    const { ["meiup.token"]: token } = parseCookies();
-
-    const response: any = await axios.get(
-      `https://meiup-api.herokuapp.com/api/v1/categorias`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 10, nome: value },
-      }
-    );
+    const response: any = await api.get(`/categorias`, {
+      params: { limit: 10, nome: value },
+    });
 
     const data = response.data.found.categorias.map((e) => {
       return { value: String(e.id), label: e.nome };

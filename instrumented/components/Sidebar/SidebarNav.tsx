@@ -17,7 +17,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { NavItem } from "./NavItem";
 
 export function SidebarNav() {
-  const { signOut } = useContext(AuthContext);
+  const { user, signOut } = useContext(AuthContext);
 
   return (
     <>
@@ -29,16 +29,20 @@ export function SidebarNav() {
         href="/dashboard"
       />
 
-      <Flex align="center" fontWeight="bold" p="4" mx="4">
-        <Text color="gray.500">EMPRESA</Text>
-      </Flex>
+      {user?.tipo === "MEI" && (
+        <>
+          <Flex align="center" fontWeight="bold" p="4" mx="4">
+            <Text color="gray.500">EMPRESA</Text>
+          </Flex>
 
-      <NavItem
-        icon={RiBuilding4Line}
-        children="Dados gerais"
-        href="/dados-gerais"
-      />
-      <NavItem icon={RiContactsLine} children="Usuários" href="/usuarios" />
+          <NavItem
+            icon={RiBuilding4Line}
+            children="Dados gerais"
+            href="/dados-gerais"
+          />
+          <NavItem icon={RiContactsLine} children="Usuários" href="/usuarios" />
+        </>
+      )}
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500"> CATÁLOGO</Text>
@@ -53,29 +57,21 @@ export function SidebarNav() {
       </Flex>
       <NavItem icon={RiShoppingBasket2Line} children="Vendas" href="/vendas" />
       <NavItem icon={RiGroupLine} children="Clientes" href="/clientes" />
-      <NavItem
-        icon={RiPriceTag3Line}
-        children="Promoções - (Em breve)"
-        href="/promocoes"
-      />
+      <NavItem icon={RiPriceTag3Line} children="Promoções" href="/promocoes" />
 
       {/* <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">COMPRAS</Text>
-      </Flex> */}
+      </Flex>
 
-      {/* <NavItem
-        icon={RiShoppingCartLine}
-        children="Compras"
-        href="/compras"
-      /> */}
+      <NavItem icon={RiShoppingCartLine} children="Compras" href="/compras" /> */}
 
-      {/* <Flex align="center" fontWeight="bold" p="4" mx="4">
+      <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">AGENDA</Text>
       </Flex>
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">RELATÓRIOS</Text>
-      </Flex> */}
+      </Flex>
 
       <Divider />
 

@@ -146,11 +146,7 @@ export default function Vendas({ vendas }) {
   async function handlePesquisaVenda(event) {
     if (event.target.value.length > 3) {
       setIsFetching(true);
-      const vendasPesquisadas = await getVendas(
-        1,
-        undefined,
-        event.target.value
-      );
+      const vendasPesquisadas = await getVendas(1, event.target.value);
       setValue(vendasPesquisadas);
       setIsFetching(false);
     } else {
@@ -354,7 +350,7 @@ export default function Vendas({ vendas }) {
                       </Table>
 
                       <Pagination
-                        totalCountOfRegisters={data.totalCount}
+                        totalCountOfRegisters={data?.totalCount}
                         currentPage={page}
                         onPageChange={setPage}
                       />

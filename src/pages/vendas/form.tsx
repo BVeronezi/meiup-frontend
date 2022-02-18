@@ -133,15 +133,9 @@ export default function FormVendas() {
   }, []);
 
   async function callApi(value) {
-    const { ["meiup.token"]: token } = parseCookies();
-
-    const responseClientes: any = await axios.get(
-      `https://meiup-api.herokuapp.com/api/v1/clientes`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 10, nome: value },
-      }
-    );
+    const responseClientes: any = await api.get(`/clientes`, {
+      params: { limit: 10, nome: value },
+    });
 
     const data = responseClientes.data.found.clientes.map((e) => {
       return { value: String(e.id), label: e.nome, email: e.email };

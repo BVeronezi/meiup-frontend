@@ -16,7 +16,6 @@ import {
   TabPanel,
   Skeleton,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -29,7 +28,6 @@ import AsyncSelect from "react-select/async";
 const { yupResolver } = require("@hookform/resolvers/yup");
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
-import { parseCookies } from "nookies";
 import { Sidebar } from "../../components/Sidebar";
 import { LoadPage } from "../../components/Load";
 import { InputCurrency } from "../../components/InputCurrency";
@@ -89,6 +87,7 @@ export default function FormProduto() {
     { value: "2", label: "Caixa" },
     { value: "3", label: "Fardo" },
     { value: "4", label: "Bandeja" },
+    { value: "5", label: "Unidade" },
   ];
 
   const INITIAL_DATA = {
@@ -158,15 +157,9 @@ export default function FormProduto() {
   }, []);
 
   async function callApi(value) {
-    const { ["meiup.token"]: token } = parseCookies();
-
-    const response: any = await axios.get(
-      `https://meiup-api.herokuapp.com/api/v1/categorias`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 10, nome: value },
-      }
-    );
+    const response: any = await api.get(`/categorias`, {
+      params: { limit: 10, nome: value },
+    });
 
     const data = response.data.found.categorias.map((e) => {
       return { value: String(e.id), label: e.nome };
@@ -263,9 +256,15 @@ export default function FormProduto() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab fontWeight="bold">Produto</Tab>
-                  <Tab fontWeight="bold">Estoque</Tab>
-                  <Tab fontWeight="bold">Preços</Tab>
+                  <Tab data-cy="produto" fontWeight="bold">
+                    Produto
+                  </Tab>
+                  <Tab data-cy="estoque" fontWeight="bold">
+                    Estoque
+                  </Tab>
+                  <Tab data-cy="precos" fontWeight="bold">
+                    Preços
+                  </Tab>
                 </TabList>
 
                 <TabPanels>
@@ -387,6 +386,7 @@ export default function FormProduto() {
                         w="100%"
                       >
                         <InputCurrency
+                          id="precoVendaVarejo"
                           isLoading={isLoading}
                           name="precoVendaVarejo"
                           label="Preço de venda varejo"
@@ -400,6 +400,7 @@ export default function FormProduto() {
                         ></InputCurrency>
 
                         <InputCurrency
+                          id="precoVendaAtacado"
                           isLoading={isLoading}
                           name="precoVendaAtacado"
                           label="Preço de venda atacado"
@@ -416,6 +417,7 @@ export default function FormProduto() {
                         w="100%"
                       >
                         <InputCurrency
+                          id="precoCompra"
                           isLoading={isLoading}
                           name="precoCompra"
                           label="Preço de compra"
@@ -426,6 +428,7 @@ export default function FormProduto() {
                           onValueChange={(v) => setPrecoCompra(v.floatValue)}
                         ></InputCurrency>
                         <InputCurrency
+                          id="margemLucro"
                           isDisabled={true}
                           isLoading={isLoading}
                           name="margemLucro"
@@ -443,6 +446,7 @@ export default function FormProduto() {
             <Box>
               <HStack spacing="24px" mt="10px" justify="flex-end">
                 <Button
+                  data-cy="voltar"
                   width={["150px", "200px"]}
                   type="submit"
                   color="white"
@@ -457,6 +461,7 @@ export default function FormProduto() {
                 </Button>
 
                 <Button
+                  data-cy="salvar"
                   width={["150px", "200px"]}
                   fontSize={["14px", "16px"]}
                   type="submit"

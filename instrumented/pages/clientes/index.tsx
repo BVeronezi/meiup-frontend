@@ -95,11 +95,7 @@ export default function Clientes() {
   async function handlePesquisa(event) {
     if (event.target.value.length > 3) {
       setIsFetching(true);
-      const clientesPesquisados = await getClientes(
-        1,
-        undefined,
-        event.target.value
-      );
+      const clientesPesquisados = await getClientes(1, event.target.value);
       setValue(clientesPesquisados);
       setIsFetching(false);
     } else {
@@ -203,7 +199,10 @@ export default function Clientes() {
                                         handlePrefetcCliente(cliente.id)
                                       }
                                     >
-                                      <Text fontWeight="bold">
+                                      <Text
+                                        data-cy="nome-cliente"
+                                        fontWeight="bold"
+                                      >
                                         {cliente.nome}
                                       </Text>
                                     </Link>
