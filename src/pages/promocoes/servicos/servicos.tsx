@@ -211,7 +211,7 @@ export default function ServicosPromocao({ handleLoad }) {
             <InputCurrency
               id="precoPromocional"
               name="precoPromocional"
-              label="Preço promocional *"
+              label="Valor promocional *"
               error={errors.precoPromocional}
               {...register("precoPromocional")}
               value={precoPromocional}

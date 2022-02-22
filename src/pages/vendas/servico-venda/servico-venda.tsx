@@ -55,6 +55,7 @@ export default function ServicoVenda({
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
   const [stateServico, setStateServico] = useState("");
+  const [isValorPromocional, seIsValorPromocional] = useState(false);
   const [valorServico, setValorServico] = useState(0);
   const [outrasDespesas, setOutrasDespesas] = useState(0);
   const [desconto, setDesconto] = useState(0);
@@ -115,7 +116,7 @@ export default function ServicoVenda({
   }, [refreshKey]);
 
   async function callApi(value) {
-    const responseServicos: any = await axios.get(`/servicos`, {
+    const responseServicos: any = await api.get(`/servicos`, {
       params: { limit: 10, nome: value },
     });
 
@@ -192,6 +193,7 @@ export default function ServicoVenda({
   };
 
   const resetInputs = () => {
+    seIsValorPromocional(false);
     setselectData(null);
     setValorServico(0);
     setOutrasDespesas(0);
@@ -243,9 +245,25 @@ export default function ServicoVenda({
     handleLoad(false);
   }
 
-  const handleServico = (servico) => {
+  const handleServico = async (servico) => {
+    let valor: number = 0;
+
+    const promocao: any = await api.get(`/servicosPromocao/servico`, {
+      params: {
+        servicoId: servico.value,
+      },
+    });
+
+    if (promocao.data.length > 0) {
+      seIsValorPromocional(true);
+      valor = promocao.data[0].precoPromocional * 100;
+    } else if (servico.valor) {
+      seIsValorPromocional(false);
+      valor = servico.valor * 100;
+    }
+
     setselectData(servico);
-    setValorServico((servico.valor ? servico.valor : 0) * 100);
+    setValorServico(valor);
     setOutrasDespesas(0);
     setDesconto(0);
     setValorTotal(0);
@@ -292,24 +310,31 @@ export default function ServicoVenda({
             )}{" "}
           </VStack>
           <Stack>
-            <InputCurrency
-              id="valorServico"
-              isDisabled={statusVenda !== 0}
-              isLoading={isLoading}
-              name="valorServico"
-              label="Valor serviço *"
-              {...register("valorServico")}
-              value={valorServico}
-              onBlur={calculaTotal}
-              onValueChange={(v) => {
-                setValorServico(v.floatValue);
-              }}
-            ></InputCurrency>
-            {stateServico && !valorServico && (
-              <Text color="red" fontSize="14px">
-                Valor serviço obrigatório
-              </Text>
-            )}{" "}
+            <Stack>
+              <InputCurrency
+                id="valorServico"
+                isDisabled={statusVenda !== 0}
+                isLoading={isLoading}
+                name="valorServico"
+                label="Valor serviço *"
+                {...register("valorServico")}
+                value={valorServico}
+                onBlur={calculaTotal}
+                onValueChange={(v) => {
+                  setValorServico(v.floatValue);
+                }}
+              ></InputCurrency>
+              {stateServico && !valorServico && (
+                <Text color="red" fontSize="14px">
+                  Valor serviço obrigatório
+                </Text>
+              )}{" "}
+              {isValorPromocional && (
+                <Text alignSelf="flex-start" color="green">
+                  Valor promocional
+                </Text>
+              )}
+            </Stack>
           </Stack>
         </SimpleGrid>
       </VStack>
