@@ -25,8 +25,16 @@ export async function getPromocoes(
     return {
       id: promocao.id,
       descricao: promocao.descricao,
-      dataInicio: promocao.dataInicio,
-      dataFim: promocao.dataFim,
+      dataInicio: new Date(promocao.dataInicio).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "numeric",
+        year: "numeric",
+      }),
+      dataFim: new Date(promocao.dataFim).toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "numeric",
+        year: "numeric",
+      }),
     };
   });
 
