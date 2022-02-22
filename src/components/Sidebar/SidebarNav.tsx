@@ -59,11 +59,15 @@ export function SidebarNav() {
       <NavItem icon={RiGroupLine} children="Clientes" href="/clientes" />
       <NavItem icon={RiPriceTag3Line} children="Promoções" href="/promocoes" />
 
-      {/* <Flex align="center" fontWeight="bold" p="4" mx="4">
+      <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">COMPRAS</Text>
       </Flex>
 
-      <NavItem icon={RiShoppingCartLine} children="Compras" href="/compras" /> */}
+      <NavItem
+        icon={RiShoppingCartLine}
+        children="Fornecedores"
+        href="/fornecedores"
+      />
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">AGENDA</Text>

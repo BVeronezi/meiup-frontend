@@ -252,7 +252,7 @@ export default function ServicosPromocao({ handleLoad }) {
         <Thead>
           <Tr>
             <Th>Serviço</Th>
-            <Th>Preço promocional</Th>
+            <Th>Valor promocional</Th>
             <Th width="8">Ações</Th>
           </Tr>
         </Thead>
