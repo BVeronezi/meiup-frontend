@@ -193,6 +193,7 @@ export default function Fornecedores() {
                           <Tr>
                             <Th>Nome</Th>
                             <Th>Celular</Th>
+                            <Th>Telefone</Th>
                             <Th width="8">Ações</Th>
                           </Tr>
                         </Thead>
@@ -224,6 +225,10 @@ export default function Fornecedores() {
 
                                 <Td>
                                   <Text>{fornecedor.celular}</Text>
+                                </Td>
+
+                                <Td>
+                                  <Text>{fornecedor.telefone}</Text>
                                 </Td>
 
                                 <Td>
