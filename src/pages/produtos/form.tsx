@@ -31,6 +31,7 @@ import { api } from "../../services/apiClient";
 import { Sidebar } from "../../components/Sidebar";
 import { LoadPage } from "../../components/Load";
 import { InputCurrency } from "../../components/InputCurrency";
+import { FornecedoresProduto } from "./fornecedores/fornecedores";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 
 type FormData = {
@@ -64,6 +65,7 @@ export default function FormProduto() {
   const [precoAtacado, setPrecoAtacado] = useState(0);
   const [precoCompra, setPrecoCompra] = useState(0);
   const [margemLucro, setMargemLucro] = useState(0);
+  const [isLoadingFetch, setIsLoadingFetch] = useState(false);
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -180,6 +182,10 @@ export default function FormProduto() {
     setselectData(categoria);
   };
 
+  const handleLoad = (value) => {
+    setIsLoadingFetch(value);
+  };
+
   const calculaMargemLucro = () => {
     const precoVenda = precoVarejo ? precoVarejo / 100 : precoAtacado / 100;
 
@@ -244,7 +250,7 @@ export default function FormProduto() {
       <Head>
         <title>MEIUP | Produto</title>
       </Head>
-      <LoadPage active={isLoading}>
+      <LoadPage active={isLoading || isLoadingFetch}>
         <Sidebar>
           <Stack as="form" onSubmit={handleSubmit(handleProduto)}>
             <Box
@@ -264,6 +270,9 @@ export default function FormProduto() {
                   </Tab>
                   <Tab data-cy="precos" fontWeight="bold">
                     Preços
+                  </Tab>
+                  <Tab data-cy="fornecedores" fontWeight="bold">
+                    Fornecedores
                   </Tab>
                 </TabList>
 
@@ -439,6 +448,11 @@ export default function FormProduto() {
                         ></InputCurrency>
                       </SimpleGrid>
                     </VStack>
+                  </TabPanel>
+                  <TabPanel>
+                    <FornecedoresProduto
+                      handleLoad={handleLoad}
+                    ></FornecedoresProduto>
                   </TabPanel>
                 </TabPanels>
               </Tabs>

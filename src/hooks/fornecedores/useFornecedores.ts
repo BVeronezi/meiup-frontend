@@ -6,6 +6,7 @@ type Fornecedor = {
   nome: string;
   email: string;
   celular: string;
+  telefone: string;
 };
 
 type GetFornecedorResponse = {
@@ -21,12 +22,13 @@ export async function getFornecedores(
     params: { page, nome: valuePesquisa },
   });
 
-  const fornecedores = response.data.found.fornecedores.map((cliente) => {
+  const fornecedores = response.data.found.fornecedores.map((fornecedor) => {
     return {
-      id: cliente.id,
-      nome: cliente.nome,
-      email: cliente.email,
-      celular: cliente.celular,
+      id: fornecedor.id,
+      nome: fornecedor.nome,
+      email: fornecedor.email,
+      celular: fornecedor.celular,
+      telefone: fornecedor.telefone,
     };
   });
 
