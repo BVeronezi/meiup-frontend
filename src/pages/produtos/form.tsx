@@ -24,15 +24,14 @@ import { theme as customTheme } from "../../styles/theme";
 import * as yup from "yup";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
 import { Sidebar } from "../../components/Sidebar";
 import { LoadPage } from "../../components/Load";
 import { InputCurrency } from "../../components/InputCurrency";
-import { FornecedoresProduto } from "./fornecedores/fornecedores";
 import { withSSRAuth } from "../../utils/withSSRAuth";
+import FornecedoresProduto from "./fornecedores/fornecedores";
 
 type FormData = {
   descricao: string;
@@ -156,7 +155,7 @@ export default function FormProduto() {
     }
 
     focus();
-  }, []);
+  }, [router.query, setValue]);
 
   async function callApi(value) {
     const response: any = await api.get(`/categorias`, {

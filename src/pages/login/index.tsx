@@ -1,6 +1,5 @@
 import NextLink from "next/link";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useContext, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";

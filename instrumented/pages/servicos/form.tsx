@@ -5,8 +5,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
   Button,
@@ -89,7 +88,7 @@ export default function FormServico() {
     }
 
     focus();
-  }, []);
+  }, [router.query, setValue, servicoId]);
 
   const handleLoad = (value) => {
     setIsLoadingFetch(value);

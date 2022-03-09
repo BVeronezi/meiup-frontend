@@ -10,8 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import * as yup from "yup";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import { theme as customTheme } from "../../../styles/theme";
 import { SubmitHandler, useForm } from "react-hook-form";
 import AsyncSelect from "react-select/async";
@@ -32,7 +31,7 @@ const fornecedorFormSchema = yup.object().shape({
   fornecedor: yup.string(),
 });
 
-export function FornecedoresProduto({ handleLoad }) {
+export default function FornecedoresProduto({ handleLoad }) {
   const router = useRouter();
   const produtoId: any = Object.keys(router.query)[0];
   const [page, setPage] = useState(1);
@@ -76,7 +75,7 @@ export function FornecedoresProduto({ handleLoad }) {
       setData(result);
     }
     fetchData();
-  }, [refreshKey]);
+  }, [page, produtoId]);
 
   async function callApi(value) {
     const responseFornecedores: any = await api.get(`/fornecedores`, {

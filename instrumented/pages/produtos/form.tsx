@@ -24,8 +24,7 @@ import { theme as customTheme } from "../../styles/theme";
 import * as yup from "yup";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
 import { Sidebar } from "../../components/Sidebar";

@@ -17,8 +17,7 @@ import { theme as customTheme } from "../../../styles/theme";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import AsyncSelect from "react-select/async";
 import { SubmitHandler, useForm } from "react-hook-form";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { getServicosVenda } from "../../../hooks/vendas/useServicoVenda";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
@@ -113,7 +112,7 @@ export default function ServicoVenda({
       setData(result);
     }
     fetchData();
-  }, [refreshKey]);
+  }, [page, vendaId]);
 
   async function callApi(value) {
     const responseServicos: any = await api.get(`/servicos`, {

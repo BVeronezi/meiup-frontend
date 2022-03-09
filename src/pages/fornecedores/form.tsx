@@ -18,8 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import * as yup from "yup";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useContext, useEffect, useState } from "react";
 import { theme as customTheme } from "../../styles/theme";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -98,7 +97,7 @@ export default function FormFornecedor() {
       findFornecedor();
     }
     focus();
-  }, []);
+  }, [fornecedorId, setValue]);
 
   const buscaCep = async (value) => {
     const cep = value.replace(/[^0-9]/g, "");

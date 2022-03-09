@@ -10,8 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import * as yup from "yup";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import { theme as customTheme } from "../../../styles/theme";
 import { SubmitHandler, useForm } from "react-hook-form";
 import AsyncSelect from "react-select/async";
@@ -84,7 +83,7 @@ export default function ProdutosPromocao({ handleLoad }) {
       setData(result);
     }
     fetchData();
-  }, [refreshKey]);
+  }, [page, promocaoId]);
 
   async function callApi(value) {
     const responseProdutos: any = await api.get(`/produtos`, {

@@ -16,8 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import * as yup from "yup";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -68,7 +67,7 @@ export default function FormCategoria() {
       findCategoria();
     }
     focus();
-  }, []);
+  }, [categoriaId, router.query, setValue]);
 
   const handleCategoria: SubmitHandler<FormData> = async (values) => {
     const data = {
@@ -123,7 +122,9 @@ export default function FormCategoria() {
             >
               <Tabs isFitted variant="enclosed">
                 <TabList>
-                  <Tab data-cy="categoria" fontWeight="bold">Categoria</Tab>
+                  <Tab data-cy="categoria" fontWeight="bold">
+                    Categoria
+                  </Tab>
                 </TabList>
 
                 <TabPanels>

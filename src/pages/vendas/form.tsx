@@ -20,8 +20,7 @@ import * as yup from "yup";
 import { Input } from "../../components/Input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import AsyncSelect from "react-select/async";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "../../contexts/AuthContext";
@@ -127,7 +126,7 @@ export default function FormVendas() {
     }
 
     focus();
-  }, []);
+  }, [router.query, setValue, vendaId]);
 
   async function callApi(value) {
     const responseClientes: any = await api.get(`/clientes`, {

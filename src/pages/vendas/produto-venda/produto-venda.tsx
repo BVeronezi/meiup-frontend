@@ -16,8 +16,7 @@ import AsyncSelect from "react-select/async";
 import * as yup from "yup";
 import { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 import { theme as customTheme } from "../../../styles/theme";
 import { api } from "../../../services/apiClient";
 import { useRouter } from "next/router";
@@ -112,7 +111,7 @@ export default function ProdutoVenda({
       setData(result);
     }
     fetchData();
-  }, [refreshKey]);
+  }, [page, vendaId]);
 
   async function callApi(value) {
     const responseProdutos: any = await api.get(`/produtos`, {

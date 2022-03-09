@@ -24,8 +24,7 @@ import { Input } from "../../components/Input";
 import { useEffect, useState } from "react";
 import { api } from "../../services/apiClient";
 import { theme as customTheme } from "../../styles/theme";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { yupResolver } = require("@hookform/resolvers/yup");
+import { yupResolver } from "@hookform/resolvers/yup";
 registerLocale("pt", pt);
 
 type FormData = {
@@ -64,7 +63,7 @@ export default function DialogAgenda({ isOpen, onClose, slot }) {
     } else {
       setDataAgenda(slot?.slots[0]);
     }
-  }, [slot]);
+  }, [slot, setValue]);
 
   const handleAgenda: SubmitHandler<FormData> = async (values) => {
     const data = {
