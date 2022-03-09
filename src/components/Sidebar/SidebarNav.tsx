@@ -1,6 +1,7 @@
 import { Box, Divider, Flex, Stack, Text } from "@chakra-ui/react";
 import {
   RiBuilding4Line,
+  RiCalendarTodoFill,
   RiContactsLine,
   RiDashboardLine,
   RiGroupLine,
@@ -70,8 +71,10 @@ export function SidebarNav() {
       />
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
-        <Text color="gray.500">AGENDA</Text>
+        <Text color="gray.500">CALENDÁRIO</Text>
       </Flex>
+
+      <NavItem icon={RiCalendarTodoFill} children="Agenda" href="/agenda" />
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">RELATÓRIOS</Text>
