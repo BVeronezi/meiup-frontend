@@ -17,7 +17,6 @@ import * as yup from "yup";
 import { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
 import { theme as customTheme } from "../../../styles/theme";
 import { api } from "../../../services/apiClient";
 import { useRouter } from "next/router";
@@ -55,6 +54,7 @@ export default function ProdutoVenda({
 }) {
   const router = useRouter();
   const vendaId: any = Object.keys(router.query)[0];
+  const [isPrecoPromocional, setIsPrecoPromocional] = useState(false);
   const [addProduto, setAddProduto] = useState(true);
   const [precoUnitario, setPrecoUnitario] = useState(0);
   const [outrasDespesas, setOutrasDespesas] = useState(0);
@@ -111,7 +111,7 @@ export default function ProdutoVenda({
       setData(result);
     }
     fetchData();
-  }, [refreshKey]);
+  }, [page, vendaId]);
 
   async function callApi(value) {
     const responseProdutos: any = await api.get(`/produtos`, {
@@ -162,11 +162,25 @@ export default function ProdutoVenda({
     handleLoad(false);
   }
 
-  const handleProduto = (produto) => {
+  const handleProduto = async (produto) => {
+    let preco: number = 0;
+
+    const promocao: any = await api.get(`/produtosPromocao/produto`, {
+      params: {
+        produtoId: produto.value,
+      },
+    });
+
+    if (promocao.data.length > 0) {
+      setIsPrecoPromocional(true);
+      preco = promocao.data[0].precoPromocional * 100;
+    } else if (produto.precos) {
+      setIsPrecoPromocional(false);
+      preco = produto.precos.precoVendaVarejo * 100;
+    }
+
     setValue("quantidade", "");
-    setPrecoUnitario(
-      (produto.precos ? produto.precos.precoVendaVarejo : 0) * 100
-    );
+    setPrecoUnitario(preco);
     setOutrasDespesas(0);
     setDesconto(0);
     setValorTotal(0);
@@ -245,6 +259,7 @@ export default function ProdutoVenda({
   };
 
   const resetInputs = () => {
+    setIsPrecoPromocional(false);
     setselectData(null);
     setValue("quantidade", "");
     setPrecoUnitario(0);
@@ -306,19 +321,25 @@ export default function ProdutoVenda({
       </VStack>
       <VStack marginTop="14px" spacing="12">
         <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
-          <InputCurrency
-            id="precoUnitario"
-            isDisabled={true}
-            isLoading={isLoading}
-            name="precoUnitario"
-            label="Preço unitário *"
-            error={errors.precoUnitario}
-            {...register("precoUnitario")}
-            value={precoUnitario}
-            onValueChange={(v) => {
-              setPrecoUnitario(v.floatValue);
-            }}
-          ></InputCurrency>
+          <VStack>
+            <InputCurrency
+              id="precoUnitario"
+              isLoading={isLoading}
+              name="precoUnitario"
+              label="Preço unitário *"
+              error={errors.precoUnitario}
+              {...register("precoUnitario")}
+              value={precoUnitario}
+              onValueChange={(v) => {
+                setPrecoUnitario(v.floatValue);
+              }}
+            ></InputCurrency>
+            {isPrecoPromocional && (
+              <Text alignSelf="flex-start" color="green">
+                Preço promocional
+              </Text>
+            )}
+          </VStack>
 
           <InputCurrency
             id="outrasDespesas"

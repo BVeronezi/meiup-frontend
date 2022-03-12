@@ -21,10 +21,6 @@ import { Input } from "../../components/Input";
 import { SubmitHandler, useForm } from "react-hook-form";
 import AsyncSelect from "react-select/async";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-import { GetServerSideProps } from "next";
-import { parseCookies } from "nookies";
-import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "../../contexts/AuthContext";

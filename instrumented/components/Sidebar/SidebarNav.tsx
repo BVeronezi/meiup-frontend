@@ -1,8 +1,10 @@
 import { Box, Divider, Flex, Stack, Text } from "@chakra-ui/react";
 import {
   RiBuilding4Line,
+  RiCalendarTodoFill,
   RiContactsLine,
   RiDashboardLine,
+  RiDatabase2Line,
   RiGroupLine,
   RiInboxLine,
   RiLoginBoxLine,
@@ -22,12 +24,9 @@ export function SidebarNav() {
   return (
     <>
       <Divider />
-      <NavItem
-        mt={4}
-        icon={RiDashboardLine}
-        children="INÍCIO"
-        href="/dashboard"
-      />
+      <NavItem mt={4} icon={RiDashboardLine} href="/dashboard">
+        INÍCIO
+      </NavItem>
 
       {user?.tipo === "MEI" && (
         <>
@@ -35,12 +34,12 @@ export function SidebarNav() {
             <Text color="gray.500">EMPRESA</Text>
           </Flex>
 
-          <NavItem
-            icon={RiBuilding4Line}
-            children="Dados gerais"
-            href="/dados-gerais"
-          />
-          <NavItem icon={RiContactsLine} children="Usuários" href="/usuarios" />
+          <NavItem icon={RiBuilding4Line} href="/dados-gerais">
+            Dados gerais
+          </NavItem>
+          <NavItem icon={RiContactsLine} href="/usuarios">
+            Usuários
+          </NavItem>
         </>
       )}
 
@@ -48,39 +47,58 @@ export function SidebarNav() {
         <Text color="gray.500"> CATÁLOGO</Text>
       </Flex>
 
-      <NavItem icon={RiStackFill} children="Produtos" href="/produtos" />
-      <NavItem icon={RiStackLine} children="Serviços" href="/servicos" />
-      <NavItem icon={RiInboxLine} children="Categorias" href="/categorias" />
+      <NavItem icon={RiStackFill} href="/produtos">
+        Produtos
+      </NavItem>
+      <NavItem icon={RiStackLine} href="/servicos">
+        Serviços
+      </NavItem>
+      <NavItem icon={RiInboxLine} href="/categorias">
+        Categorias
+      </NavItem>
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">VENDAS</Text>
       </Flex>
-      <NavItem icon={RiShoppingBasket2Line} children="Vendas" href="/vendas" />
-      <NavItem icon={RiGroupLine} children="Clientes" href="/clientes" />
-      <NavItem icon={RiPriceTag3Line} children="Promoções" href="/promocoes" />
+      <NavItem icon={RiShoppingBasket2Line} href="/vendas">
+        Vendas
+      </NavItem>
+      <NavItem icon={RiGroupLine} href="/clientes">
+        Clientes
+      </NavItem>
+      <NavItem icon={RiPriceTag3Line} href="/promocoes">
+        Promoções
+      </NavItem>
 
-      {/* <Flex align="center" fontWeight="bold" p="4" mx="4">
+      <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">COMPRAS</Text>
       </Flex>
 
-      <NavItem icon={RiShoppingCartLine} children="Compras" href="/compras" /> */}
+      <NavItem icon={RiShoppingCartLine} href="/fornecedores">
+        Fornecedores
+      </NavItem>
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
-        <Text color="gray.500">AGENDA</Text>
+        <Text color="gray.500">CALENDÁRIO</Text>
       </Flex>
+
+      <NavItem icon={RiCalendarTodoFill} href="/agenda">
+        Agenda
+      </NavItem>
 
       <Flex align="center" fontWeight="bold" p="4" mx="4">
         <Text color="gray.500">RELATÓRIOS</Text>
       </Flex>
 
+      <NavItem icon={RiDatabase2Line} href="/relatorios">
+        Relatórios
+      </NavItem>
+
       <Divider />
 
-      <NavItem
-        icon={RiLoginBoxLine}
-        children="SAIR"
-        href="#"
-        onClick={signOut}
-      />
+      <NavItem icon={RiLoginBoxLine} href="#" onClick={signOut}>
+        SAIR
+      </NavItem>
     </>
   );
 }

@@ -16,7 +16,7 @@ export function ChartLineDashboard({ vendas }) {
       vendas.map((d) => moment(d["dataVenda"]).format("YYYY-MM-DD"))
     );
     setData(vendas.map((c) => c["count"]));
-  }, []);
+  }, [vendas]);
 
   const options: ApexCharts.ApexOptions = {
     chart: {

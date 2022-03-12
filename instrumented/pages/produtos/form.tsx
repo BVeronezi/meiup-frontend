@@ -31,6 +31,7 @@ import { Sidebar } from "../../components/Sidebar";
 import { LoadPage } from "../../components/Load";
 import { InputCurrency } from "../../components/InputCurrency";
 import { withSSRAuth } from "../../utils/withSSRAuth";
+import FornecedoresProduto from "./fornecedores/fornecedores";
 
 type FormData = {
   descricao: string;
@@ -63,6 +64,7 @@ export default function FormProduto() {
   const [precoAtacado, setPrecoAtacado] = useState(0);
   const [precoCompra, setPrecoCompra] = useState(0);
   const [margemLucro, setMargemLucro] = useState(0);
+  const [isLoadingFetch, setIsLoadingFetch] = useState(false);
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
@@ -153,7 +155,7 @@ export default function FormProduto() {
     }
 
     focus();
-  }, []);
+  }, [router.query, setValue]);
 
   async function callApi(value) {
     const response: any = await api.get(`/categorias`, {
@@ -177,6 +179,10 @@ export default function FormProduto() {
 
   const handleCategoria = (categoria) => {
     setselectData(categoria);
+  };
+
+  const handleLoad = (value) => {
+    setIsLoadingFetch(value);
   };
 
   const calculaMargemLucro = () => {
@@ -243,7 +249,7 @@ export default function FormProduto() {
       <Head>
         <title>MEIUP | Produto</title>
       </Head>
-      <LoadPage active={isLoading}>
+      <LoadPage active={isLoading || isLoadingFetch}>
         <Sidebar>
           <Stack as="form" onSubmit={handleSubmit(handleProduto)}>
             <Box
@@ -263,6 +269,9 @@ export default function FormProduto() {
                   </Tab>
                   <Tab data-cy="precos" fontWeight="bold">
                     Preços
+                  </Tab>
+                  <Tab data-cy="fornecedores" fontWeight="bold">
+                    Fornecedores
                   </Tab>
                 </TabList>
 
@@ -438,6 +447,11 @@ export default function FormProduto() {
                         ></InputCurrency>
                       </SimpleGrid>
                     </VStack>
+                  </TabPanel>
+                  <TabPanel>
+                    <FornecedoresProduto
+                      handleLoad={handleLoad}
+                    ></FornecedoresProduto>
                   </TabPanel>
                 </TabPanels>
               </Tabs>

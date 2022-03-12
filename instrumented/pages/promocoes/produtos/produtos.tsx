@@ -7,10 +7,8 @@ import {
   IconButton,
   SimpleGrid,
   Text,
-  toast,
   VStack,
 } from "@chakra-ui/react";
-import { Input } from "../../../components/Input";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { theme as customTheme } from "../../../styles/theme";
@@ -18,38 +16,38 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import AsyncSelect from "react-select/async";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { getProdutoServico } from "../../../hooks/servicos/useProdutoServico";
 import { api } from "../../../services/apiClient";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
 import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
 import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pagination } from "../../../components/Pagination";
-import axios from "axios";
-import { parseCookies } from "nookies";
+import { getProdutoPromocao } from "../../../hooks/promocao/useProdutoPromocao";
+import { InputCurrency } from "../../../components/InputCurrency";
 
 type FormData = {
   produto: string;
-  quantidade: string;
+  precoPromocional: string;
 };
 
-const insumoFormSchema = yup.object().shape({
+const produtoFormSchema = yup.object().shape({
   produto: yup.string(),
-  quantidade: yup.string().required("Quantidade obrigatória"),
+  precoPromocional: yup.string(),
 });
 
-export default function Insumos({ handleLoad }) {
+export default function ProdutosPromocao({ handleLoad }) {
   const router = useRouter();
-  const servicoId: any = Object.keys(router.query)[0];
+  const promocaoId: any = Object.keys(router.query)[0];
   const [page, setPage] = useState(1);
   const [addProduto, setAddProduto] = useState(true);
+  const [precoPromocional, setPrecoPromocional] = useState(0);
   const toast = createStandaloneToast({ theme: customTheme });
 
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => setIsOpen(false);
   const cancelRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
-  const { register, handleSubmit, formState, setValue, getValues } = useForm({
-    resolver: yupResolver(insumoFormSchema),
+  const { register, handleSubmit, formState } = useForm({
+    resolver: yupResolver(produtoFormSchema),
   });
 
   const { errors } = formState;
@@ -63,16 +61,15 @@ export default function Insumos({ handleLoad }) {
 
   const [selectedProduto, setSelectedProduto] = useState({
     id: 0,
-    quantidade: 0,
+    precoPromocional: 0,
     produto: { id: 0, descricao: "" },
   });
 
   const [data, setData] = useState({
-    produtosServico: [
+    produtosPromocao: [
       {
         id: 0,
-        quantidade: 0,
-        servico: { id: 0 },
+        precoPromocional: 0,
         produto: { id: 0, descricao: "" },
       },
     ],
@@ -82,11 +79,11 @@ export default function Insumos({ handleLoad }) {
 
   useEffect(() => {
     async function fetchData() {
-      const result: any = await getProdutoServico(page, servicoId);
+      const result: any = await getProdutoPromocao(page, promocaoId);
       setData(result);
     }
     fetchData();
-  }, [servicoId, page]);
+  }, [page, promocaoId]);
 
   async function callApi(value) {
     const responseProdutos: any = await api.get(`/produtos`, {
@@ -103,19 +100,19 @@ export default function Insumos({ handleLoad }) {
     return data;
   }
 
-  const handleEditProdutoServico = (produtoServico) => {
-    const produto: any = [produtoServico.produto].map((p) => {
+  const handleEditProdutoPromocao = (produtoPromocao) => {
+    const produto: any = [produtoPromocao.produto].map((p) => {
       return { value: String(p.id), label: p.descricao };
     })[0];
     setselectData(produto);
-    setValue("quantidade", produtoServico.quantidade);
+    setPrecoPromocional(produtoPromocao.precoPromocional * 100);
   };
 
   const handleProduto = (produto) => {
     setselectData(produto);
   };
 
-  const adicionarInsumo: SubmitHandler<FormData> = async (values) => {
+  const adicionarProdutoPromocao: SubmitHandler<FormData> = async (values) => {
     handleLoad(true);
     if (!selectData.value) {
       setAddProduto(false);
@@ -124,24 +121,21 @@ export default function Insumos({ handleLoad }) {
     if (selectData.value) {
       const params = {
         produto: selectData.value,
-        quantidade: getValues("quantidade"),
+        precoPromocional: precoPromocional / 100,
       };
 
-      const result = await api.post(
-        `/servicos/produtosServico/${servicoId}`,
-        params
-      );
+      const result = await api.post(`/promocoes/produto/${promocaoId}`, params);
 
-      if (!result.data?.produtoServico) {
+      if (!result.data?.produtoPromocao) {
         toast({
-          title: "Insumo atualizado com sucesso!",
+          title: "Produto atualizado com sucesso!",
           status: "success",
           duration: 2000,
           isClosable: true,
         });
       } else {
         toast({
-          title: "Insumo adicionado com sucesso!",
+          title: "Produto adicionado com sucesso!",
           status: "success",
           duration: 2000,
           isClosable: true,
@@ -156,22 +150,22 @@ export default function Insumos({ handleLoad }) {
 
   const resetInputs = () => {
     setselectData(null);
-    setValue("quantidade", null);
+    setPrecoPromocional(null);
   };
 
-  async function excluirInsumo(produtoServico) {
+  async function excluirProduto(produtoPromocao) {
     handleLoad(true);
     try {
       onClose();
-      await api.delete(`/servicos/produtosServico/${servicoId}`, {
+      await api.delete(`/promocoes/produto/${promocaoId}`, {
         data: {
-          produtoServico: produtoServico.id,
-          produto: produtoServico.produto.id,
+          produtoPromocao: produtoPromocao.id,
+          produto: produtoPromocao.produto.id,
         },
       });
 
       toast({
-        title: "Insumo removido com sucesso!",
+        title: "Produto removido com sucesso!",
         status: "success",
         duration: 2000,
         isClosable: true,
@@ -212,12 +206,17 @@ export default function Insumos({ handleLoad }) {
             )}{" "}
           </VStack>
           {selectData?.value ? (
-            <Input
-              name="quantidade"
-              label="Quantidade *"
-              error={errors.quantidade}
-              {...register("quantidade")}
-            ></Input>
+            <InputCurrency
+              id="precoPromocional"
+              name="precoPromocional"
+              label="Preço promocional *"
+              error={errors.precoPromocional}
+              {...register("precoPromocional")}
+              value={precoPromocional}
+              onValueChange={(v) => {
+                setPrecoPromocional(v.floatValue);
+              }}
+            ></InputCurrency>
           ) : (
             ""
           )}
@@ -231,7 +230,7 @@ export default function Insumos({ handleLoad }) {
               type="submit"
               color="white"
               backgroundColor="yellow.500"
-              onClick={handleSubmit(adicionarInsumo)}
+              onClick={handleSubmit(adicionarProdutoPromocao)}
             >
               ADICIONAR
             </Button>
@@ -240,10 +239,10 @@ export default function Insumos({ handleLoad }) {
       </VStack>
       <Divider mt="12" />
       <Text fontSize="20px" fontWeight="medium" mt="8" mb="8">
-        Insumos adicionados no serviço
+        Produtos adicionados na promoção
       </Text>
       <Table
-        id="table-insumos"
+        id="table-produtos-promocao"
         variant="striped"
         colorScheme="blackAlpha"
         size="md"
@@ -251,19 +250,19 @@ export default function Insumos({ handleLoad }) {
         <Thead>
           <Tr>
             <Th>Produto</Th>
-            <Th>Quantidade</Th>
+            <Th>Preço promocional</Th>
             <Th width="8">Ações</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {data.produtosServico.map((produtoServico, index) => {
+          {data?.produtosPromocao.map((produtoPromocao, index) => {
             return (
               <Tr key={index}>
                 <Td>
-                  <Text>{produtoServico.produto.descricao}</Text>
+                  <Text>{produtoPromocao.produto.descricao}</Text>
                 </Td>
                 <Td>
-                  <Text>{produtoServico.quantidade}</Text>
+                  <Text>{produtoPromocao.precoPromocional}</Text>
                 </Td>
                 <Td>
                   <HStack>
@@ -273,7 +272,7 @@ export default function Insumos({ handleLoad }) {
                       aria-label="Editar produto"
                       icon={<RiPencilLine />}
                       onClick={() => {
-                        handleEditProdutoServico(produtoServico);
+                        handleEditProdutoPromocao(produtoPromocao);
                       }}
                     />
                     <IconButton
@@ -282,7 +281,7 @@ export default function Insumos({ handleLoad }) {
                       aria-label="Remover produto"
                       icon={<RiDeleteBinLine />}
                       onClick={() => {
-                        setSelectedProduto(produtoServico);
+                        setSelectedProduto(produtoPromocao);
                         setIsOpen(true);
                       }}
                     />
@@ -292,10 +291,10 @@ export default function Insumos({ handleLoad }) {
                     isOpen={isOpen}
                     cancelRef={cancelRef}
                     onClose={onClose}
-                    header="Remover Insumo"
-                    body="Tem certeza que deseja remover o insumo"
+                    header="Remover produto"
+                    body="Tem certeza que deseja remover o produto"
                     description={selectedProduto.produto?.descricao}
-                    onClick={() => excluirInsumo(selectedProduto)}
+                    onClick={() => excluirProduto(selectedProduto)}
                   />
                 </Td>
               </Tr>

@@ -29,7 +29,7 @@ import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pesquisa } from "../../fragments/pesquisa";
-import { usePromocoes } from "../../hooks/promocao/usePromocao";
+import { getPromocoes, usePromocoes } from "../../hooks/promocao/usePromocao";
 import { api } from "../../services/apiClient";
 import { queryClient } from "../../services/queryClient";
 import { theme as customTheme } from "../../styles/theme";
@@ -70,15 +70,15 @@ export default function Promocoes() {
     fetchData();
   }, [data]);
 
-  async function deleteServico(promocaoId: string) {
+  async function deletePromocao(promocaoId: string) {
     setIsLoadingPage(true);
     try {
       onClose();
 
       await api.delete(`/promocoes/${promocaoId}`);
 
-      // const data = await getServicos(page, null);
-      // setValue(data);
+      const data = await getPromocoes(page);
+      setValue(data);
 
       toast({
         title: "Promoção removida com sucesso!",
@@ -97,11 +97,11 @@ export default function Promocoes() {
     setIsLoadingPage(false);
   }
 
-  async function handlePrefetchServico(servicoId: number) {
+  async function handlePrefetchPromocao(servicoId: number) {
     await queryClient.prefetchQuery(
       ["servico", servicoId],
       async () => {
-        const response = await api.get(`/servicos/${servicoId}`);
+        const response = await api.get(`/promocoes/${servicoId}`);
 
         return response.data;
       },
@@ -114,12 +114,8 @@ export default function Promocoes() {
   async function handlePesquisaPromocao(event) {
     if (event.target.value.length > 3) {
       setIsFetching(true);
-      // const servicosPesquisados = await getServicos(
-      //   1,
-      //   undefined,
-      //   event.target.value
-      // );
-      // setValue(servicosPesquisados);
+      const servicosPesquisados = await getPromocoes(1, event.target.value);
+      setValue(servicosPesquisados);
       setIsFetching(false);
     } else {
       setIsFetching(true);
@@ -140,7 +136,7 @@ export default function Promocoes() {
               <Pesquisa handleChange={handlePesquisaPromocao} />
               <Box ml="4">
                 {isWideVersion && (
-                  <NextLink href="/servicos/form" passHref>
+                  <NextLink href="/promocoes/form" passHref>
                     <Button
                       _hover={{
                         bg: "blue.500",
@@ -152,18 +148,18 @@ export default function Promocoes() {
                       backgroundColor="blue.800"
                       leftIcon={<Icon as={RiAddLine} fontSize="20" />}
                     >
-                      Novo serviço
+                      Nova promoção
                     </Button>
                   </NextLink>
                 )}
 
                 {!isWideVersion && (
-                  <Tooltip label="Novo servico">
+                  <Tooltip label="Nova promoção">
                     <IconButton
                       variant="outline"
                       color="blue.800"
-                      aria-label="Novo servico"
-                      onClick={() => router.push("/servicos/form")}
+                      aria-label="Novo promoção"
+                      onClick={() => router.push("/promocoes/form")}
                       icon={<RiAddBoxLine />}
                     />
                   </Tooltip>
@@ -207,7 +203,9 @@ export default function Promocoes() {
                                   <Link
                                     color="gray.900"
                                     onMouseEnter={() =>
-                                      handlePrefetchServico(Number(promocao.id))
+                                      handlePrefetchPromocao(
+                                        Number(promocao.id)
+                                      )
                                     }
                                   >
                                     <Text>{promocao.descricao}</Text>
@@ -228,7 +226,7 @@ export default function Promocoes() {
                                   <IconButton
                                     variant="outline"
                                     color="blue.800"
-                                    aria-label="Editar serviço"
+                                    aria-label="Editar promoção"
                                     icon={<RiPencilLine />}
                                     onClick={() => {
                                       router.push({
@@ -273,7 +271,7 @@ export default function Promocoes() {
               header="Remover Promoção"
               body="Tem certeza que deseja remover a promoção"
               description={selectedPromocao.descricao}
-              onClick={() => deleteServico(String(selectedPromocao.id))}
+              onClick={() => deletePromocao(String(selectedPromocao.id))}
             />
           </Box>
         </Sidebar>

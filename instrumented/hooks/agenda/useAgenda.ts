@@ -1,0 +1,42 @@
+import { useQuery, UseQueryOptions, UseQueryResult } from "react-query";
+import { api } from "../../services/apiClient";
+
+type Agenda = {
+  id: string;
+  titulo: string;
+  data: string;
+  descricao: string;
+};
+
+type GetAgendaResponse = {
+  totalCount: number;
+  agenda: Agenda[];
+};
+
+export async function getAgenda(valuePesquisa?): Promise<GetAgendaResponse> {
+  const response: any = await api.get(`/agenda`, {
+    params: { nome: valuePesquisa },
+  });
+
+  const agenda = response.data.found.agenda.map((agenda) => {
+    return {
+      id: agenda.id,
+      title: agenda.titulo,
+      start: agenda.data,
+      end: agenda.data,
+      descricao: agenda.descricao,
+    };
+  });
+
+  return {
+    agenda,
+    totalCount: response.data.found.total,
+  };
+}
+
+export function useAgenda(options?: UseQueryOptions) {
+  return useQuery([["agenda"]], () => getAgenda(), {
+    staleTime: 0,
+    ...options,
+  }) as UseQueryResult<GetAgendaResponse, unknown>;
+}

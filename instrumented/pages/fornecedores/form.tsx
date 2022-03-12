@@ -30,18 +30,14 @@ import { LoadPage } from "../../components/Load";
 import { Sidebar } from "../../components/Sidebar";
 import { Input } from "../../components/Input";
 import { Endereco } from "../../fragments/endereco";
-import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale } from "react-datepicker";
-import DatePicker from "react-datepicker";
-import pt from "date-fns/locale/pt";
-registerLocale("pt", pt);
 
 type FormData = {
   nome: string;
   email: string;
-  dataNascimento: string;
+  cpfCnpj: string;
   telefone: number;
   celular: number;
+  situacaoCadastral: string;
   cep: number;
   endereco: string;
   estado: string;
@@ -60,13 +56,12 @@ const usuarioFormSchema = yup.object().shape({
   endereco: yup.string(),
 });
 
-export default function FormUsuario() {
+export default function FormFornecedor() {
   const router = useRouter();
   const { user } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [date, setDate] = useState();
   const toast = createStandaloneToast({ theme: customTheme });
-  const clienteId: any = Object.keys(router.query)[0];
+  const fornecedorId: any = Object.keys(router.query)[0];
   const { register, handleSubmit, formState, setValue } = useForm({
     resolver: yupResolver(usuarioFormSchema),
   });
@@ -74,20 +69,20 @@ export default function FormUsuario() {
   const { errors } = formState;
 
   useEffect(() => {
-    async function findCliente() {
+    async function findFornecedor() {
       setIsLoading(true);
 
-      if (clienteId) {
-        const response: any = await api.get(`/clientes/${clienteId}`);
+      if (fornecedorId) {
+        const response: any = await api.get(`/fornecedores/${fornecedorId}`);
 
-        Object.entries(response.data.cliente).forEach(([key, value]) => {
+        Object.entries(response.data.fornecedor).forEach(([key, value]) => {
           if (key !== "endereco") {
             setValue(key, value);
           }
         });
 
-        if (response.data.cliente.endereco) {
-          Object.entries(response.data.cliente.endereco).forEach(
+        if (response.data.fornecedor.endereco) {
+          Object.entries(response.data.fornecedor.endereco).forEach(
             ([key, value]) => {
               setValue(key, value);
             }
@@ -98,11 +93,11 @@ export default function FormUsuario() {
       setIsLoading(false);
     }
 
-    if (clienteId) {
-      findCliente();
+    if (fornecedorId) {
+      findFornecedor();
     }
     focus();
-  }, [clienteId, setValue]);
+  }, [fornecedorId, setValue]);
 
   const buscaCep = async (value) => {
     const cep = value.replace(/[^0-9]/g, "");
@@ -141,13 +136,14 @@ export default function FormUsuario() {
     }
   };
 
-  const handleCliente: SubmitHandler<FormData> = async (values) => {
+  const handleFornecedor: SubmitHandler<FormData> = async (values) => {
     const data = {
       nome: values.nome,
       email: values.email,
-      dataNascimento: date,
+      cpfCnpj: values.cpfCnpj,
       telefone: values.telefone,
       celular: values.celular,
+      situacaoCadastral: values.situacaoCadastral,
       empresa: user.empresa,
       endereco: {
         cep: values.cep,
@@ -161,12 +157,12 @@ export default function FormUsuario() {
     };
 
     try {
-      if (clienteId) {
-        await api.patch(`/clientes/${clienteId}`, {
+      if (fornecedorId) {
+        await api.patch(`/fornecedores/${fornecedorId}`, {
           ...data,
         });
       } else {
-        await api.post(`/clientes`, {
+        await api.post(`/fornecedores`, {
           ...data,
         });
       }
@@ -192,11 +188,11 @@ export default function FormUsuario() {
   return (
     <>
       <Head>
-        <title>MEIUP | Cliente</title>
+        <title>MEIUP | Fornecedor</title>
       </Head>
       <LoadPage active={isLoading}>
         <Sidebar>
-          <Stack as="form" onSubmit={handleSubmit(handleCliente)} flex="1">
+          <Stack as="form" onSubmit={handleSubmit(handleFornecedor)} flex="1">
             <Box
               borderBottom="1px"
               borderLeft="1px"
@@ -246,6 +242,28 @@ export default function FormUsuario() {
                       >
                         <Input
                           isLoading={isLoading}
+                          name="cpfCnpj"
+                          autoFocus={true}
+                          label="CPF / CNPJ"
+                          error={errors.cpfCnpj}
+                          {...register("cpfCnpj")}
+                        ></Input>
+                        <Input
+                          isLoading={isLoading}
+                          name="situacaoCadastral"
+                          autoFocus={true}
+                          label="Situação cadastral"
+                          error={errors.situacaoCadastral}
+                          {...register("situacaoCadastral")}
+                        ></Input>
+                      </SimpleGrid>
+                      <SimpleGrid
+                        minChildWidth="240px"
+                        spacing={["6", "8"]}
+                        w="100%"
+                      >
+                        <Input
+                          isLoading={isLoading}
                           name="celular"
                           label="Celular"
                           {...register("celular")}
@@ -256,25 +274,6 @@ export default function FormUsuario() {
                           label="Telefone"
                           {...register("telefone")}
                         ></Input>
-                        <Box>
-                          <VStack align="left" spacing="4">
-                            <Text fontWeight="bold">Data nascimento</Text>
-                            <Skeleton isLoaded={!isLoading}>
-                              <DatePicker
-                                locale="pt"
-                                dateFormat="dd MMMM, yyy"
-                                showPopperArrow={false}
-                                peekNextMonth
-                                showMonthDropdown
-                                showYearDropdown
-                                dropdownMode="select"
-                                selected={date}
-                                onChange={(date) => setDate(date)}
-                                customInput={<Input />}
-                              />
-                            </Skeleton>
-                          </VStack>
-                        </Box>
                       </SimpleGrid>
                     </VStack>
                   </TabPanel>

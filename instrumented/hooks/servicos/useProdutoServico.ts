@@ -38,7 +38,7 @@ export async function getProdutoServico(
   };
 }
 
-export function useServicosVenda(
+export function useProdutosServico(
   page: number,
   servicoId: string,
   options?: UseQueryOptions

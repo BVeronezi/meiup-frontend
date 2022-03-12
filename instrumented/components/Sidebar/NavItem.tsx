@@ -8,7 +8,7 @@ interface NavItemProps extends FlexProps {
   href: string;
 }
 
-export const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
+export const NavItem = ({ icon, href, children }: NavItemProps) => {
   return (
     <ActiveLink href={href} passHref>
       <Link
@@ -28,7 +28,6 @@ export const NavItem = ({ icon, children, href, ...rest }: NavItemProps) => {
             bg: "yellow.500",
             color: "white",
           }}
-          {...rest}
         >
           {icon && (
             <Icon

@@ -88,7 +88,7 @@ export default function FormServico() {
     }
 
     focus();
-  }, [router.query, setValue, servicoId]);
+  }, [servicoId, router.query, setValue]);
 
   const handleLoad = (value) => {
     setIsLoadingFetch(value);
