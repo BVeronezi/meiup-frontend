@@ -111,7 +111,7 @@ export default function ProdutoVenda({
       setData(result);
     }
     fetchData();
-  }, [page, vendaId]);
+  }, [page, vendaId, refreshKey]);
 
   async function callApi(value) {
     const responseProdutos: any = await api.get(`/produtos`, {

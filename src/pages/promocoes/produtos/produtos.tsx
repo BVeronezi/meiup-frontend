@@ -83,7 +83,7 @@ export default function ProdutosPromocao({ handleLoad }) {
       setData(result);
     }
     fetchData();
-  }, [page, promocaoId]);
+  }, [page, promocaoId, refreshKey]);
 
   async function callApi(value) {
     const responseProdutos: any = await api.get(`/produtos`, {

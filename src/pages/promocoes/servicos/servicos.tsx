@@ -84,7 +84,7 @@ export default function ServicosPromocao({ handleLoad }) {
       setData(result);
     }
     fetchData();
-  }, [page, promocaoId]);
+  }, [page, promocaoId, refreshKey]);
 
   async function callApi(value) {
     const responseServicos: any = await api.get(`/servicos`, {

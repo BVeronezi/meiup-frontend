@@ -75,7 +75,7 @@ export default function FornecedoresProduto({ handleLoad }) {
       setData(result);
     }
     fetchData();
-  }, [page, produtoId]);
+  }, [page, produtoId, refreshKey]);
 
   async function callApi(value) {
     const responseFornecedores: any = await api.get(`/fornecedores`, {

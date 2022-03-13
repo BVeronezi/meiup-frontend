@@ -26,17 +26,18 @@ import {
   RiCloseCircleLine,
   RiEyeLine,
   RiPencilLine,
+  RiPrinterLine,
 } from "react-icons/ri";
 import { queryClient } from "../../services/queryClient";
 import { api } from "../../services/apiClient";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
 import { Pagination } from "../../components/Pagination";
 import { getVendas, useVendas } from "../../hooks/vendas/useVendas";
-import { GetServerSideProps } from "next";
 import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 import { LoadPage } from "../../components/Load";
 import { withSSRAuth } from "../../utils/withSSRAuth";
+import VendaPDF from "./report-venda/[...report-venda]";
 
 export const StatusVenda = [
   { codigo: 0, label: "ABERTA" },
@@ -155,6 +156,23 @@ export default function Vendas({ vendas }) {
       setIsFetching(false);
     }
   }
+
+  const gerarRelatorio = async (vendaId) => {
+    const responseVenda = await api.get(`/vendas/${vendaId}`);
+    const produtos = await api.get(`/produtosVenda`, {
+      params: { vendaId: vendaId },
+    });
+
+    const servicos = await api.get(`/servicosVenda`, {
+      params: { vendaId: vendaId },
+    });
+
+    VendaPDF(
+      responseVenda.data.venda,
+      produtos.data.found.produtosVenda,
+      servicos.data.found.servicosVenda
+    );
+  };
 
   return (
     <>
@@ -281,7 +299,6 @@ export default function Vendas({ vendas }) {
                                         />
                                       </Tooltip>
                                     )}
-
                                     {Number(venda.status) === 0 && (
                                       <Tooltip label="Editar venda">
                                         <IconButton
@@ -337,6 +354,21 @@ export default function Vendas({ vendas }) {
                                               setIsFinalizaVenda(false);
                                               setIsOpen(true);
                                             }
+                                          }}
+                                        />
+                                      </Tooltip>
+                                    )}
+
+                                    {Number(venda.status) === 1 && (
+                                      <Tooltip label="Imprimir venda">
+                                        <IconButton
+                                          size="sm"
+                                          variant="outline"
+                                          color="blue.800"
+                                          aria-label="Imprimir venda"
+                                          icon={<RiPrinterLine />}
+                                          onClick={() => {
+                                            gerarRelatorio(venda.id);
                                           }}
                                         />
                                       </Tooltip>
