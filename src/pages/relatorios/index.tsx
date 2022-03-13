@@ -24,16 +24,21 @@ import DatePicker from "react-datepicker";
 import pt from "date-fns/locale/pt";
 import { Input } from "../../components/Input";
 import { api } from "../../services/apiClient";
-import FornecedoresPDF from "./[...fornecedores]";
-import VendasPDF from "./[...vendas]";
 import { AuthContext } from "../../contexts/AuthContext";
 import { LoadPage } from "../../components/Load";
+import VendasPDF from "./vendas/[...report-vendas]";
+import FornecedoresPDF from "./fornecedores/[...report-fornecedores]";
+import ProdutosPDF from "./produtos/[...report-produtos]";
+import ServicosPDF from "./servicos/[...report-servicos]";
+import ClientesPDF from "./clientes/[...report-clientes]";
 registerLocale("pt", pt);
 
 export enum TipoRelatorio {
-  DRE = "1",
+  VENDAS = "1",
   FORNECEDORES = "2",
-  VENDAS = "3",
+  PRODUTOS = "3",
+  SERVICOS = "4",
+  CLIENTES = "5",
 }
 
 export default function Relatorios() {
@@ -45,9 +50,11 @@ export default function Relatorios() {
   const { user } = useContext(AuthContext);
 
   const tiposRelatorio = [
-    { value: "1", label: "DRE" },
+    { value: "1", label: "Vendas" },
     { value: "2", label: "Fornecedores" },
-    { value: "3", label: "Vendas" },
+    { value: "3", label: "Produtos" },
+    { value: "4", label: "Serviços" },
+    { value: "5", label: "Clientes" },
   ];
 
   const handleTiposRelatorio = (tipoRelatorio) => {
@@ -64,17 +71,6 @@ export default function Relatorios() {
     setLoading(true);
 
     switch (stateTiposRelatorio) {
-      case TipoRelatorio.DRE:
-        break;
-      case TipoRelatorio.FORNECEDORES:
-        const responseFornecedores = await api.get("/fornecedores");
-
-        setLoading(false);
-        FornecedoresPDF(
-          responseFornecedores.data.found.fornecedores,
-          user?.empresa
-        );
-        break;
       case TipoRelatorio.VENDAS:
         const responseVendas = await api.get("/vendas", {
           params: {
@@ -90,6 +86,33 @@ export default function Relatorios() {
           dataFim,
           user?.empresa
         );
+        break;
+      case TipoRelatorio.FORNECEDORES:
+        const responseFornecedores = await api.get("/fornecedores");
+
+        setLoading(false);
+        FornecedoresPDF(
+          responseFornecedores.data.found.fornecedores,
+          user?.empresa
+        );
+        break;
+      case TipoRelatorio.PRODUTOS:
+        const responseProdutos = await api.get("/produtos");
+
+        setLoading(false);
+        ProdutosPDF(responseProdutos.data.found.produtos, user?.empresa);
+        break;
+      case TipoRelatorio.SERVICOS:
+        const responseServicos = await api.get("/servicos");
+
+        setLoading(false);
+        ServicosPDF(responseServicos.data.found.servicos, user?.empresa);
+        break;
+      case TipoRelatorio.CLIENTES:
+        const responseClientes = await api.get("/clientes");
+
+        setLoading(false);
+        ClientesPDF(responseClientes.data.found.clientes, user?.empresa);
         break;
       default:
         break;
@@ -144,8 +167,7 @@ export default function Relatorios() {
                           )}
                         </VStack>
                         {stateTiposRelatorio &&
-                          stateTiposRelatorio !==
-                            TipoRelatorio.FORNECEDORES && (
+                          stateTiposRelatorio === TipoRelatorio.VENDAS && (
                             <>
                               <VStack align="left" spacing="4">
                                 <Text fontWeight="bold">Data início *</Text>

@@ -67,8 +67,6 @@ export default function VendasPDF(
       })
     : [];
 
-  console.log(totais);
-
   const details = [
     {
       text: `Vendas - Período: ${moment(dataInicioFiltro).format(
@@ -84,11 +82,26 @@ export default function VendasPDF(
         widths: ["*", "*", "*", "*", "*"],
         body: [
           [
-            { text: "Cliente", style: "tableHeader", fontSize: 12 },
-            { text: "Data da venda", style: "tableHeader", fontSize: 12 },
-            { text: "Valor total", style: "tableHeader", fontSize: 12 },
-            { text: "Status", style: "tableHeader", fontSize: 12 },
-            { text: "Vendedor(a)", style: "tableHeader", fontSize: 12 },
+            { text: "Cliente", style: "tableHeader", fontSize: 12, bold: true },
+            {
+              text: "Data da venda",
+              style: "tableHeader",
+              fontSize: 12,
+              bold: true,
+            },
+            {
+              text: "Valor total",
+              style: "tableHeader",
+              fontSize: 12,
+              bold: true,
+            },
+            { text: "Status", style: "tableHeader", fontSize: 12, bold: true },
+            {
+              text: "Vendedor(a)",
+              style: "tableHeader",
+              fontSize: 12,
+              bold: true,
+            },
           ],
           ...values,
         ],
