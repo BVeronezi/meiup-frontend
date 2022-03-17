@@ -40,7 +40,7 @@ describe("Vendas Produto", () => {
 
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
 
-    cy.wait(5000);
+    cy.wait(4000);
 
     cy.get(`[data-cy="finalizar"]`).should("be.visible");
 
@@ -59,6 +59,8 @@ describe("Vendas Produto", () => {
         cy.get(`#produto`).type("Abacate{enter}");
       });
     cy.get(`#precoUnitario`).should("be.visible");
+
+    cy.wait(2000);
 
     cy.get(`#quantidade`).should("be.visible").type("10.00").focus().blur();
     cy.get(`#outrasDespesas`).should("be.visible").type("2.00").focus().blur();
@@ -92,6 +94,8 @@ describe("Vendas Produto", () => {
         cy.get(`#produto`).type("Couve{enter}");
       });
     cy.get(`#precoUnitario`).should("be.visible");
+
+    cy.wait(2000);
 
     cy.get(`#quantidade`).should("be.visible").type("10.00").focus().blur();
     cy.get(`#outrasDespesas`).should("be.visible").type("2.00").focus().blur();

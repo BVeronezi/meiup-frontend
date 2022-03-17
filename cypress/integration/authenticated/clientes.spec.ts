@@ -44,6 +44,8 @@ describe("Clientes", () => {
     cy.wait(3000);
     cy.get(`[aria-label="Editar cliente"]`).should("be.visible").click();
 
+    cy.wait(3000);
+
     cy.get(`#nome`).should("have.value", "Teste cliente cypress");
     cy.get(`#email`)
       .should("be.visible")
@@ -64,7 +66,7 @@ describe("Clientes", () => {
   it("Realiza a exclusão do cliente", () => {
     cy.visit("/clientes");
 
-    cy.get(`#pesquisa`).should("be.visible").type("este cliente cypress 2");
+    cy.get(`#pesquisa`).should("be.visible").type("Teste cliente cypress 2");
     cy.get("table")
       .should("be.visible")
       .contains("td", "este cliente cypress 2");

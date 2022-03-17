@@ -239,7 +239,7 @@ export default function Promocoes() {
                                   <IconButton
                                     variant="outline"
                                     color="red.800"
-                                    aria-label="Excluir promoçõ"
+                                    aria-label="Excluir promoção"
                                     icon={<RiDeleteBinLine />}
                                     onClick={() => {
                                       setSelectedPromocao(promocao);

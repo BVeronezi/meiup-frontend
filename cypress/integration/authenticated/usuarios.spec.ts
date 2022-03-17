@@ -65,7 +65,7 @@ describe("Usuários", () => {
 
     cy.get(`#pesquisa`).should("be.visible").type("Teste cypress");
     cy.get("table").should("be.visible").contains("td", "Teste cypress");
-    cy.wait(3000);
+    cy.wait(4000);
     cy.get(`[aria-label="Editar usuário"]`).should("be.visible").click();
 
     cy.get(`#nome`).should("have.value", "Teste cypress");
@@ -93,7 +93,10 @@ describe("Usuários", () => {
     cy.get(`#pesquisa`).should("be.visible").type("Teste cypress");
     cy.get("table").should("be.visible").contains("td", "Teste cypress");
     cy.wait(3000);
-    cy.get(`[aria-label="Excluir usuário"]`).should("be.visible").click();
+    cy.get(`[aria-label="Excluir usuário"]`)
+      .should("be.visible")
+      .click()
+      .first();
     cy.get('[data-test-id="remover"]').should("be.visible").click();
 
     cy.get(".chakra-toast > .chakra-toast__inner")

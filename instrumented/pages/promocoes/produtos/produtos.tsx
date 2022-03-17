@@ -83,7 +83,7 @@ export default function ProdutosPromocao({ handleLoad }) {
       setData(result);
     }
     fetchData();
-  }, [page, promocaoId]);
+  }, [page, promocaoId, refreshKey]);
 
   async function callApi(value) {
     const responseProdutos: any = await api.get(`/produtos`, {
@@ -224,7 +224,7 @@ export default function ProdutosPromocao({ handleLoad }) {
         <Box alignSelf="flex-end">
           <HStack>
             <Button
-              data-cy="adicionar"
+              data-cy="adicionar-produto"
               width="120px"
               fontSize="14px"
               type="submit"

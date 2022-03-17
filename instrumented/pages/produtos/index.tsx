@@ -138,7 +138,7 @@ export default function Produtos() {
       <Head>
         <title>MEIUP | Produtos</title>
       </Head>
-      <LoadPage active={isLoadingPage}>
+      <LoadPage active={isLoading || isLoadingPage}>
         <Sidebar>
           <Box borderRadius={10} boxShadow="base" p={["2", "6"]}>
             <Flex mb="8" justify="space-between" align="center">

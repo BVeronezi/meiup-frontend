@@ -86,7 +86,7 @@ export default function Insumos({ handleLoad }) {
       setData(result);
     }
     fetchData();
-  }, [servicoId, page]);
+  }, [servicoId, page, refreshKey]);
 
   async function callApi(value) {
     const responseProdutos: any = await api.get(`/produtos`, {

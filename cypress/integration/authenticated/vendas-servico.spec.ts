@@ -53,6 +53,8 @@ describe("Vendas Serviço", () => {
       });
     cy.get(`#valorServico`).should("be.visible");
 
+    cy.wait(2000);
+
     cy.get(`#outrasDespesasServicos`)
       .should("be.visible")
       .type("2.00")

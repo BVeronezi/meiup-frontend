@@ -225,7 +225,7 @@ export default function ServicosPromocao({ handleLoad }) {
         <Box alignSelf="flex-end">
           <HStack>
             <Button
-              data-cy="adicionar"
+              data-cy="adicionar-servico"
               width="120px"
               fontSize="14px"
               type="submit"

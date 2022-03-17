@@ -112,7 +112,7 @@ export default function ServicoVenda({
       setData(result);
     }
     fetchData();
-  }, [page, vendaId]);
+  }, [page, vendaId, refreshKey]);
 
   async function callApi(value) {
     const responseServicos: any = await api.get(`/servicos`, {

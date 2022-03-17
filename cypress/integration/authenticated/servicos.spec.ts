@@ -30,6 +30,9 @@ describe("Serviços", () => {
     cy.get(`[data-cy="salvar"]`).should("be.visible").click();
 
     cy.get(`[data-cy="insumos"]`).should("not.be.disabled");
+
+    cy.wait(3000);
+
     cy.get(`#valor`).should("be.visible").type("4.99").focus().blur();
     cy.get(`#custo`).should("be.visible").type("2.00").focus().blur();
     cy.get(`#margemLucro`).should("be.visible");
