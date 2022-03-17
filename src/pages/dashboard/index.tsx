@@ -2,10 +2,12 @@ import Head from "next/head";
 import {
   Box,
   Divider,
+  Flex,
   Heading,
   SimpleGrid,
   Stack,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { ChartBarDashboard } from "../../components/ChartBar";
 import { ChartLineDashboard } from "../../components/ChartLine";
@@ -18,7 +20,7 @@ import { LoadPage } from "../../../instrumented/components/Load";
 export default function Dashboard() {
   const [data, setData] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
-
+  const iconBoxInside = useColorModeValue("white", "white");
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
@@ -44,7 +46,7 @@ export default function Dashboard() {
               border="1px"
               bg="gray.700"
               color="white"
-              pb="4"
+              pb="2"
             >
               <Heading as="h2" title="estoque" size="md">
                 Estoque
@@ -101,7 +103,16 @@ export default function Dashboard() {
                 <Text fontSize="lg" mb="4">
                   Produtos mais vendidos
                 </Text>
-                <ChartBarDashboard produtos={data?.produtosMaisVendidos} />
+                <ChartBarDashboard dados={data?.produtosMaisVendidos} />
+              </Box>
+            )}
+
+            {data?.servicosMaisVendidos && (
+              <Box p={["6", "8"]} borderRadius={8} pb="4">
+                <Text fontSize="lg" mb="4">
+                  Serviços mais vendidos
+                </Text>
+                <ChartBarDashboard dados={data?.servicosMaisVendidos} />
               </Box>
             )}
 

@@ -5,7 +5,7 @@ const Chart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-export function ChartBarDashboard({ produtos }) {
+export function ChartBarDashboard({ dados }) {
   const options: ApexCharts.ApexOptions = {
     series: [
       {
@@ -31,14 +31,14 @@ export function ChartBarDashboard({ produtos }) {
       enabled: false,
     },
     xaxis: {
-      categories: produtos.map((c) => c["produto_descricao"]),
+      categories: dados.map((c) => c["descricao"]),
     },
   };
 
   const series = [
     {
       name: "quantidadeVendida",
-      data: produtos.map((c) => c.count),
+      data: dados.map((c) => c.count),
     },
   ];
 
