@@ -1,24 +1,22 @@
-import Head from "next/head";
 import {
   Box,
   Button,
   createStandaloneToast,
   Flex,
-  Text,
+  HStack,
   Icon,
+  IconButton,
+  Link,
   Progress,
   Spinner,
-  Link,
-  HStack,
-  IconButton,
+  Text,
   Tooltip,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
+import Head from "next/head";
 import NextLink from "next/link";
-import { theme as customTheme } from "../../styles/theme";
+import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { Pesquisa } from "../../fragments/pesquisa";
 import {
   RiAddBoxLine,
   RiAddLine,
@@ -28,16 +26,18 @@ import {
   RiPencilLine,
   RiPrinterLine,
 } from "react-icons/ri";
-import { queryClient } from "../../services/queryClient";
-import { api } from "../../services/apiClient";
-import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
+import { LoadPage } from "../../components/Load";
 import { Pagination } from "../../components/Pagination";
-import { getVendas, useVendas } from "../../hooks/vendas/useVendas";
 import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
-import { LoadPage } from "../../components/Load";
-import { withSSRAuth } from "../../utils/withSSRAuth";
+import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
+import { Pesquisa } from "../../fragments/pesquisa";
+import { getVendas, useVendas } from "../../hooks/vendas/useVendas";
 import VendaPDF from "../../reports/vendas/report-venda";
+import { api } from "../../services/apiClient";
+import { queryClient } from "../../services/queryClient";
+import { theme as customTheme } from "../../styles/theme";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 export const StatusVenda = [
   { codigo: 0, label: "ABERTA" },

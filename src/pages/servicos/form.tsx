@@ -1,11 +1,3 @@
-import Head from "next/head";
-import { theme as customTheme } from "../../styles/theme";
-import * as yup from "yup";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
-import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
   Button,
@@ -22,14 +14,22 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { Sidebar } from "../../components/Sidebar";
-import { Input } from "../../components/Input";
-import Insumos from "./insumos/insumos";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { RiInformationLine } from "react-icons/ri";
-import { api } from "../../services/apiClient";
-import { LoadPage } from "../../components/Load";
+import * as yup from "yup";
+import { Input } from "../../components/Input";
 import { InputCurrency } from "../../components/InputCurrency";
+import { LoadPage } from "../../components/Load";
+import { Sidebar } from "../../components/Sidebar";
+import { AuthContext } from "../../contexts/AuthContext";
+import { api } from "../../services/apiClient";
+import { theme as customTheme } from "../../styles/theme";
 import { withSSRAuth } from "../../utils/withSSRAuth";
+import Insumos from "./insumos/insumos";
 
 type FormData = {
   nome: string;

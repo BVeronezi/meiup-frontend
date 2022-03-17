@@ -1,42 +1,41 @@
-import React, { useState } from "react";
-import NextLink from "next/link";
-import { useRouter } from "next/dist/client/router";
-import { SubmitHandler, useForm } from "react-hook-form";
-import * as yup from "yup";
-import InputMask from "react-input-mask";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { ViewIcon } from "@chakra-ui/icons";
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
-  Input,
+  Button,
+  createStandaloneToast,
   Flex,
+  FormControl,
   FormErrorMessage,
   Heading,
   HStack,
   IconButton,
   Image,
+  Input,
   InputGroup,
   InputRightElement,
-  Text,
-  FormControl,
-  AlertDialog,
-  AlertDialogOverlay,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogBody,
-  AlertDialogFooter,
-  Button,
-  createStandaloneToast,
   Stack,
+  Text,
 } from "@chakra-ui/react";
-import { ViewIcon } from "@chakra-ui/icons";
-
-import { MDivider } from "../../components/Divider";
-import { ButtonSocial } from "../../components/ButtonSocial";
-import MButton from "../../components/Button";
-import { api } from "../../services/apiClient";
-import { withSSRGuest } from "../../utils/withSSRGuest";
-import { theme as customTheme } from "../../styles/theme";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/dist/client/router";
+import NextLink from "next/link";
+import React, { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { RiArrowLeftSLine } from "react-icons/ri";
+import InputMask from "react-input-mask";
+import * as yup from "yup";
+import MButton from "../../components/Button";
+import { ButtonSocial } from "../../components/ButtonSocial";
+import { MDivider } from "../../components/Divider";
+import { api } from "../../services/apiClient";
+import { theme as customTheme } from "../../styles/theme";
+import { withSSRGuest } from "../../utils/withSSRGuest";
 
 type UserFormData = {
   email: string;

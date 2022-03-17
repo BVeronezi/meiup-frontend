@@ -1,5 +1,3 @@
-import Head from "next/head";
-import { useRouter } from "next/dist/client/router";
 import {
   Box,
   Button,
@@ -12,6 +10,8 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useRouter } from "next/dist/client/router";
+import Head from "next/head";
 import { withSSRGuest } from "../utils/withSSRGuest";
 
 export default function Home() {

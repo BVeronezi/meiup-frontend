@@ -13,18 +13,17 @@ import {
   Stack,
   Textarea,
 } from "@chakra-ui/react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import pt from "date-fns/locale/pt";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale } from "react-datepicker";
-import pt from "date-fns/locale/pt";
 import { Input } from "../../components/Input";
-import { useEffect, useState } from "react";
 import { api } from "../../services/apiClient";
 import { theme as customTheme } from "../../styles/theme";
-import { yupResolver } from "@hookform/resolvers/yup";
 registerLocale("pt", pt);
 
 type FormData = {

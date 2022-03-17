@@ -1,5 +1,3 @@
-import Head from "next/head";
-import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -14,25 +12,27 @@ import {
   Tooltip,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import Head from "next/head";
 import NextLink from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
 import {
   RiAddBoxLine,
   RiAddLine,
   RiDeleteBinLine,
   RiPencilLine,
 } from "react-icons/ri";
+import { LoadPage } from "../../components/Load";
 import { Pagination } from "../../components/Pagination";
-import { api } from "../../services/apiClient";
-import { queryClient } from "../../services/queryClient";
-import { withSSRAuth } from "../../utils/withSSRAuth";
-import { useRouter } from "next/router";
-import { theme as customTheme } from "../../styles/theme";
-import { Pesquisa } from "../../fragments/pesquisa";
-import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
 import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
+import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
+import { Pesquisa } from "../../fragments/pesquisa";
 import { getUsuarios, useUsuarios } from "../../hooks/usuario/useUsers";
-import { LoadPage } from "../../components/Load";
+import { api } from "../../services/apiClient";
+import { queryClient } from "../../services/queryClient";
+import { theme as customTheme } from "../../styles/theme";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 enum Perfil {
   "ADMIN" = "Administrador",

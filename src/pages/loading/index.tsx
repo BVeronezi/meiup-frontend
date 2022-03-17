@@ -1,9 +1,9 @@
+import { Box, Flex, Text } from "@chakra-ui/layout";
+import { CircularProgress } from "@chakra-ui/progress";
+import Router from "next/router";
 import { setCookie } from "nookies";
 import { useEffect, useState } from "react";
 import { api } from "../../services/apiClient";
-import Router from "next/router";
-import { CircularProgress } from "@chakra-ui/progress";
-import { Box, Flex, Text } from "@chakra-ui/layout";
 
 type User = {
   email: string;

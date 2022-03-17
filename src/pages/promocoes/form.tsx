@@ -1,4 +1,3 @@
-import Head from "next/head";
 import {
   Box,
   Button,
@@ -6,35 +5,35 @@ import {
   FormControl,
   HStack,
   SimpleGrid,
+  Skeleton,
   Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
   Text,
   VStack,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
-  Skeleton,
 } from "@chakra-ui/react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import pt from "date-fns/locale/pt";
+import moment from "moment";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Input } from "../../components/Input";
-import { theme as customTheme } from "../../styles/theme";
-import DatePicker from "react-datepicker";
+import { RiInformationLine } from "react-icons/ri";
 import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { Input } from "../../components/Input";
+import { LoadPage } from "../../components/Load";
+import { Sidebar } from "../../components/Sidebar";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
-import { Sidebar } from "../../components/Sidebar";
-import { LoadPage } from "../../components/Load";
+import { theme as customTheme } from "../../styles/theme";
 import { withSSRAuth } from "../../utils/withSSRAuth";
-import moment from "moment";
-import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale } from "react-datepicker";
-import pt from "date-fns/locale/pt";
 import ProdutosPromocao from "./produtos/produtos";
-import { RiInformationLine } from "react-icons/ri";
 import ServicosPromocao from "./servicos/servicos";
 registerLocale("pt", pt);
 

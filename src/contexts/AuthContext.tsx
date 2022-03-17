@@ -1,8 +1,8 @@
-import React, { createContext, ReactNode, useEffect, useState } from "react";
-import { setCookie, parseCookies, destroyCookie } from "nookies";
-import Router from "next/router";
-import { api } from "../services/apiClient";
 import { createStandaloneToast } from "@chakra-ui/react";
+import Router from "next/router";
+import { destroyCookie, parseCookies, setCookie } from "nookies";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
+import { api } from "../services/apiClient";
 import { theme as customTheme } from "../styles/theme";
 
 type User = {

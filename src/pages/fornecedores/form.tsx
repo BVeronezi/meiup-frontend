@@ -1,4 +1,3 @@
-import Head from "next/head";
 import {
   Box,
   Button,
@@ -6,30 +5,29 @@ import {
   Flex,
   HStack,
   SimpleGrid,
-  Skeleton,
   Stack,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
-  Text,
   VStack,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useContext, useEffect, useState } from "react";
-import { theme as customTheme } from "../../styles/theme";
-import { AuthContext } from "../../contexts/AuthContext";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { api } from "../../services/apiClient";
 import axios from "axios";
-import { withSSRAuth } from "../../utils/withSSRAuth";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import * as yup from "yup";
+import { Input } from "../../components/Input";
 import { LoadPage } from "../../components/Load";
 import { Sidebar } from "../../components/Sidebar";
-import { Input } from "../../components/Input";
+import { AuthContext } from "../../contexts/AuthContext";
 import { Endereco } from "../../fragments/endereco";
+import { api } from "../../services/apiClient";
+import { theme as customTheme } from "../../styles/theme";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 type FormData = {
   nome: string;

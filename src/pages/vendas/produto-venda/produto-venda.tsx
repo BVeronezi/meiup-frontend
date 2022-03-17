@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Box,
   Button,
@@ -12,21 +11,22 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import AsyncSelect from "react-select/async";
-import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
+import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { theme as customTheme } from "../../../styles/theme";
-import { api } from "../../../services/apiClient";
-import { useRouter } from "next/router";
-import { Input } from "../../../components/Input";
-import { getProdutosVenda } from "../../../hooks/vendas/useProdutoVenda";
 import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
-import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
+import AsyncSelect from "react-select/async";
+import * as yup from "yup";
+import { Input } from "../../../components/Input";
+import { InputCurrency } from "../../../components/InputCurrency";
 import { Pagination } from "../../../components/Pagination";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
-import { InputCurrency } from "../../../components/InputCurrency";
+import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
+import { getProdutosVenda } from "../../../hooks/vendas/useProdutoVenda";
+import { api } from "../../../services/apiClient";
+import { theme as customTheme } from "../../../styles/theme";
 
 type FormData = {
   produto: string;

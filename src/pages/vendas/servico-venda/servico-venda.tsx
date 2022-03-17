@@ -1,33 +1,31 @@
 import {
+  Box,
+  Button,
   createStandaloneToast,
+  Divider,
+  Flex,
+  HStack,
+  IconButton,
   SimpleGrid,
+  Skeleton,
+  Stack,
   Text,
   VStack,
-  Skeleton,
-  Box,
-  HStack,
-  Button,
-  Divider,
-  IconButton,
-  Flex,
-  Stack,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import { theme as customTheme } from "../../../styles/theme";
-import { MutableRefObject, useEffect, useRef, useState } from "react";
-import AsyncSelect from "react-select/async";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { getServicosVenda } from "../../../hooks/vendas/useServicoVenda";
-import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
-import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
-import { api } from "../../../services/apiClient";
-import { Pagination } from "../../../components/Pagination";
+import AsyncSelect from "react-select/async";
+import * as yup from "yup";
 import { InputCurrency } from "../../../components/InputCurrency";
-import { parseCookies } from "nookies";
-import axios from "axios";
+import { Pagination } from "../../../components/Pagination";
+import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
+import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
+import { getServicosVenda } from "../../../hooks/vendas/useServicoVenda";
+import { api } from "../../../services/apiClient";
+import { theme as customTheme } from "../../../styles/theme";
 
 type FormData = {
   servico: string;

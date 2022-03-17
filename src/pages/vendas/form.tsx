@@ -1,4 +1,3 @@
-import Head from "next/head";
 import {
   Box,
   Button,
@@ -6,6 +5,7 @@ import {
   FormControl,
   HStack,
   SimpleGrid,
+  Skeleton,
   Stack,
   Tab,
   TabList,
@@ -14,30 +14,29 @@ import {
   Tabs,
   Text,
   VStack,
-  Skeleton,
 } from "@chakra-ui/react";
-import * as yup from "yup";
-import { Input } from "../../components/Input";
-import { SubmitHandler, useForm } from "react-hook-form";
-import AsyncSelect from "react-select/async";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useContext, useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { AuthContext } from "../../contexts/AuthContext";
-import { RiInformationLine } from "react-icons/ri";
-import { api } from "../../services/apiClient";
-import DatePicker from "react-datepicker";
-import { theme as customTheme } from "../../styles/theme";
-import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale } from "react-datepicker";
 import pt from "date-fns/locale/pt";
 import moment from "moment";
-import ProdutoVenda from "./produto-venda/produto-venda";
-import { Sidebar } from "../../components/Sidebar";
-import ServicoVenda from "./servico-venda/servico-venda";
-import { LoadPage } from "../../components/Load";
-import { withSSRAuth } from "../../utils/withSSRAuth";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { RiInformationLine } from "react-icons/ri";
+import AsyncSelect from "react-select/async";
+import * as yup from "yup";
+import { Input } from "../../components/Input";
 import { InputCurrency } from "../../components/InputCurrency";
+import { LoadPage } from "../../components/Load";
+import { Sidebar } from "../../components/Sidebar";
+import { AuthContext } from "../../contexts/AuthContext";
+import { api } from "../../services/apiClient";
+import { theme as customTheme } from "../../styles/theme";
+import { withSSRAuth } from "../../utils/withSSRAuth";
+import ProdutoVenda from "./produto-venda/produto-venda";
+import ServicoVenda from "./servico-venda/servico-venda";
 registerLocale("pt", pt);
 
 type FormData = {

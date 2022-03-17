@@ -1,4 +1,3 @@
-import Head from "next/head";
 import {
   Box,
   Button,
@@ -13,26 +12,27 @@ import {
   Tooltip,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import Head from "next/head";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { theme as customTheme } from "../../styles/theme";
 import { useEffect, useRef, useState } from "react";
-import { LoadPage } from "../../components/Load";
-import { Sidebar } from "../../components/Sidebar";
-import { withSSRAuth } from "../../utils/withSSRAuth";
-import { getClientes, useClientes } from "../../hooks/clientes/useClientes";
-import { api } from "../../services/apiClient";
-import { queryClient } from "../../services/queryClient";
-import { Pesquisa } from "../../fragments/pesquisa";
 import {
   RiAddBoxLine,
   RiAddLine,
   RiDeleteBinLine,
   RiPencilLine,
 } from "react-icons/ri";
-import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
+import { LoadPage } from "../../components/Load";
 import { Pagination } from "../../components/Pagination";
+import { Sidebar } from "../../components/Sidebar";
+import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
+import { Pesquisa } from "../../fragments/pesquisa";
+import { getClientes, useClientes } from "../../hooks/clientes/useClientes";
+import { api } from "../../services/apiClient";
+import { queryClient } from "../../services/queryClient";
+import { theme as customTheme } from "../../styles/theme";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 export default function Clientes() {
   const router = useRouter();

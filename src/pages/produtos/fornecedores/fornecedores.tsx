@@ -9,19 +9,19 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { theme as customTheme } from "../../../styles/theme";
-import { SubmitHandler, useForm } from "react-hook-form";
-import AsyncSelect from "react-select/async";
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { api } from "../../../services/apiClient";
-import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
+import { useEffect, useRef, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { RiDeleteBinLine } from "react-icons/ri";
-import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
+import AsyncSelect from "react-select/async";
+import * as yup from "yup";
 import { Pagination } from "../../../components/Pagination";
+import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
+import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { getProdutoFornecedor } from "../../../hooks/produtos/useProdutosFornecedores";
+import { api } from "../../../services/apiClient";
+import { theme as customTheme } from "../../../styles/theme";
 
 type FormData = {
   fornecedor: string;

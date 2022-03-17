@@ -1,4 +1,3 @@
-import Head from "next/head";
 import {
   Box,
   Button,
@@ -14,17 +13,18 @@ import {
   Tabs,
   VStack,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Head from "next/head";
+import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import * as yup from "yup";
+import { Input } from "../../components/Input";
+import { LoadPage } from "../../components/Load";
+import { Sidebar } from "../../components/Sidebar";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/apiClient";
 import { theme as customTheme } from "../../styles/theme";
-import { LoadPage } from "../../components/Load";
-import { Sidebar } from "../../components/Sidebar";
-import { Input } from "../../components/Input";
 import { withSSRAuth } from "../../utils/withSSRAuth";
 
 type FormData = {

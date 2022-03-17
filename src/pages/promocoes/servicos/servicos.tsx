@@ -7,23 +7,22 @@ import {
   IconButton,
   SimpleGrid,
   Text,
-  toast,
   VStack,
 } from "@chakra-ui/react";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { theme as customTheme } from "../../../styles/theme";
-import { SubmitHandler, useForm } from "react-hook-form";
-import AsyncSelect from "react-select/async";
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
-import { api } from "../../../services/apiClient";
-import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
+import { useEffect, useRef, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
-import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
-import { Pagination } from "../../../components/Pagination";
+import AsyncSelect from "react-select/async";
+import * as yup from "yup";
 import { InputCurrency } from "../../../components/InputCurrency";
+import { Pagination } from "../../../components/Pagination";
+import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
+import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { getServicoPromocao } from "../../../hooks/promocao/useServicoPromocao";
+import { api } from "../../../services/apiClient";
+import { theme as customTheme } from "../../../styles/theme";
 
 type FormData = {
   servico: string;

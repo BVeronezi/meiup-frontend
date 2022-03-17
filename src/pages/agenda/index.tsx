@@ -1,15 +1,13 @@
-import { Calendar, Event, momentLocalizer } from "react-big-calendar";
-import { useEffect, useState } from "react";
-import { Sidebar } from "../../components/Sidebar";
-
 import moment from "moment";
 import "moment/locale/pt-br";
+import { useEffect, useState } from "react";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { Sidebar } from "../../components/Sidebar";
+import { getAgenda, useAgenda } from "../../hooks/agenda/useAgenda";
+import DialogAgenda from "./form";
 
 const localizer = momentLocalizer(moment);
-
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import DialogAgenda from "./form";
-import { getAgenda, useAgenda } from "../../hooks/agenda/useAgenda";
 
 const messages = {
   allDay: "Dia Inteiro",

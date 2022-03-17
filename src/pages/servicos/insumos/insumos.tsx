@@ -7,25 +7,22 @@ import {
   IconButton,
   SimpleGrid,
   Text,
-  toast,
   VStack,
 } from "@chakra-ui/react";
-import { Input } from "../../../components/Input";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { theme as customTheme } from "../../../styles/theme";
-import { SubmitHandler, useForm } from "react-hook-form";
-import AsyncSelect from "react-select/async";
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
+import AsyncSelect from "react-select/async";
+import * as yup from "yup";
+import { Input } from "../../../components/Input";
+import { Pagination } from "../../../components/Pagination";
+import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
+import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
 import { getProdutoServico } from "../../../hooks/servicos/useProdutoServico";
 import { api } from "../../../services/apiClient";
-import { Table, Tbody, Td, Th, Thead, Tr } from "../../../components/Table";
-import { RiDeleteBinLine, RiPencilLine } from "react-icons/ri";
-import { AlertDialogList } from "../../../fragments/alert-dialog-list/alert-dialog-list";
-import { Pagination } from "../../../components/Pagination";
-import axios from "axios";
-import { parseCookies } from "nookies";
+import { theme as customTheme } from "../../../styles/theme";
 
 type FormData = {
   produto: string;

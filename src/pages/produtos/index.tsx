@@ -1,4 +1,3 @@
-import Head from "next/head";
 import {
   Box,
   Button,
@@ -14,26 +13,27 @@ import {
   Tooltip,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import Head from "next/head";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { Pesquisa } from "../../fragments/pesquisa";
-import { api } from "../../services/apiClient";
-import NextLink from "next/link";
-import { queryClient } from "../../services/queryClient";
 import {
   RiAddBoxLine,
   RiAddLine,
   RiDeleteBinLine,
   RiPencilLine,
 } from "react-icons/ri";
+import { LoadPage } from "../../components/Load";
 import { Pagination } from "../../components/Pagination";
-import { theme as customTheme } from "../../styles/theme";
-import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
-import { getProdutos, useProdutos } from "../../hooks/produtos/useProdutos";
 import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
+import { AlertDialogList } from "../../fragments/alert-dialog-list/alert-dialog-list";
+import { Pesquisa } from "../../fragments/pesquisa";
+import { getProdutos, useProdutos } from "../../hooks/produtos/useProdutos";
+import { api } from "../../services/apiClient";
+import { queryClient } from "../../services/queryClient";
+import { theme as customTheme } from "../../styles/theme";
 import { withSSRAuth } from "../../utils/withSSRAuth";
-import { LoadPage } from "../../components/Load";
 
 export default function Produtos() {
   const isWideVersion = useBreakpointValue({

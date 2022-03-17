@@ -12,25 +12,24 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import Head from "next/head";
-import { Sidebar } from "../../components/Sidebar";
-import { withSSRAuth } from "../../utils/withSSRAuth";
-import { useContext, useState } from "react";
-import moment from "moment";
-import Select from "react-select";
-import "react-datepicker/dist/react-datepicker.css";
-import { registerLocale } from "react-datepicker";
-import DatePicker from "react-datepicker";
 import pt from "date-fns/locale/pt";
+import moment from "moment";
+import Head from "next/head";
+import { useContext, useState } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Select from "react-select";
 import { Input } from "../../components/Input";
-import { api } from "../../services/apiClient";
-import { AuthContext } from "../../contexts/AuthContext";
 import { LoadPage } from "../../components/Load";
+import { Sidebar } from "../../components/Sidebar";
+import { AuthContext } from "../../contexts/AuthContext";
 import ClientesPDF from "../../reports/clientes/report-clientes";
-import VendasPDF from "../../reports/vendas/report-vendas";
 import FornecedoresPDF from "../../reports/fornecedores/report-fornecedores";
 import ProdutosPDF from "../../reports/produtos/report-produtos";
 import ServicosPDF from "../../reports/servicos/report-servicos";
+import VendasPDF from "../../reports/vendas/report-vendas";
+import { api } from "../../services/apiClient";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 registerLocale("pt", pt);
 

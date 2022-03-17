@@ -1,4 +1,3 @@
-import Head from "next/head";
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
@@ -14,19 +13,20 @@ import {
   Tabs,
   VStack,
 } from "@chakra-ui/react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
+import Head from "next/head";
+import { useContext, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
-import axios from "axios";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { Input } from "../../components/Input";
-import { withSSRAuth } from "../../utils/withSSRAuth";
-import { useContext, useEffect, useState } from "react";
+import { LoadPage } from "../../components/Load";
+import { Sidebar } from "../../components/Sidebar";
 import { AuthContext } from "../../contexts/AuthContext";
+import { Endereco } from "../../fragments/endereco";
 import { api } from "../../services/apiClient";
 import { theme as customTheme } from "../../styles/theme";
-import { Endereco } from "../../fragments/endereco";
-import { Sidebar } from "../../components/Sidebar";
-import { LoadPage } from "../../components/Load";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 type FormData = {
   cnpj: string;

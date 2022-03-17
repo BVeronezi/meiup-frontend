@@ -1,35 +1,34 @@
-import NextLink from "next/link";
-import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useContext, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import * as yup from "yup";
+import { ViewIcon } from "@chakra-ui/icons";
 import {
   Box,
   Checkbox,
-  Input,
+  createStandaloneToast,
   Flex,
+  FormControl,
   FormErrorMessage,
   Heading,
   HStack,
   IconButton,
   Image,
+  Input,
   InputGroup,
   InputRightElement,
-  SimpleGrid,
-  Text,
-  FormControl,
-  createStandaloneToast,
   Stack,
+  Text,
 } from "@chakra-ui/react";
-import { ViewIcon } from "@chakra-ui/icons";
-import { theme as customTheme } from "../../styles/theme";
-import { MDivider } from "../../components/Divider";
-import { ButtonSocial } from "../../components/ButtonSocial";
-import MButton from "../../components/Button";
-import { AuthContext } from "../../contexts/AuthContext";
-import { withSSRGuest } from "../../utils/withSSRGuest";
+import { yupResolver } from "@hookform/resolvers/yup";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
+import React, { useContext, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { RiArrowLeftSLine } from "react-icons/ri";
+import * as yup from "yup";
+import MButton from "../../components/Button";
+import { ButtonSocial } from "../../components/ButtonSocial";
+import { MDivider } from "../../components/Divider";
+import { AuthContext } from "../../contexts/AuthContext";
+import { theme as customTheme } from "../../styles/theme";
+import { withSSRGuest } from "../../utils/withSSRGuest";
 
 type UserFormData = {
   email: string;

@@ -1,21 +1,20 @@
-import Head from "next/head";
 import {
   Box,
   Divider,
-  Flex,
   Heading,
   SimpleGrid,
   Stack,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import Head from "next/head";
+import { useEffect, useState } from "react";
+import { LoadPage } from "../../../instrumented/components/Load";
 import { ChartBarDashboard } from "../../components/ChartBar";
 import { ChartLineDashboard } from "../../components/ChartLine";
 import { Sidebar } from "../../components/Sidebar";
-import { withSSRAuth } from "../../utils/withSSRAuth";
-import { useEffect, useState } from "react";
 import { api } from "../../services/apiClient";
-import { LoadPage } from "../../../instrumented/components/Load";
+import { withSSRAuth } from "../../utils/withSSRAuth";
 
 export default function Dashboard() {
   const [data, setData] = useState<any>();
