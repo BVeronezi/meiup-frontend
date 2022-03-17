@@ -1,7 +1,6 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import vfsFonts from "pdfmake/build/vfs_fonts";
-import Rodape from "../utils/[utils]";
-
+import Rodape from "../utils";
 export default function ClientesPDF(clientes, empresa) {
   pdfMake.vfs = vfsFonts.pdfMake ? vfsFonts.pdfMake.vfs : pdfMake.vfs;
 

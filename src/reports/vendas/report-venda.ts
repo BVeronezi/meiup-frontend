@@ -1,7 +1,7 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import vfsFonts from "pdfmake/build/vfs_fonts";
 import moment from "moment";
-import Rodape from "../../relatorios/utils/[utils]";
+import Rodape from "../utils";
 
 export default function VendaPDF(venda, dadosProduto, dadosServico) {
   pdfMake.vfs = vfsFonts.pdfMake ? vfsFonts.pdfMake.vfs : pdfMake.vfs;

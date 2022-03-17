@@ -37,7 +37,7 @@ import { Sidebar } from "../../components/Sidebar";
 import { Table, Tbody, Td, Th, Thead, Tr } from "../../components/Table";
 import { LoadPage } from "../../components/Load";
 import { withSSRAuth } from "../../utils/withSSRAuth";
-import VendaPDF from "./report-venda/[...report-venda]";
+import VendaPDF from "../../reports/vendas/report-venda";
 
 export const StatusVenda = [
   { codigo: 0, label: "ABERTA" },

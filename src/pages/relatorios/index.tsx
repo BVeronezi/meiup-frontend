@@ -26,11 +26,12 @@ import { Input } from "../../components/Input";
 import { api } from "../../services/apiClient";
 import { AuthContext } from "../../contexts/AuthContext";
 import { LoadPage } from "../../components/Load";
-import VendasPDF from "./vendas/[...report-vendas]";
-import FornecedoresPDF from "./fornecedores/[...report-fornecedores]";
-import ProdutosPDF from "./produtos/[...report-produtos]";
-import ServicosPDF from "./servicos/[...report-servicos]";
-import ClientesPDF from "./clientes/[...report-clientes]";
+import ClientesPDF from "../../reports/clientes/report-clientes";
+import VendasPDF from "../../reports/vendas/report-vendas";
+import FornecedoresPDF from "../../reports/fornecedores/report-fornecedores";
+import ProdutosPDF from "../../reports/produtos/report-produtos";
+import ServicosPDF from "../../reports/servicos/report-servicos";
+
 registerLocale("pt", pt);
 
 export enum TipoRelatorio {

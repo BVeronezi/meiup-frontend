@@ -1,6 +1,7 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import vfsFonts from "pdfmake/build/vfs_fonts";
 import moment from "moment";
+import Rodape from "../utils";
 
 export const StatusVenda = [
   { codigo: 0, label: "ABERTA" },
@@ -175,18 +176,6 @@ export default function VendasPDF(
       margin: [20, 2, 20, 0],
     },
   ];
-
-  function Rodape(currentPage, pageCount) {
-    return [
-      {
-        text: currentPage + "/" + pageCount,
-        alignment: "right",
-        fontSize: 15,
-        bold: true,
-        margin: [0, 10, 20, 0],
-      },
-    ];
-  }
 
   const docDefinition = {
     pageSize: "A4",
