@@ -6,28 +6,31 @@ import NextLink from "next/link";
 
 export function ButtonSocial() {
   const url_google = `https://meiup-api.herokuapp.com/api/v1/auth/google`;
+  const url_facebook = `https://meiup-api.herokuapp.com/api/v1/auth/facebook`;
 
   return (
     <>
-      <Button
-        variant={"outline"}
-        leftIcon={<FaFacebookF />}
-        fontWeight="medium"
-        size="md"
-        w={"full"}
-        color="white"
-        bg="#3b5998"
-        _hover={{
-          bg: "#8b9dc3",
-        }}
-        onClick={(event) => {
-          event.preventDefault();
-        }}
-      >
-        <Center>
-          <Text> Continuar com o Facebook</Text>
-        </Center>
-      </Button>
+      <NextLink href={url_facebook}>
+        <Button
+          variant={"outline"}
+          leftIcon={<FaFacebookF />}
+          fontWeight="medium"
+          size="md"
+          w={"full"}
+          color="white"
+          bg="#3b5998"
+          _hover={{
+            bg: "#8b9dc3",
+          }}
+          onClick={(event) => {
+            event.preventDefault();
+          }}
+        >
+          <Center>
+            <Text> Continuar com o Facebook</Text>
+          </Center>
+        </Button>
+      </NextLink>
 
       <NextLink href={url_google}>
         <Button
