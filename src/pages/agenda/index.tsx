@@ -38,10 +38,12 @@ export default function Agenda() {
     setEvents(data?.agenda);
   }, [data]);
 
-  const refresh = async () => {
+  async function refresh() {
     const response = await getAgenda();
-    setEvents(response?.agenda);
-  };
+    const agenda = response?.agenda ?? []
+
+    setEvents(agenda);
+  }
 
   const handleOpenDialog = (slot) => {
     setIsSlot(slot);

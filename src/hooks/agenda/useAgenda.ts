@@ -1,5 +1,6 @@
 import { useQuery, UseQueryOptions, UseQueryResult } from "react-query";
 import { api } from "../../services/apiClient";
+import moment from "moment";
 
 type Agenda = {
   id: string;
@@ -22,8 +23,8 @@ export async function getAgenda(valuePesquisa?): Promise<GetAgendaResponse> {
     return {
       id: agenda.id,
       title: agenda.titulo,
-      start: agenda.data,
-      end: agenda.data,
+      start: moment(agenda.data).toDate(),
+      end: moment(agenda.data).toDate(),
       descricao: agenda.descricao,
     };
   });

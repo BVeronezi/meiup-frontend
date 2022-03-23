@@ -9,9 +9,9 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { LoadPage } from "../../../instrumented/components/Load";
 import { ChartBarDashboard } from "../../components/ChartBar";
 import { ChartLineDashboard } from "../../components/ChartLine";
+import { LoadPage } from "../../components/Load";
 import { Sidebar } from "../../components/Sidebar";
 import { api } from "../../services/apiClient";
 import { withSSRAuth } from "../../utils/withSSRAuth";
@@ -19,7 +19,7 @@ import { withSSRAuth } from "../../utils/withSSRAuth";
 export default function Dashboard() {
   const [data, setData] = useState<any>();
   const [isLoading, setIsLoading] = useState(false);
-  const iconBoxInside = useColorModeValue("white", "white");
+  
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
